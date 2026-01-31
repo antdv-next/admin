@@ -1,6 +1,7 @@
+import { AntdvNextResolver } from '@antdv-next/auto-import-resolver'
+import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
 import { nitro } from 'nitro/vite'
-import unocss from 'unocss/vite'
 import autoImport from 'unplugin-auto-import/vite'
 import components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
@@ -11,10 +12,11 @@ import vueRouter from 'vue-router/vite'
 export default defineConfig({
   plugins: [
     vue(),
-    unocss(),
+    tailwindcss(),
     dayjs(),
     nitro(),
     autoImport({
+      dirs: [],
       dts: 'types/auto-imports.d.ts',
       imports: [
         'vue',
@@ -24,6 +26,8 @@ export default defineConfig({
       ],
     }),
     components({
+      dirs: [],
+      resolvers: [AntdvNextResolver()],
       dts: 'types/components.d.ts',
     }),
     vueRouter({
