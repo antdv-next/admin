@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@antdv-next/icons": "1.0.0-rc.1",
-    "@tailwindcss/vite": "^4.1.18",
     "@antdv-next/tailwind": "1.0.0-beta.0",
+    "@tailwindcss/vite": "^4.1.18",
     "@vueuse/core": "^14.1.0",
     "antdv-next": "1.0.0-rc.8",
     "pinia": "^3.0.4",

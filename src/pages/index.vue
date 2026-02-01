@@ -1,3 +1,11 @@
+<script setup lang="ts">
+definePage({
+  meta: {
+    title: '首页',
+  },
+})
+</script>
+
 <template>
   <div>
     <div class="text-primary hover:text-primary-hover text-3xl cursor-pointer">
