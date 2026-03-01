@@ -20,10 +20,19 @@ export function loadPlugins(mode: string, baseUrl: string) {
   return [
     vueRouter({
       dts: 'types/vue-router.d.ts',
-      exclude: [
-        'src/pages/**/components/**',
+      routesFolder: [
+        {
+          src: 'src/pages',
+          path: file => file.slice(file.lastIndexOf('src/pages') + 'src/pages'.length),
+          exclude: [
+            '**/components',
+            '**/hooks',
+            '**/composables',
+          ],
+        },
       ],
     }),
+    // vue-router的插件必须放在vue插件前面
     vue(),
     tailwindcss(),
     dayjs(),
