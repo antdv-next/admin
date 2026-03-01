@@ -1,10 +1,9 @@
 <script setup lang="ts">
+import BaseConfig from '@/components/base/config.vue'
 </script>
 
 <template>
-  <a-style-provider :layer="true">
-    <a-app>
-      <RouterView />
-    </a-app>
-  </a-style-provider>
+  <BaseConfig>
+    <router-view />
+  </BaseConfig>
 </template>

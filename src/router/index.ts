@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { routes } from 'vue-router/auto-routes'
+import { setupAuthGuard } from '@/router/guard/auth.ts'
 import { setupTitleGuard } from './guard/title'
 
 export const router = createRouter({
@@ -7,4 +8,5 @@ export const router = createRouter({
   history: createWebHistory(),
 })
 
+setupAuthGuard(router)
 setupTitleGuard(router)
