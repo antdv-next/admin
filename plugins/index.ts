@@ -33,13 +33,17 @@ export function loadPlugins(mode: string, baseUrl: string) {
     dayjs(),
     ...plugins,
     autoImport({
-      dirs: [],
+      dirs: [
+        'src/stores',
+        'apps/*/stores',
+      ],
       dts: 'types/auto-imports.d.ts',
       imports: [
         'vue',
         'vue-router',
         '@vueuse/core',
         'vue-i18n',
+        'pinia',
       ],
     }),
     components({

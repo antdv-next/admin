@@ -4,6 +4,6 @@ import BaseConfig from '@/components/base/config.vue'
 
 <template>
   <BaseConfig>
-    <RouterView />
+    <router-view />
   </BaseConfig>
 </template>

@@ -2,8 +2,8 @@ import type { UserConfig } from 'vite'
 import { fileURLToPath } from 'node:url'
 import { defineConfig, loadEnv } from 'vite'
 import { loadPlugins } from './plugins'
-import { loadAlias } from './plugins/alisa.ts'
-import { loadSever } from './plugins/server.ts'
+import { loadAlias } from './plugins/alias'
+import { loadSever } from './plugins/server'
 
 const baseUrl = fileURLToPath(new URL('./', import.meta.url))
 
