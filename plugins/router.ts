@@ -1,34 +1,42 @@
-import type { RoutesFolder } from 'vue-router/dist/unplugin/index.mjs'
+import type { RoutesFolder } from 'vue-router/unplugin'
 
-export function loadRouter() {
-  const commonExclude = [
-    '**/components',
-    '**/hooks',
-    '**/composables',
-  ]
+const commonExclude = [
+  '**/components/**',
+  '**/hooks/**',
+  '**/composables/**',
+]
+
+function normalizePath(filePath: string) {
+  return filePath.replaceAll('\\', '/')
+}
+
+function toRelativePath(filePath: string, prefix: string) {
+  const normalizedPath = normalizePath(filePath)
+  const normalizedPrefix = `${normalizePath(prefix).replace(/\/+$/, '')}/`
+  const index = normalizedPath.lastIndexOf(normalizedPrefix)
+
+  if (index === -1)
+    return normalizedPath
+
+  return normalizedPath.slice(index + normalizedPrefix.length)
+}
+
+export function loadRouter(): RoutesFolder {
   return [
     {
       src: 'src/pages',
-      path: (file) => {
-        return file.slice(file.lastIndexOf('src/pages') + 'src/pages'.length).slice(1)
-      },
-      exclude: [
-        ...commonExclude,
-      ],
+      path: (filePath: string) => toRelativePath(filePath, 'src/pages'),
+      exclude: commonExclude,
     },
     {
-      src: 'apps/admin',
-      filePatterns: [
-        'pages/**',
-      ],
-      path: (file) => {
-        const prefix = 'apps/admin'
-        const path = file.slice(file.lastIndexOf(prefix) + prefix.length + 1).replace('pages/', '')
-        return `admin/${path}`
+      src: 'apps',
+      filePatterns: ['*/pages/**'],
+      // apps/admin/pages/index.vue -> admin/index.vue
+      path: (filePath: string) => {
+        const routePath = toRelativePath(filePath, 'apps')
+        return routePath.replace(/^([^/]+)\/pages\//, '$1/')
       },
-      exclude: [
-        ...commonExclude,
-      ],
+      exclude: commonExclude,
     },
-  ] as RoutesFolder
+  ]
 }

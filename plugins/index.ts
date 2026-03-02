@@ -7,6 +7,7 @@ import components from 'unplugin-vue-components/vite'
 import { loadEnv } from 'vite'
 import dayjs from 'vite-plugin-dayjs'
 import vueRouter from 'vue-router/vite'
+import { layout } from './layout'
 import { loadRouter } from './router'
 
 export function loadPlugins(mode: string, baseUrl: string) {
@@ -23,6 +24,7 @@ export function loadPlugins(mode: string, baseUrl: string) {
       dts: 'types/vue-router.d.ts',
       routesFolder: loadRouter(),
     }),
+    layout(),
     // vue-router的插件必须放在vue插件前面
     vue(),
     tailwindcss(),
