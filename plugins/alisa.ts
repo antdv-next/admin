@@ -7,5 +7,9 @@ export function loadAlias(baseUrl: string) {
       find: '@',
       replacement: path.resolve(baseUrl, 'src'),
     },
+    {
+      find: '@apps/admin',
+      replacement: path.resolve(baseUrl, 'apps/admin', 'src'),
+    },
   ] as NonNullable<UserConfig['resolve']>['alias']
 }

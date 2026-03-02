@@ -1,4 +1,9 @@
 <script setup lang="ts">
+definePage({
+  meta: {
+    layout: 'admin/base',
+  },
+})
 </script>
 
 <template>

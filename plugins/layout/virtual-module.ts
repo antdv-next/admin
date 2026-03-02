@@ -1,10 +1,16 @@
 import type { ResolvedLayoutPluginOptions } from './types'
-import { normalizeGlobPath } from './utils'
+import { normalizeGlobPath, toViteExcludeGlob } from './utils'
 
 export function createVirtualModuleCode(options: ResolvedLayoutPluginOptions) {
-  const globs = options.layoutDirs
+  const includeGlobs = options.layoutDirs
     .map(dir => normalizeGlobPath(dir))
     .map(dir => `'${dir}/**/*.vue'`)
+
+  const excludeGlobs = options.exclude
+    .map(pattern => toViteExcludeGlob(pattern))
+    .map(pattern => `'${pattern}'`)
+
+  const globs = [...includeGlobs, ...excludeGlobs]
     .join(', ')
 
   return `
@@ -21,14 +27,14 @@ function resolveModule(module) {
 function getLayoutKey(filePath) {
   const appLayout = filePath.match(/\\/apps\\/([^/]+)\\/layouts\\/(.+)\\.vue$/)
   if (appLayout)
-    return \`\${appLayout[1]}/\${appLayout[2]}\`
+    return \`\${appLayout[1]}/\${appLayout[2]}\`.replace(/\\/index$/, '')
 
   const srcLayout = filePath.match(/\\/src\\/layouts\\/(.+)\\.vue$/)
   if (srcLayout)
-    return srcLayout[1]
+    return srcLayout[1].replace(/\\/index$/, '')
 
   const genericLayout = filePath.match(/\\/layouts\\/(.+)\\.vue$/)
-  return genericLayout ? genericLayout[1] : null
+  return genericLayout ? genericLayout[1].replace(/\\/index$/, '') : null
 }
 
 Object.entries(modules).forEach(([filePath, module]) => {
@@ -36,8 +42,6 @@ Object.entries(modules).forEach(([filePath, module]) => {
   if (key)
     layouts[key] = resolveModule(module)
 })
-
-console.log('Loaded layouts:', Object.keys(layouts))
 function getAppName(routePath) {
   if (!routePath || routePath === '/')
     return ''

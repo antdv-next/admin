@@ -7,6 +7,25 @@ export function normalizeFsPath(filePath: string) {
   return filePath.replaceAll('\\', '/')
 }
 
+export function normalizeGlobPattern(pattern: string) {
+  const normalizedPattern = normalizeFsPath(pattern)
+  const isNegated = normalizedPattern.startsWith('!')
+  const withoutNegation = isNegated ? normalizedPattern.slice(1) : normalizedPattern
+  const withoutRelative = withoutNegation.replace(/^\.?\//, '')
+  const absolutePattern = withoutRelative.startsWith('/') ? withoutRelative : `/${withoutRelative}`
+  return isNegated ? `!${absolutePattern}` : absolutePattern
+}
+
+export function normalizeExcludeGlob(pattern: string) {
+  const normalizedPattern = normalizeGlobPattern(pattern)
+  return normalizedPattern.startsWith('!') ? normalizedPattern.slice(1) : normalizedPattern
+}
+
+export function toViteExcludeGlob(pattern: string) {
+  const normalizedPattern = normalizeGlobPattern(pattern)
+  return normalizedPattern.startsWith('!') ? normalizedPattern : `!${normalizedPattern}`
+}
+
 export function toLayoutWatchGlob(path: string) {
   return `${path.replace(/\/+$/, '')}/**/*.vue`
 }

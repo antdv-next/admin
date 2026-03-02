@@ -1,5 +1,4 @@
-import type { LayoutType } from 'virtual:layout'
-
+import type { GeneratedLayoutType } from './layout-generated'
 import 'vue-router'
 
 export {}
@@ -7,7 +6,7 @@ export {}
 declare module 'vue-router' {
   interface RouteMeta {
     title?: string
-    layout?: LayoutType | false
+    layout?: GeneratedLayoutType | false
     isLayout?: boolean
   }
 }
