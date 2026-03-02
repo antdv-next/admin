@@ -7,6 +7,7 @@ import components from 'unplugin-vue-components/vite'
 import { loadEnv } from 'vite'
 import dayjs from 'vite-plugin-dayjs'
 import vueRouter from 'vue-router/vite'
+import { loadRouter } from './router'
 
 export function loadPlugins(mode: string, baseUrl: string) {
   const isProd = mode === 'production'
@@ -20,17 +21,7 @@ export function loadPlugins(mode: string, baseUrl: string) {
   return [
     vueRouter({
       dts: 'types/vue-router.d.ts',
-      routesFolder: [
-        {
-          src: 'src/pages',
-          path: file => file.slice(file.lastIndexOf('src/pages') + 'src/pages'.length),
-          exclude: [
-            '**/components',
-            '**/hooks',
-            '**/composables',
-          ],
-        },
-      ],
+      routesFolder: loadRouter(),
     }),
     // vue-router的插件必须放在vue插件前面
     vue(),

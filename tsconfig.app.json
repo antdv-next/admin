@@ -21,6 +21,9 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "types/**/*.d.ts",
-    "server/**/*.ts"
+    "server/**/*.ts",
+    "apps/**/*.ts",
+    "apps/**/*.tsx",
+    "apps/**/*.vue"
   ]
 }

@@ -1,9 +1,8 @@
 <script setup lang="ts">
-
 </script>
 
 <template>
   <div>
-    <h1>Admin</h1>
+    <span>测试</span>
   </div>
 </template>
