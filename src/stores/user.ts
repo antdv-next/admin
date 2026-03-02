@@ -1,15 +1,22 @@
-export interface UserState {
+import { useAuthorization } from '@/composables/authorization'
 
+export interface UserState {
+  token: string | null
 }
 
-export const userStore = defineStore('user', {
-  state: (): UserState => ({
+const authorization = useAuthorization()
 
-  }),
-  actions: {
+export const useUserStore = defineStore(
+  'user',
+  {
+    state: (): UserState => ({
+      token: authorization.value,
+    }),
+    actions: {
 
+    },
+    getters: {
+
+    },
   },
-  getters: {
-
-  },
-})
+)

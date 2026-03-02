@@ -36,6 +36,7 @@ export function loadPlugins(mode: string, baseUrl: string) {
       dirs: [
         'src/stores',
         'apps/*/stores',
+        'src/utils/request/index.ts',
       ],
       dts: 'types/auto-imports.d.ts',
       imports: [
