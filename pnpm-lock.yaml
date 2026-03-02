@@ -26,6 +26,9 @@ importers:
       axios:
         specifier: ^1.13.6
         version: 1.13.6
+      es-toolkit:
+        specifier: ^1.45.0
+        version: 1.45.0
       pinia:
         specifier: ^3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.29(typescript@5.9.3))
@@ -1860,6 +1863,9 @@ packages:
 
   es-toolkit@1.44.0:
     resolution: {integrity: sha512-6penXeZalaV88MM3cGkFZZfOoLGWshWWfdy0tWw/RlVVyhvMaWSBTOvXNeiW3e5FwdS5ePW0LGEu17zT139ktg==}
+
+  es-toolkit@1.45.0:
+    resolution: {integrity: sha512-RArCX+Zea16+R1jg4mH223Z8p/ivbJjIkU3oC6ld2bdUfmDxiCkFYSi9zLOR2anucWJUeH4Djnzgd0im0nD3dw==}
 
   escalade@3.2.0:
     resolution: {integrity: sha512-WUj2qlxaQtO4g6Pq5c29GTcWGDyd8itL8zTlipgECz3JesAiiOKotd8JU6otB3PACgG6xkJUyVhboMS+bje/jA==}
@@ -4240,7 +4246,7 @@ snapshots:
   '@v-c/slick@1.0.2(vue@3.5.29(typescript@5.9.3))':
     dependencies:
       '@v-c/util': 1.0.17(vue@3.5.29(typescript@5.9.3))
-      es-toolkit: 1.44.0
+      es-toolkit: 1.45.0
       vue: 3.5.29(typescript@5.9.3)
 
   '@v-c/slider@1.0.10(vue@3.5.29(typescript@5.9.3))':
@@ -4784,6 +4790,8 @@ snapshots:
       hasown: 2.0.2
 
   es-toolkit@1.44.0: {}
+
+  es-toolkit@1.45.0: {}
 
   escalade@3.2.0: {}
 

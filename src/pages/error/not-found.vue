@@ -4,6 +4,10 @@
 
 <template>
   <div>
-    <span>测试</span>
+    Not Found
   </div>
 </template>
+
+<style scoped>
+
+</style>

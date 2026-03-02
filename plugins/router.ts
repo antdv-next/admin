@@ -26,7 +26,12 @@ export function loadRouter(): RoutesFolder {
     {
       src: 'src/pages',
       path: (filePath: string) => toRelativePath(filePath, 'src/pages'),
-      exclude: commonExclude,
+      exclude: [
+        ...commonExclude,
+        'src/pages/error/**',
+        'src/pages/index.vue',
+        'src/pages/auth/**',
+      ],
     },
     {
       src: 'apps',

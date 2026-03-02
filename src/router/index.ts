@@ -1,8 +1,8 @@
 import { setupLayouts } from 'virtual:layout'
 import { createRouter, createWebHistory } from 'vue-router'
-import { routes } from 'vue-router/auto-routes'
 import { setupAuthGuard } from '@/router/guard/auth'
 import { setupTitleGuard } from './guard/title'
+import { routes } from './static-router'
 
 export const router = createRouter({
   routes: setupLayouts(routes),

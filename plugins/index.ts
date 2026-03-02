@@ -23,9 +23,20 @@ export function loadPlugins(mode: string, baseUrl: string) {
     vueRouter({
       dts: 'types/vue-router.d.ts',
       routesFolder: loadRouter(),
+      extendRoute(route) {
+        if (route.path.startsWith('/admin')) {
+          route.addToMeta({
+            layout: 'admin/base',
+          })
+        }
+      },
     }),
     layout({
-      exclude: ['**/components/**', '**/hooks/**', '**/composables/**'],
+      exclude: [
+        '**/components/**',
+        '**/hooks/**',
+        '**/composables/**',
+      ],
     }),
     // vue-router的插件必须放在vue插件前面
     vue(),
