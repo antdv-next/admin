@@ -94,7 +94,7 @@ function deepSetupLayout(routes, top = true) {
 
     if (top) {
       const skipLayout = !nextRoute.component
-        && nextRoute.children?.some(child => (child.path === '' || child.path === '/') && child.meta?.isLayout)
+        && nextRoute.children?.some(child => (child.path === '' || child.path === '/') && (child.meta?.isLayout || child.meta?.layout === false))
 
       if (!skipLayout) {
         const layoutKey = resolveLayoutKey(nextRoute)
