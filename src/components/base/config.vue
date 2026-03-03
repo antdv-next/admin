@@ -1,23 +1,21 @@
 <script setup lang="ts">
-import { theme } from 'antdv-next'
-import { useGlobalToken } from '@/composables/token'
+import { useTheme } from '@/components/base/theme.ts'
+import BaseToken from './token.vue'
 
 defineOptions({
   name: 'BaseConfig',
 })
-const { token } = theme.useToken()
-const globalToken = useGlobalToken()
-watchEffect(() => {
-  globalToken.token.value = token.value
-})
+const { theme } = useTheme()
 </script>
 
 <template>
   <a-style-provider layer>
-    <a-config-provider :theme="{ zeroRuntime: true }">
-      <a-app>
-        <slot />
-      </a-app>
+    <a-config-provider :theme="theme">
+      <BaseToken>
+        <a-app>
+          <slot />
+        </a-app>
+      </BaseToken>
     </a-config-provider>
   </a-style-provider>
 </template>
