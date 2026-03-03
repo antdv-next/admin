@@ -3,3 +3,4 @@
 @import '@antdv-next/tailwind/theme.css';
 @import 'antdv-next/dist/reset.css' layer(reset);
 @import 'antdv-next/dist/antd.css' layer(antd);
+@import 'trickling/lib/style.css' layer(base);

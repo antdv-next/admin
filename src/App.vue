@@ -1,3 +1,9 @@
+<script setup lang="ts">
+import BaseConfig from '@/components/base/config.vue'
+</script>
+
 <template>
-  <router-view />
+  <BaseConfig>
+    <router-view />
+  </BaseConfig>
 </template>

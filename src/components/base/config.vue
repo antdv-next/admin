@@ -1,6 +1,14 @@
 <script setup lang="ts">
+import { theme } from 'antdv-next'
+import { useGlobalToken } from '@/composables/token'
+
 defineOptions({
   name: 'BaseConfig',
+})
+const { token } = theme.useToken()
+const globalToken = useGlobalToken()
+watchEffect(() => {
+  globalToken.token.value = token.value
 })
 </script>
 
