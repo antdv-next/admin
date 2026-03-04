@@ -4,8 +4,6 @@ import { setupLayouts } from 'virtual:layout'
 import { routes } from 'vue-router/auto-routes'
 import { NOT_FOUND_NAME, notFoundRoute, ROUTE_NAME } from '@/router/constant'
 
-console.log('routes', routes)
-
 let hasRoute = false
 export function setupAuthGuard(router: Router) {
   router.beforeEach(async (to) => {
