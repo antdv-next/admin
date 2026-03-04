@@ -8,7 +8,7 @@ export interface MenuInfo {
   // 菜单图标
   icon?: string
   // 父级id
-  parentId?: string
+  parentId?: string | null
   // 多应用标识，对应我们前端的多应用配置
   app?: string
   // 显示排序（越小越靠前）
