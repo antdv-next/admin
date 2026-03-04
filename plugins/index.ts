@@ -1,3 +1,4 @@
+import type { LayoutPluginOptions } from './layout'
 import { AntdvNextResolver } from '@antdv-next/auto-import-resolver'
 import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
@@ -13,6 +14,14 @@ import { loadRouter } from './router'
 export function loadPlugins(mode: string, baseUrl: string) {
   const isProd = mode === 'production'
   const env = loadEnv(mode, baseUrl)
+  const layoutOptions: LayoutPluginOptions = {
+    globalFallbackLayout: false,
+    exclude: [
+      '**/components/**',
+      '**/hooks/**',
+      '**/composables/**',
+    ],
+  }
 
   // 需要判断生产环境是否开启nitro
   const plugins = []
@@ -22,16 +31,9 @@ export function loadPlugins(mode: string, baseUrl: string) {
   return [
     vueRouter({
       dts: 'types/vue-router.d.ts',
-      routesFolder: loadRouter(),
+      routesFolder: loadRouter(layoutOptions),
     }),
-    layout({
-      fallbackToGlobalDefault: false,
-      exclude: [
-        '**/components/**',
-        '**/hooks/**',
-        '**/composables/**',
-      ],
-    }),
+    layout(layoutOptions),
     // vue-router的插件必须放在vue插件前面
     vue(),
     tailwindcss(),

@@ -13,10 +13,29 @@ export function createVirtualModuleCode(options: ResolvedLayoutPluginOptions) {
   const globs = [...includeGlobs, ...excludeGlobs]
     .join(', ')
 
+  const defaultLayoutLiteral = JSON.stringify(options.defaultLayout)
+  const globalFallbackLayoutLiteral = JSON.stringify(options.globalFallbackLayout)
+  const modulesLiteral = JSON.stringify(options.modules)
+  const layoutSourcesLiteral = JSON.stringify(options.layoutSources)
+
   return `
 const modules = import.meta.glob([${globs}], { eager: ${options.importMode === 'sync'} })
 const layouts = Object.create(null)
-const appLayoutNames = new Set()
+const defaultLayoutKey = ${defaultLayoutLiteral}
+const routeModules = ${modulesLiteral}
+const layoutSources = ${layoutSourcesLiteral}
+const knownModuleRoutePrefixes = new Set(Object.keys(routeModules))
+const moduleNameOverrides = Object.create(null)
+
+Object.entries(routeModules).forEach(([routePrefix, config]) => {
+  if (typeof config?.module === 'string' && config.module.length > 0)
+    moduleNameOverrides[routePrefix] = config.module
+})
+
+layoutSources.forEach((source) => {
+  if (source.kind === 'module-static' && source.routePrefix)
+    knownModuleRoutePrefixes.add(source.routePrefix)
+})
 
 function resolveModule(module) {
   if (module && typeof module === 'object' && 'default' in module)
@@ -25,29 +44,83 @@ function resolveModule(module) {
   return module
 }
 
-function getLayoutKey(filePath) {
-  const appLayout = filePath.match(/\\/apps\\/([^/]+)\\/layouts\\/(.+)\\.vue$/)
-  if (appLayout)
-    return \`\${appLayout[1]}/\${appLayout[2]}\`.replace(/\\/index$/, '')
+function normalizeLayoutPath(value) {
+  return value.replace(/\\.vue$/, '').replace(/\\/index$/, '')
+}
 
-  const srcLayout = filePath.match(/\\/src\\/layouts\\/(.+)\\.vue$/)
-  if (srcLayout)
-    return srcLayout[1].replace(/\\/index$/, '')
+function resolveLayoutInfo(filePath) {
+  const normalizedFilePath = filePath.startsWith('/') ? filePath : \`/\${filePath.replace(/^\\/+/, '')}\`
 
-  const genericLayout = filePath.match(/\\/layouts\\/(.+)\\.vue$/)
-  return genericLayout ? genericLayout[1].replace(/\\/index$/, '') : null
+  for (const source of layoutSources) {
+    const normalizedLayoutDir = source.layoutDir.replace(/\\/+$/, '')
+    if (source.kind === 'global') {
+      const prefix = \`\${normalizedLayoutDir}/\`
+      if (!normalizedFilePath.startsWith(prefix))
+        continue
+
+      const relativePath = normalizedFilePath.slice(prefix.length)
+      return {
+        layoutKey: normalizeLayoutPath(relativePath),
+      }
+    }
+
+    if (source.kind === 'module-static') {
+      const prefix = \`\${normalizedLayoutDir}/\`
+      if (!normalizedFilePath.startsWith(prefix))
+        continue
+
+      const relativePath = normalizedFilePath.slice(prefix.length)
+      const routePrefix = source.routePrefix
+      const moduleName = moduleNameOverrides[routePrefix] ?? routePrefix
+
+      return {
+        layoutKey: \`\${moduleName}/\${normalizeLayoutPath(relativePath)}\`,
+        routePrefix,
+      }
+    }
+
+    if (source.kind === 'module-wildcard' && source.wildcardRegex) {
+      const matcher = new RegExp(source.wildcardRegex)
+      const matched = normalizedFilePath.match(matcher)
+      if (!matched)
+        continue
+
+      const routePrefix = matched[1]
+      const relativePath = matched[2]
+      const moduleName = moduleNameOverrides[routePrefix] ?? routePrefix
+
+      return {
+        layoutKey: \`\${moduleName}/\${normalizeLayoutPath(relativePath)}\`,
+        routePrefix,
+      }
+    }
+  }
+
+  return null
+}
+
+function resolveFallbackLayout(layoutKey) {
+  if (layoutKey === false)
+    return false
+
+  if (typeof layoutKey === 'string' && layoutKey.length > 0)
+    return layouts[layoutKey] ? layoutKey : false
+
+  return false
 }
 
 Object.entries(modules).forEach(([filePath, module]) => {
-  const appLayout = filePath.match(/\\/apps\\/([^/]+)\\/layouts\\//)
-  if (appLayout)
-    appLayoutNames.add(appLayout[1])
+  const info = resolveLayoutInfo(filePath)
+  if (!info?.layoutKey)
+    return
 
-  const key = getLayoutKey(filePath)
-  if (key)
-    layouts[key] = resolveModule(module)
+  if (info.routePrefix)
+    knownModuleRoutePrefixes.add(info.routePrefix)
+
+  layouts[info.layoutKey] = resolveModule(module)
 })
-function getAppName(routePath) {
+
+function getRoutePrefix(routePath) {
   if (!routePath || routePath === '/')
     return ''
 
@@ -62,19 +135,34 @@ function resolveLayoutKey(route) {
   if (typeof route.meta?.layout === 'string' && route.meta.layout.length > 0)
     return route.meta.layout
 
-  const appName = getAppName(route.path)
-  if (appName && appLayoutNames.has(appName)) {
-    const appDefaultLayout = \`\${appName}/${options.defaultLayout}\`
-    if (layouts[appDefaultLayout])
-      return appDefaultLayout
+  const routePrefix = getRoutePrefix(route.path)
+  if (routePrefix) {
+    const routeModule = routeModules[routePrefix]
+    const isModuleRoute = Boolean(routeModule) || knownModuleRoutePrefixes.has(routePrefix)
 
-    if (${options.fallbackToGlobalDefault})
-      return '${options.defaultLayout}'
+    if (isModuleRoute) {
+      if (typeof routeModule?.layout === 'string' && routeModule.layout.length > 0) {
+        if (layouts[routeModule.layout])
+          return routeModule.layout
 
-    return false
+        const routeFallbackLayout = routeModule.fallbackLayout ?? ${globalFallbackLayoutLiteral}
+        return resolveFallbackLayout(routeFallbackLayout)
+      }
+
+      const moduleName = typeof routeModule?.module === 'string' && routeModule.module.length > 0
+        ? routeModule.module
+        : routePrefix
+
+      const moduleDefaultLayout = \`\${moduleName}/\${defaultLayoutKey}\`
+      if (layouts[moduleDefaultLayout])
+        return moduleDefaultLayout
+
+      const routeFallbackLayout = routeModule?.fallbackLayout ?? ${globalFallbackLayoutLiteral}
+      return resolveFallbackLayout(routeFallbackLayout)
+    }
   }
 
-  return '${options.defaultLayout}'
+  return defaultLayoutKey
 }
 
 function wrapWithLayout(route, layoutKey) {

@@ -8,25 +8,53 @@ function normalizeLayoutDir(layoutDir: string) {
   return normalizeFsPath(layoutDir).replace(/^\.?\//, '').replace(/\/+$/, '')
 }
 
-function resolveLayoutKey(filePath: string) {
+function normalizeLayoutPath(value: string) {
+  return value.replace(/\.vue$/, '').replace(/\/index$/, '')
+}
+
+function getModuleName(routePrefix: string, options: ResolvedLayoutPluginOptions) {
+  const configuredModuleName = options.modules[routePrefix]?.module
+  if (typeof configuredModuleName === 'string' && configuredModuleName.length > 0)
+    return configuredModuleName
+
+  return routePrefix
+}
+
+function resolveLayoutKey(filePath: string, options: ResolvedLayoutPluginOptions) {
   const normalizedPath = normalizeFsPath(filePath)
-  const appLayout = normalizedPath.match(/^apps\/([^/]+)\/layouts\/(.+)\.vue$/)
+  const absolutePath = normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`
 
-  if (appLayout)
-    return `${appLayout[1]}/${appLayout[2]}`.replace(/\/index$/, '')
+  for (const source of options.layoutSources) {
+    const layoutDir = normalizeFsPath(source.layoutDir).replace(/^\/+/, '').replace(/\/+$/, '')
+    const prefix = `${layoutDir}/`
 
-  const srcLayout = normalizedPath.match(/^src\/layouts\/(.+)\.vue$/)
-  if (srcLayout)
-    return srcLayout[1].replace(/\/index$/, '')
+    if (source.kind === 'global') {
+      if (!normalizedPath.startsWith(prefix))
+        continue
+      return normalizeLayoutPath(normalizedPath.slice(prefix.length))
+    }
 
-  if (normalizedPath.startsWith('layouts/'))
-    return normalizedPath.slice('layouts/'.length, -'.vue'.length).replace(/\/index$/, '')
+    if (source.kind === 'module-static') {
+      if (!normalizedPath.startsWith(prefix))
+        continue
 
-  const layoutsIndex = normalizedPath.indexOf('/layouts/')
-  if (layoutsIndex !== -1) {
-    return normalizedPath
-      .slice(layoutsIndex + '/layouts/'.length, -'.vue'.length)
-      .replace(/\/index$/, '')
+      const routePrefix = source.routePrefix
+      if (!routePrefix)
+        continue
+
+      const moduleName = getModuleName(routePrefix, options)
+      return `${moduleName}/${normalizeLayoutPath(normalizedPath.slice(prefix.length))}`
+    }
+
+    if (source.kind === 'module-wildcard' && source.wildcardRegex) {
+      const matched = absolutePath.match(new RegExp(source.wildcardRegex))
+      if (!matched)
+        continue
+
+      const routePrefix = matched[1]
+      const moduleName = getModuleName(routePrefix, options)
+      return `${moduleName}/${normalizeLayoutPath(matched[2])}`
+    }
   }
 
   return null
@@ -60,6 +88,17 @@ export function generateLayoutTypeDts(
   options: ResolvedLayoutPluginOptions,
 ) {
   const layoutNames = new Set<string>([options.defaultLayout])
+  if (typeof options.globalFallbackLayout === 'string' && options.globalFallbackLayout.length > 0)
+    layoutNames.add(options.globalFallbackLayout)
+
+  Object.values(options.modules).forEach((moduleOptions) => {
+    if (typeof moduleOptions.layout === 'string' && moduleOptions.layout.length > 0)
+      layoutNames.add(moduleOptions.layout)
+
+    if (typeof moduleOptions.fallbackLayout === 'string' && moduleOptions.fallbackLayout.length > 0)
+      layoutNames.add(moduleOptions.fallbackLayout)
+  })
+
   const exclude = options.exclude.map((pattern) => {
     return normalizeExcludeGlob(pattern).replace(/^\/+/, '')
   })
@@ -72,7 +111,7 @@ export function generateLayoutTypeDts(
     })
 
     for (const filePath of files) {
-      const key = resolveLayoutKey(filePath)
+      const key = resolveLayoutKey(filePath, options)
       if (key)
         layoutNames.add(key)
     }
