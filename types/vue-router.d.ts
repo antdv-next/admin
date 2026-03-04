@@ -47,8 +47,22 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/user/': RouteRecordInfo<
-      '/user/',
+    '/test/[form]/': RouteRecordInfo<
+      '/test/[form]/',
+      '/test/:form',
+      { form: ParamValue<true> },
+      { form: ParamValue<false> },
+      | never
+    >,
+    '/test/[form]/[id]': RouteRecordInfo<
+      '/test/[form]/[id]',
+      '/test/:form/:id',
+      { form: ParamValue<true>, id: ParamValue<true> },
+      { form: ParamValue<false>, id: ParamValue<false> },
+      | never
+    >,
+    'UserPage': RouteRecordInfo<
+      'UserPage',
       '/user',
       Record<never, never>,
       Record<never, never>,
@@ -85,9 +99,21 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'src/pages/test/[form]/index.vue': {
+      routes:
+        | '/test/[form]/'
+      views:
+        | never
+    }
+    'src/pages/test/[form]/[id].vue': {
+      routes:
+        | '/test/[form]/[id]'
+      views:
+        | never
+    }
     'src/pages/user/index.vue': {
       routes:
-        | '/user/'
+        | 'UserPage'
       views:
         | never
     }

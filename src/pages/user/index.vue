@@ -1,4 +1,8 @@
 <script setup lang="ts">
+defineOptions({ name: 'UserPage' })
+definePage({
+  name: 'UserPage',
+})
 </script>
 
 <template>

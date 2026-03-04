@@ -98,7 +98,7 @@ function handleFinish(_values: any) {
           <a-input
             v-model:value="formModel.email"
             size="large"
-            placeholder="admin@antdv-next.com"
+            placeholder="admin"
             :classes="{
               root: 'bg-transparent',
             }"
@@ -114,7 +114,7 @@ function handleFinish(_values: any) {
             v-model:value="formModel.password"
             type="password"
             size="large"
-            placeholder="••••••••"
+            placeholder="admin"
             :classes="{
               root: 'bg-transparent',
             }"
