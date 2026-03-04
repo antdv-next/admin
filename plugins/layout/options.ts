@@ -13,6 +13,7 @@ export function resolveLayoutOptions(
 ): ResolvedLayoutPluginOptions {
   return {
     defaultLayout: userOptions.defaultLayout ?? 'default',
+    fallbackToGlobalDefault: userOptions.fallbackToGlobalDefault ?? true,
     layoutDirs: toArray(userOptions.layoutDirs, DEFAULT_LAYOUT_DIRS),
     exclude: toArray(userOptions.exclude, []),
     importMode: userOptions.importMode ?? 'async',

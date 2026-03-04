@@ -25,6 +25,7 @@ export function loadPlugins(mode: string, baseUrl: string) {
       routesFolder: loadRouter(),
     }),
     layout({
+      fallbackToGlobalDefault: false,
       exclude: [
         '**/components/**',
         '**/hooks/**',

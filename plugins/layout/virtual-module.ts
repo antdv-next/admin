@@ -16,6 +16,7 @@ export function createVirtualModuleCode(options: ResolvedLayoutPluginOptions) {
   return `
 const modules = import.meta.glob([${globs}], { eager: ${options.importMode === 'sync'} })
 const layouts = Object.create(null)
+const appLayoutNames = new Set()
 
 function resolveModule(module) {
   if (module && typeof module === 'object' && 'default' in module)
@@ -38,6 +39,10 @@ function getLayoutKey(filePath) {
 }
 
 Object.entries(modules).forEach(([filePath, module]) => {
+  const appLayout = filePath.match(/\\/apps\\/([^/]+)\\/layouts\\//)
+  if (appLayout)
+    appLayoutNames.add(appLayout[1])
+
   const key = getLayoutKey(filePath)
   if (key)
     layouts[key] = resolveModule(module)
@@ -58,10 +63,15 @@ function resolveLayoutKey(route) {
     return route.meta.layout
 
   const appName = getAppName(route.path)
-  if (appName) {
+  if (appName && appLayoutNames.has(appName)) {
     const appDefaultLayout = \`\${appName}/${options.defaultLayout}\`
     if (layouts[appDefaultLayout])
       return appDefaultLayout
+
+    if (${options.fallbackToGlobalDefault})
+      return '${options.defaultLayout}'
+
+    return false
   }
 
   return '${options.defaultLayout}'
