@@ -63,7 +63,7 @@ function handleFinish(_values: any) {
       class="relative w-full max-w-md rounded-3xl border p-10 backdrop-blur-xl"
       :class="isDark
         ? 'border-white/10 bg-white/3 shadow-2xl shadow-black/50'
-        : 'border-gray-200 bg-white/50 shadow-2xl shadow-gray-200/60'"
+        : 'border-gray-200 bg-white/20 shadow-2xl shadow-gray-200/60'"
     >
       <!-- Dark Mode Toggle -->
       <button
@@ -82,7 +82,7 @@ function handleFinish(_values: any) {
           欢迎回来
         </h2>
         <p class="mt-2 text-sm" :class="isDark ? 'text-gray-400' : 'text-gray-500'">
-          hi, 欢迎登录 Antdv Next 管理后台
+          Hi, 欢迎登录 Antdv Next 管理后台
         </p>
       </div>
 
