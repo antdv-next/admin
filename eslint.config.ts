@@ -4,4 +4,11 @@ export default anfu({
   formatters: {
     css: true,
   },
+}, {
+  files: [
+    'server/**',
+  ],
+  rules: {
+    'no-console': 'off',
+  },
 })
