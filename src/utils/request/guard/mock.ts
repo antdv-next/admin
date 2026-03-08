@@ -1,5 +1,6 @@
 import type { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig, RawAxiosResponseHeaders } from 'axios'
 import type { MockContext, MockDefinition, MockHandlerValue, MockMethod, ResolvedMockResponse } from '../../../../mock'
+import type { RequestConfig } from '../interface'
 import { MOCK_METHODS } from '../../../../mock'
 
 interface MockMatcher {
@@ -15,10 +16,13 @@ const MOCK_MODULES = import.meta.glob('../../../../mock/**/index.ts', { eager: t
 const MOCK_REGISTRY = createMockRegistry()
 
 export function setupMockGuard(http: AxiosInstance) {
-  if (!import.meta.env.DEV || import.meta.env.VITE_APP_MOCK_ENABLED !== 'true')
+  if (!import.meta.env.DEV)
     return
 
   http.interceptors.request.use((config) => {
+    if (!isMockEnabled(config as RequestConfig))
+      return config
+
     const matchedMock = findMock(config)
     if (!matchedMock)
       return config
@@ -47,6 +51,13 @@ export function setupMockGuard(http: AxiosInstance) {
 
     return config
   })
+}
+
+function isMockEnabled(config: RequestConfig) {
+  if (typeof config.meta?.mock === 'boolean')
+    return config.meta.mock
+
+  return import.meta.env.VITE_APP_MOCK_ENABLED === 'true'
 }
 
 function createMockRegistry() {
