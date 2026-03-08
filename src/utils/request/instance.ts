@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { setupMockGuard } from './guard/mock'
 import { setupRequestGuard } from './guard/request'
 import { setupResponseGuard } from './guard/response'
 
@@ -7,5 +8,6 @@ export const http = axios.create({
   timeout: 6000,
 })
 
+setupMockGuard(http)
 setupRequestGuard(http)
 setupResponseGuard(http)

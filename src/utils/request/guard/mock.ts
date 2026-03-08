@@ -1,3 +1,244 @@
-export function setupMockGuard() {
+import type { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig, RawAxiosResponseHeaders } from 'axios'
+import type { MockContext, MockDefinition, MockHandlerValue, MockMethod, ResolvedMockResponse } from '../../../../mock'
+import { MOCK_METHODS } from '../../../../mock'
 
+interface MockMatcher {
+  handler: MockHandlerValue
+  method: MockMethod
+  path: string
+}
+
+const DEFAULT_ORIGIN = 'http://localhost'
+const MOCK_MODULES = import.meta.glob('../../../../mock/**/index.ts', { eager: true }) as Record<string, {
+  default?: MockDefinition
+}>
+const MOCK_REGISTRY = createMockRegistry()
+
+export function setupMockGuard(http: AxiosInstance) {
+  if (!import.meta.env.DEV || import.meta.env.VITE_APP_MOCK_ENABLED !== 'true')
+    return
+
+  http.interceptors.request.use((config) => {
+    const matchedMock = findMock(config)
+    if (!matchedMock)
+      return config
+
+    config.adapter = async () => {
+      const context = createMockContext(config, matchedMock)
+      const resolved = await resolveMock(context, matchedMock.handler)
+      const headers = {
+        'content-type': 'application/json',
+        ...resolved.headers,
+      } as RawAxiosResponseHeaders
+
+      if (resolved.delay && resolved.delay > 0) {
+        await sleep(resolved.delay)
+      }
+
+      return {
+        config,
+        data: resolved.body,
+        headers,
+        request: { mocked: true, path: matchedMock.path },
+        status: resolved.status ?? 200,
+        statusText: resolved.statusText ?? 'OK',
+      } satisfies AxiosResponse
+    }
+
+    return config
+  })
+}
+
+function createMockRegistry() {
+  const registry = new Map<string, Partial<Record<MockMethod, MockHandlerValue>>>()
+
+  for (const [filePath, module] of Object.entries(MOCK_MODULES)) {
+    const routePath = toRoutePath(filePath)
+    if (!routePath || !module.default)
+      continue
+
+    const routeRecord = registry.get(routePath) ?? {}
+    for (const [methodKey, handler] of Object.entries(module.default)) {
+      const method = toMethod(methodKey)
+      if (!method)
+        continue
+      routeRecord[method] = handler
+    }
+    registry.set(routePath, routeRecord)
+  }
+
+  return registry
+}
+
+function findMock(config: InternalAxiosRequestConfig): MockMatcher | null {
+  const method = toMethod(config.method)
+  if (!method)
+    return null
+
+  const requestPath = normalizePath(stripBasePath(resolveRequestPath(config), resolveBasePath(config.baseURL)))
+  const routeRecord = MOCK_REGISTRY.get(requestPath)
+  const handler = routeRecord?.[method]
+  if (!handler)
+    return null
+
+  return {
+    handler,
+    method,
+    path: requestPath,
+  }
+}
+
+function createMockContext(config: InternalAxiosRequestConfig, matchedMock: MockMatcher): MockContext {
+  const requestUrl = resolveRequestUrl(config)
+  const parsedUrl = new URL(requestUrl, getOrigin())
+
+  for (const [key, value] of Object.entries(config.params ?? {})) {
+    appendQueryValue(parsedUrl.searchParams, key, value)
+  }
+
+  return {
+    config,
+    data: normalizeBody(config.data),
+    headers: normalizeHeaders(config),
+    method: matchedMock.method,
+    params: { ...(config.params ?? {}) },
+    path: matchedMock.path,
+    query: readQuery(parsedUrl.searchParams),
+    url: parsedUrl.toString(),
+  }
+}
+
+async function resolveMock(context: MockContext, handler: MockHandlerValue): Promise<ResolvedMockResponse> {
+  const result = typeof handler === 'function'
+    ? await handler(context)
+    : handler
+
+  if (isResolvedMockResponse(result))
+    return result
+
+  return {
+    __mockResponse: true,
+    body: result,
+  }
+}
+
+function toRoutePath(filePath: string) {
+  const relativePath = filePath.replace(/\\/g, '/').split('/mock/')[1]
+  if (!relativePath || relativePath === 'index.ts')
+    return null
+
+  return normalizePath(`/${relativePath.replace(/\/index\.ts$/, '')}`)
+}
+
+function resolveRequestPath(config: InternalAxiosRequestConfig) {
+  const requestUrl = resolveRequestUrl(config)
+  return new URL(requestUrl, getOrigin()).pathname
+}
+
+function resolveRequestUrl(config: InternalAxiosRequestConfig) {
+  return config.url ?? '/'
+}
+
+function resolveBasePath(baseURL?: string) {
+  if (!baseURL)
+    return ''
+  return new URL(baseURL, getOrigin()).pathname
+}
+
+function stripBasePath(pathname: string, basePath: string) {
+  if (!basePath || basePath === '/' || pathname === basePath)
+    return pathname === basePath ? '/' : pathname
+
+  if (pathname.startsWith(`${basePath}/`)) {
+    return pathname.slice(basePath.length)
+  }
+
+  return pathname
+}
+
+function normalizePath(path: string) {
+  const normalized = `/${path}`.replace(/\/+/g, '/').replace(/\/$/, '')
+  return normalized || '/'
+}
+
+function toMethod(method?: string | null) {
+  if (!method)
+    return null
+
+  const normalizedMethod = method.toUpperCase()
+  return MOCK_METHODS.find(item => item === normalizedMethod) ?? null
+}
+
+function normalizeHeaders(config: InternalAxiosRequestConfig) {
+  const rawHeaders = typeof config.headers?.toJSON === 'function'
+    ? config.headers.toJSON()
+    : config.headers
+
+  return Object.fromEntries(
+    Object.entries(rawHeaders ?? {}).map(([key, value]) => [key, String(value)]),
+  )
+}
+
+function normalizeBody(data: unknown) {
+  if (typeof data === 'string') {
+    try {
+      return JSON.parse(data)
+    }
+    catch {
+      return data
+    }
+  }
+
+  if (typeof FormData !== 'undefined' && data instanceof FormData) {
+    return Object.fromEntries(data.entries())
+  }
+
+  if (typeof URLSearchParams !== 'undefined' && data instanceof URLSearchParams) {
+    return Object.fromEntries(data.entries())
+  }
+
+  return data
+}
+
+function readQuery(searchParams: URLSearchParams) {
+  const query: Record<string, string | string[]> = {}
+
+  for (const [key, value] of searchParams.entries()) {
+    const previousValue = query[key]
+    if (previousValue === undefined) {
+      query[key] = value
+      continue
+    }
+    query[key] = Array.isArray(previousValue)
+      ? [...previousValue, value]
+      : [previousValue, value]
+  }
+
+  return query
+}
+
+function appendQueryValue(searchParams: URLSearchParams, key: string, value: unknown) {
+  if (value == null)
+    return
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      appendQueryValue(searchParams, key, item)
+    }
+    return
+  }
+
+  searchParams.append(key, String(value))
+}
+
+function isResolvedMockResponse(value: unknown): value is ResolvedMockResponse {
+  return typeof value === 'object' && value !== null && '__mockResponse' in value
+}
+
+function sleep(delay: number) {
+  return new Promise(resolve => setTimeout(resolve, delay))
+}
+
+function getOrigin() {
+  return typeof window !== 'undefined' ? window.location.origin : DEFAULT_ORIGIN
 }

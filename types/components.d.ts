@@ -21,7 +21,6 @@ declare module 'vue' {
     AForm: typeof import('antdv-next')['Form']
     AFormItem: typeof import('antdv-next')['FormItem']
     AInput: typeof import('antdv-next')['Input']
-    AMenu: typeof import('antdv-next')['Menu']
     AStyleProvider: typeof import('antdv-next')['StyleProvider']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

@@ -25,6 +25,7 @@
     "server/**/*.ts",
     "apps/**/*.ts",
     "apps/**/*.tsx",
-    "apps/**/*.vue"
+    "apps/**/*.vue",
+    "mock/**/*.ts"
   ]
 }
