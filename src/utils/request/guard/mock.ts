@@ -10,7 +10,7 @@ interface MockMatcher {
 }
 
 const DEFAULT_ORIGIN = 'http://localhost'
-const MOCK_MODULES = import.meta.glob('../../../../mock/**/index.ts', { eager: true }) as Record<string, {
+const MOCK_MODULES = import.meta.glob('../../../../mock/**/*.ts', { eager: true }) as Record<string, {
   default?: MockDefinition
 }>
 const MOCK_REGISTRY = createMockRegistry()
@@ -138,7 +138,11 @@ function toRoutePath(filePath: string) {
   if (!relativePath || relativePath === 'index.ts')
     return null
 
-  return normalizePath(`/${relativePath.replace(/\/index\.ts$/, '')}`)
+  const routePath = relativePath.endsWith('/index.ts')
+    ? relativePath.replace(/\/index\.ts$/, '')
+    : relativePath.replace(/\.ts$/, '')
+
+  return normalizePath(`/${routePath}`)
 }
 
 function resolveRequestPath(config: InternalAxiosRequestConfig) {
