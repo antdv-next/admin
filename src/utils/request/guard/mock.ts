@@ -16,9 +16,6 @@ const MOCK_MODULES = import.meta.glob('../../../../mock/**/*.ts', { eager: true 
 const MOCK_REGISTRY = createMockRegistry()
 
 export function setupMockGuard(http: AxiosInstance) {
-  if (!import.meta.env.DEV)
-    return
-
   http.interceptors.request.use((config) => {
     if (!isMockEnabled(config as RequestConfig))
       return config
