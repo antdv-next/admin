@@ -4,6 +4,9 @@ export default anfu({
   formatters: {
     css: true,
   },
+  rules: {
+    'e18e/ban-dependencies': 'off',
+  },
 }, {
   files: [
     'server/**',
