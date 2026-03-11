@@ -1,6 +1,7 @@
 import type { LayoutPluginOptions } from './layout'
 import { AntdvNextResolver } from '@antdv-next/auto-import-resolver'
 import tailwindcss from '@tailwindcss/vite'
+// import { DevTools } from '@vitejs/devtools'
 import vue from '@vitejs/plugin-vue'
 import { nitro } from 'nitro/vite'
 import autoImport from 'unplugin-auto-import/vite'
@@ -29,6 +30,7 @@ export function loadPlugins(mode: string, baseUrl: string) {
     plugins.push(nitro())
   }
   return [
+    // DevTools(),
     vueRouter({
       dts: 'types/vue-router.d.ts',
       routesFolder: loadRouter(layoutOptions),

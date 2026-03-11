@@ -17,5 +17,13 @@ export default defineConfig(({ mode }) => {
       alias: loadAlias(baseUrl),
     },
     server: loadSever(mode, baseUrl),
+    // devtools: {
+    //   enabled: true,
+    // },
+    build: {
+      rolldownOptions: {
+        // devtools: {},
+      },
+    },
   } as UserConfig
 })
