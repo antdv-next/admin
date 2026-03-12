@@ -1,11 +1,16 @@
-import anfu from '@antfu/eslint-config'
+import antfu from '@antfu/eslint-config'
 
-export default anfu({
+export default antfu({
   formatters: {
     css: true,
   },
   rules: {
-    'e18e/ban-dependencies': 'off',
+    'e18e/ban-dependencies': [
+      'error',
+      {
+        allowed: ['axios'],
+      },
+    ],
   },
 }, {
   files: [

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { FormProps } from 'antdv-next'
 import { LockOutlined, MoonOutlined, SunOutlined, UserOutlined } from '@antdv-next/icons'
 import { useDarkMode } from '@/composables/dark'
 
@@ -14,30 +15,26 @@ definePage({
 const { isDark, toggleDark } = useDarkMode()
 
 const formModel = reactive({
-  email: '',
+  username: '',
   password: '',
   remember: true,
 })
 
-const formRules = {
-  email: [
-    { required: true, message: '请输入电子邮箱' },
-    { type: 'email' as const, message: '请输入有效的邮箱地址' },
+const formRules: FormProps['rules'] = {
+  username: [
+    { required: true, message: '请输入账号' },
+    { min: 3, message: '账号至少 3 个字符' },
   ],
   password: [
     { required: true, message: '请输入密码' },
-    { min: 6, message: '密码至少 6 个字符' },
+    { min: 5, message: '密码至少 5 个字符' },
   ],
 }
 
 const loading = ref(false)
 
-function handleFinish(_values: any) {
-  loading.value = true
-  // TODO: 实际登录逻辑
-  setTimeout(() => {
-    loading.value = false
-  }, 1500)
+async function handleFinish(_values: any) {
+  console.log(_values)
 }
 </script>
 
@@ -94,10 +91,9 @@ function handleFinish(_values: any) {
         layout="vertical"
         @finish="handleFinish"
       >
-        <a-form-item label="电子邮箱" name="email">
+        <a-form-item label="账号" name="username">
           <a-input
-            v-model:value="formModel.email"
-            size="large"
+            v-model:value="formModel.username"
             placeholder="admin"
             :classes="{
               root: 'bg-transparent',
@@ -113,7 +109,6 @@ function handleFinish(_values: any) {
           <a-input
             v-model:value="formModel.password"
             type="password"
-            size="large"
             placeholder="admin"
             :classes="{
               root: 'bg-transparent',
@@ -134,8 +129,7 @@ function handleFinish(_values: any) {
             </a-form-item>
             <a
               href="#"
-              class="text-sm"
-              :class="isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-500 hover:text-blue-600'"
+              class="text-sm text-primary hover:text-primary-hover active:text-primary-active"
             >
               忘记密码？
             </a>
