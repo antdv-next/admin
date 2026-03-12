@@ -27,7 +27,7 @@ const isExternalLink = (href: string) => /^https?:\/\//.test(href)
       <router-link to="/" class="flex items-center gap-2">
         <img src="/antdv-next.svg" alt="Antdv Next" class="h-8 w-8">
         <span class="text-xl font-bold tracking-tight">
-          Antdv <span class="text-blue-500">Next</span>
+          Antdv <span class="text-primary">Next</span>
         </span>
       </router-link>
 
@@ -39,8 +39,7 @@ const isExternalLink = (href: string) => /^https?:\/\//.test(href)
           :href="link.href"
           :target="isExternalLink(link.href) ? '_blank' : undefined"
           :rel="isExternalLink(link.href) ? 'noopener noreferrer' : undefined"
-          class="transition"
-          :class="isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-500'"
+          class="transition text-text-secondary hover:text-primary-hover active:text-primary-active"
         >
           {{ link.label }}
         </a>

@@ -40,32 +40,25 @@ async function handleFinish(_values: any) {
 
 <template>
   <div
-    class="flex min-h-screen items-center justify-center p-6 font-sans isolate"
-    :class="isDark ? 'text-gray-100' : 'text-gray-900'"
+    class="flex min-h-screen items-center justify-center bg-layout p-6 text-text font-sans isolate"
   >
     <!-- Background glow -->
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
       <div
-        class="absolute left-1/4 top-1/4 h-125 w-125 rounded-full blur-[150px]"
-        :class="isDark ? 'bg-blue-600/20' : 'bg-blue-400/15'"
+        class="absolute left-1/4 top-1/4 h-125 w-125 rounded-full bg-primary/15 blur-[150px]"
       />
       <div
-        class="absolute bottom-1/4 right-1/4 h-100 w-100 rounded-full blur-[150px]"
-        :class="isDark ? 'bg-cyan-600/10' : 'bg-cyan-400/10'"
+        class="absolute bottom-1/4 right-1/4 h-100 w-100 rounded-full bg-info/10 blur-[150px]"
       />
     </div>
 
     <!-- Login Card -->
     <div
-      class="relative w-full max-w-md rounded-3xl border p-10 backdrop-blur-xl"
-      :class="isDark
-        ? 'border-white/10 bg-white/3 shadow-2xl shadow-black/50'
-        : 'border-gray-200 bg-white/20 shadow-2xl shadow-gray-200/60'"
+      class="relative w-full max-w-md rounded-3xl border border-border bg-elevated/30 p-10 backdrop-blur-xl"
     >
       <!-- Dark Mode Toggle -->
       <button
-        class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full transition"
-        :class="isDark ? 'text-gray-400 hover:bg-white/10 hover:text-gray-200' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'"
+        class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full text-text-tertiary transition hover:bg-base hover:text-text"
         @click="toggleDark()"
       >
         <MoonOutlined v-if="!isDark" class="text-lg" />
@@ -78,7 +71,7 @@ async function handleFinish(_values: any) {
         <h2 class="text-2xl font-bold tracking-tight">
           欢迎回来
         </h2>
-        <p class="mt-2 text-sm" :class="isDark ? 'text-gray-400' : 'text-gray-500'">
+        <p class="mt-2 text-sm text-text-secondary">
           Hi, 欢迎登录 Antdv Next 管理后台
         </p>
       </div>
@@ -95,6 +88,7 @@ async function handleFinish(_values: any) {
           <a-input
             v-model:value="formModel.username"
             placeholder="admin"
+            size="large"
             :classes="{
               root: 'bg-transparent',
             }"
@@ -108,6 +102,7 @@ async function handleFinish(_values: any) {
         <a-form-item label="密码" name="password">
           <a-input
             v-model:value="formModel.password"
+            size="large"
             type="password"
             placeholder="admin"
             :classes="{
@@ -151,14 +146,12 @@ async function handleFinish(_values: any) {
 
       <!-- Footer -->
       <div
-        class="mt-8 border-t pt-8 text-center text-sm"
-        :class="isDark ? 'border-white/10 text-gray-500' : 'border-gray-200 text-gray-400'"
+        class="mt-8 border-t border-border pt-8 text-center text-sm text-text-tertiary"
       >
         还没有账号？
         <a
           href="#"
-          class="font-semibold hover:underline"
-          :class="isDark ? 'text-blue-400' : 'text-blue-500'"
+          class="font-semibold text-primary hover:text-primary-hover active:text-primary-active hover:underline"
         >
           立即注册
         </a>
