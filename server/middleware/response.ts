@@ -1,25 +1,13 @@
 import { defineMiddleware, HTTPResponse } from 'nitro/h3'
-import { HttpException } from '../common/exception/HttpException'
+import { createResponseBody } from '../common/response'
 
-export default defineMiddleware(async (_, next) => {
-  try {
+export default defineMiddleware(
+  async (_, next) => {
     const data = await next()
-    if (data && data instanceof HTTPResponse) {
+    if (data instanceof HTTPResponse || data instanceof Response) {
       return data
     }
 
-    return {
-      code: 200,
-      data,
-      message: 'success',
-    }
-  }
-  catch (e) {
-    if (e instanceof HttpException) {
-      return {
-        code: e.code,
-        message: e.message,
-      }
-    }
-  }
-})
+    return createResponseBody(200, 'success', data)
+  },
+)

@@ -1,6 +1,6 @@
 import { defineHandler } from 'nitro/h3'
-import { HttpException } from '../../common/exception/HttpException'
+import { BadRequestException } from '../../common/exception'
 
 export default defineHandler(() => {
-  throw new HttpException(400, 'Bad Request')
+  throw new BadRequestException()
 })
