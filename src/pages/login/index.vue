@@ -43,7 +43,7 @@ async function handleFinish(_values: any) {
     return
   }
 
-  if (res?.data && res.data?.token) {
+  if (res && res.data && res.data?.token) {
     // TODO
   }
   message.success('登录成功')
