@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { App } from 'antdv-next'
-import { useGlobalApp } from '@/composables/app'
+import { useApp } from '@/composables/app'
 
 defineOptions({
   name: 'BaseApp',
@@ -8,7 +8,7 @@ defineOptions({
 
 const { notification, message, modal } = App.useApp()
 
-const { registerApp } = useGlobalApp()
+const { registerApp } = useApp()
 registerApp({
   notification,
   message,

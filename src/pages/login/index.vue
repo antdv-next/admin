@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FormProps } from 'antdv-next'
 import { LockOutlined, MoonOutlined, SunOutlined, UserOutlined } from '@antdv-next/icons'
-import { useDarkMode } from '@/composables/dark'
+import { loginApi } from '@/api/auth/login.ts'
 
 defineOptions({ name: 'LoginPage' })
 
@@ -33,8 +33,20 @@ const formRules: FormProps['rules'] = {
 
 const loading = ref(false)
 
+const { message } = useApp()
 async function handleFinish(_values: any) {
-  console.log(_values)
+  loading.value = true
+  const [err, res] = await tryIt<{ msg: string }>()(loginApi, formModel)
+  loading.value = false
+  if (err) {
+    message.error(err.msg || '登录失败')
+    return
+  }
+
+  if (res?.data && res.data?.token) {
+    // TODO
+  }
+  message.success('登录成功')
 }
 </script>
 

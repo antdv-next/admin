@@ -46,6 +46,7 @@ export function loadPlugins(mode: string, baseUrl: string) {
         'src/stores',
         'apps/*/stores',
         'src/utils/request/index.ts',
+        'src/composables/index.ts',
       ],
       dts: 'types/auto-imports.d.ts',
       imports: [

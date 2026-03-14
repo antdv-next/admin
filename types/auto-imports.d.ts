@@ -116,6 +116,7 @@ declare global {
   const toRefs: typeof import('vue').toRefs
   const toValue: typeof import('vue').toValue
   const triggerRef: typeof import('vue').triggerRef
+  const tryIt: typeof import('../src/utils/request/index').tryIt
   const tryOnBeforeMount: typeof import('@vueuse/core').tryOnBeforeMount
   const tryOnBeforeUnmount: typeof import('@vueuse/core').tryOnBeforeUnmount
   const tryOnMounted: typeof import('@vueuse/core').tryOnMounted
@@ -126,6 +127,7 @@ declare global {
   const until: typeof import('@vueuse/core').until
   const useActiveElement: typeof import('@vueuse/core').useActiveElement
   const useAnimate: typeof import('@vueuse/core').useAnimate
+  const useApp: typeof import('../src/composables/index').useApp
   const useAppStore: typeof import('../src/stores/app').useAppStore
   const useArrayDifference: typeof import('@vueuse/core').useArrayDifference
   const useArrayEvery: typeof import('@vueuse/core').useArrayEvery
@@ -163,6 +165,7 @@ declare global {
   const useCurrentElement: typeof import('@vueuse/core').useCurrentElement
   const useCycleList: typeof import('@vueuse/core').useCycleList
   const useDark: typeof import('@vueuse/core').useDark
+  const useDarkMode: typeof import('../src/composables/index').useDarkMode
   const useDateFormat: typeof import('@vueuse/core').useDateFormat
   const useDebounce: typeof import('@vueuse/core').useDebounce
   const useDebounceFn: typeof import('@vueuse/core').useDebounceFn
@@ -331,4 +334,7 @@ declare global {
   // @ts-ignore
   export type { UserState } from '../src/stores/user'
   import('../src/stores/user')
+  // @ts-ignore
+  export type { TryItResult } from '../src/utils/request/index'
+  import('../src/utils/request/index')
 }
