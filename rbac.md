@@ -1,649 +1,364 @@
-# RBAC 后台管理完整设计（适配 antdv-next admin）
+# RBAC 设计观念
 
-## 1. 目标与范围
+本文档基于当前 `server/db/schema` 下的表结构反推系统的权限模型和业务模式，目标不是定义一套抽象 RBAC 理论，而是沉淀出一套贴合本项目现状的设计观念，方便后续继续扩展。
 
-### 1.1 目标
+## 1. 我们的 RBAC 核心观念
 
-构建一套可长期演进的后台权限体系，覆盖：
+### 1.1 这是一个面向中后台的菜单型 RBAC
 
-1. 登录鉴权（Authentication）。
-2. 路由访问控制（页面级）。
-3. 菜单可见性控制（导航级）。
-4. 按钮/操作权限控制（功能级）。
-5. API 调用权限控制（接口级，后端强校验）。
-6. 数据权限控制（行级/范围级，可选一期后落地）。
+从 `sys_user`、`sys_role`、`sys_menu`、`sys_user_role`、`sys_role_menu` 这组表可以看出，当前系统的权限核心不是“资源对象授权”，而是“后台菜单树 + 按钮动作授权”：
 
-### 1.2 设计边界
+- 用户先绑定角色。
+- 角色再绑定菜单。
+- 菜单既承载前端路由，也承载后端权限点。
+- 按钮权限通过 `menuType = 3` 和 `permissionCode` 表达。
 
-1. 本设计聚焦后台管理权限体系（RBAC + 数据范围扩展）。
-2. 默认单租户；预留多租户字段（tenant_id）扩展位。
-3. 前端技术栈遵循当前项目：Vue 3 + Composition API + TypeScript + Pinia + vue-router auto-routes + antdv-next。
+这说明我们的业务更偏向企业管理后台、运营后台、内部管理平台，而不是面向 C 端用户的开放型产品权限模型。
 
----
+### 1.2 权限不直接发给用户，统一通过角色汇聚
 
-## 2. 当前项目现状分析
+当前结构里没有“用户直绑菜单”或“用户直绑权限点”的表，说明我们坚持：
 
-### 2.1 已有能力
+- 用户和权限之间不直接建立长期绑定关系。
+- 权限的分配单位是角色。
+- 用户只是角色的拥有者，而不是权限的直接持有者。
 
-1. 已有动态路由注入与守卫骨架（`src/router/guard/auth.ts`）。
-2. 已有用户 token 状态存储（`src/stores/user.ts` + `src/composables/authorization.ts`）。
-3. 已有菜单数据类型雏形（`src/api/menu/index.ts`，仅基础字段）。
-4. 已有多布局与多应用路由能力（`plugins/layout` + `plugins/router.ts`）。
-5. 已有菜单权限架构草案文档（`MENU_PERMISSION_ARCHITECTURE.md`）。
+这样做的好处是：
 
-### 2.2 主要缺口
+- 角色可以复用。
+- 授权成本低。
+- 回收权限时只需要回收角色。
+- 审计时更容易解释“某用户为什么拥有这个权限”。
 
-1. 缺少完整 RBAC 领域模型（用户-角色-菜单-权限点-API 的关系未闭环）。
-2. 前端缺少独立权限 Store，无法统一路由/菜单/按钮权限判定。
-3. 后端接口协议尚未定义（登录后一次性获取授权快照、权限版本、失效机制等）。
-4. 缺少 RBAC 管理端页面设计（用户、角色、菜单、权限点、数据范围）。
-5. API 权限未后端强制校验，存在“只做前端控制”的越权风险。
+### 1.3 菜单不仅是导航，也是权限载体
 
----
+`sys_menu` 明确同时承载以下职责：
 
-## 3. 权限模型设计
+- 菜单树结构：`parentId`
+- 菜单类型：`menuType`
+- 展示信息：`menuName`、`icon`、`visible`
+- 前端路由：`routeName`、`routePath`、`component`
+- 后端授权标识：`permissionCode`
 
-### 3.1 模型选择
+这意味着我们采用的是“菜单模型驱动权限”的方案，而不是单独维护一张纯权限点表。
 
-采用 **RBAC1 + 约束（RBAC2）+ 数据范围扩展**：
+在这套模式下：
 
-1. RBAC0：用户关联角色，角色授予权限。
-2. RBAC1：支持角色继承（可选，建议二期）。
-3. RBAC2：支持互斥角色、角色数量上限、禁用态约束。
-4. 扩展：角色附带数据范围规则（全部、本部门、本人、自定义组织树）。
+- 目录用于组织结构。
+- 菜单用于承载页面访问能力。
+- 按钮用于承载操作级权限。
 
-### 3.2 统一权限对象
+因此前后端会共用一套权限基础设施，前端根据菜单渲染路由和导航，后端根据 `permissionCode` 做接口鉴权。
 
-定义统一资源模型（Resource）：
+### 1.4 当前默认是单租户运行，但从表结构上预留多租户演进能力
 
-1. `MENU`：菜单/目录（影响导航与页面入口）。
-2. `BUTTON`：页面操作点（新增、编辑、删除、导出等）。
-3. `API`：后端接口权限点。
-4. `DATA_SCOPE`：数据范围规则（绑定角色）。
+几乎所有核心表都带有 `tenantId`，并且索引也是按 `tenantId` 组织的，但当前又没有真正的租户表，也没有外键约束。这说明我们的判断是：
 
-### 3.3 权限编码规范
+- 现阶段按单租户交付或单实例独立部署为主。
+- 未来可能演进为逻辑多租户系统。
+- 因此表结构先把租户字段和索引留出来，避免未来大面积迁移。
 
-建议统一编码：`{app}:{module}:{resource}:{action}`
+这是一种很务实的设计：
 
-示例：
+- 先不引入租户管理复杂度。
+- 但不阻断未来 SaaS 化的可能。
 
-1. `admin:user:list:view`
-2. `admin:user:item:create`
-3. `admin:user:item:update`
-4. `admin:user:item:delete`
-5. `admin:role:item:assign`
-6. `admin:api:/api/admin/user:GET`
+### 1.5 超级管理员和系统角色是两套不同层次的治理手段
 
-约束：
+从现有字段看，我们区分了两类治理能力：
 
-1. 编码全局唯一。
-2. 菜单可使用稳定 `menu_code`；按钮/API 使用 `perm_code`。
-3. 页面按钮与后端 API 建议一一映射，避免“前后语义漂移”。
+- `sys_user.isSuperAdmin`：面向“人”的全局特权。
+- `sys_role.isSystem`：面向“角色”的系统内置标识。
 
-### 3.4 路由访问模式（与现有架构对齐）
+这两个概念不能混为一谈：
 
-沿用并固化 `meta.access`：
+- 超级管理员强调绕过常规授权链路。
+- 系统角色强调某些角色是平台内置资产，不应被普通管理员随意删除或篡改。
 
-1. `public`：公开页面，不要求登录。
-2. `login`：仅登录可访问，不依赖菜单授权。
-3. `menu`：默认模式，要求命中授权菜单路径。
-4. `inherit`：继承某菜单权限（详情页、编辑页等隐藏页）。
+因此我们更倾向于这样的设计观念：
 
-路由元信息约定：
+- 超级管理员是用户级兜底权限。
+- 系统角色是角色级治理边界。
 
-```ts
-interface RouteAccessMeta {
-  access?: {
-    mode: 'public' | 'login' | 'menu' | 'inherit'
-    from?: string // inherit 模式必填
-    path?: string // 动态路由的权限锚点
-  }
-  menu?: boolean // 是否出现在菜单树
-  title?: string
-}
-```
-
----
-
-## 4. 领域数据结构设计（数据库）
-
-> 建议表名前缀：`sys_`。以下字段类型以 MySQL 8 为例。
-
-### 4.1 用户与角色
-
-#### `sys_user`
-
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| id | bigint pk | 用户ID |
-| username | varchar(64) unique | 登录名 |
-| password_hash | varchar(255) | 密码哈希 |
-| nickname | varchar(64) | 昵称 |
-| email | varchar(128) | 邮箱 |
-| phone | varchar(32) | 手机号 |
-| status | tinyint | 1启用 0禁用 |
-| dept_id | bigint null | 所属部门 |
-| is_super_admin | tinyint | 是否超级管理员 |
-| last_login_at | datetime null | 最近登录时间 |
-| created_at | datetime | 创建时间 |
-| updated_at | datetime | 更新时间 |
-| deleted_at | datetime null | 软删除 |
-
-索引：`uk_username`、`idx_status`、`idx_dept_id`。
-
-#### `sys_role`
-
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| id | bigint pk | 角色ID |
-| role_key | varchar(64) unique | 角色标识（如 `admin`） |
-| role_name | varchar(64) | 角色名称 |
-| sort | int | 排序 |
-| status | tinyint | 1启用 0禁用 |
-| data_scope_type | varchar(32) | `ALL/DEPT/DEPT_AND_CHILD/SELF/CUSTOM` |
-| remark | varchar(255) null | 备注 |
-| created_at | datetime | 创建时间 |
-| updated_at | datetime | 更新时间 |
-| deleted_at | datetime null | 软删除 |
-
-#### `sys_user_role`
-
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| user_id | bigint | 用户ID |
-| role_id | bigint | 角色ID |
-| created_at | datetime | 创建时间 |
+### 1.6 状态、逻辑删除、审计字段是权限模型的一部分
 
-主键：`(user_id, role_id)`。
+几乎所有主表都具有：
 
-### 4.2 菜单与权限点
+- `status`
+- `isDeleted`
+- `createdBy`
+- `updatedBy`
+- `createdAt`
+- `updatedAt`
+- `version`
 
-#### `sys_menu`
+这表明我们对权限系统的理解不是“只要能授权就行”，而是：
 
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| id | bigint pk | 菜单ID |
-| app_key | varchar(32) | 应用标识（如 `admin`） |
-| parent_id | bigint null | 父菜单ID |
-| menu_type | varchar(16) | `CATALOG/MENU/LINK` |
-| menu_code | varchar(128) unique | 菜单编码 |
-| title | varchar(64) | 菜单名 |
-| path | varchar(255) | 路由路径（权限锚点） |
-| route_name | varchar(128) null | 路由名称 |
-| component | varchar(255) null | 前端组件路径（可选） |
-| icon | varchar(64) null | 图标 |
-| order_no | int | 排序 |
-| hidden | tinyint | 是否隐藏 |
-| keep_alive | tinyint | 是否缓存 |
-| status | tinyint | 1启用 0禁用 |
-| created_at | datetime | 创建时间 |
-| updated_at | datetime | 更新时间 |
+- 任何账号、角色、菜单都需要支持启停。
+- 任何主数据都要支持逻辑删除。
+- 任何关键修改都要能追溯是谁改的。
+- 并发更新要具备基础乐观锁能力。
 
-索引：`idx_app_parent`(`app_key`,`parent_id`)、`idx_path`。
+也就是说，我们的 RBAC 不是“轻量配置”，而是“正式业务主数据”。
 
-#### `sys_permission`
+### 1.7 登录日志和操作日志不是附属功能，而是权限闭环的一部分
 
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| id | bigint pk | 权限点ID |
-| app_key | varchar(32) | 应用标识 |
-| perm_type | varchar(16) | `BUTTON/API` |
-| perm_code | varchar(191) unique | 权限编码 |
-| perm_name | varchar(64) | 权限名称 |
-| menu_id | bigint null | 关联菜单ID（按钮场景） |
-| api_method | varchar(16) null | API Method |
-| api_path | varchar(255) null | API Path |
-| status | tinyint | 1启用 0禁用 |
-| created_at | datetime | 创建时间 |
-| updated_at | datetime | 更新时间 |
-
-索引：`idx_app_type`(`app_key`,`perm_type`)、`idx_menu_id`。
-
-#### `sys_role_menu`
-
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| role_id | bigint | 角色ID |
-| menu_id | bigint | 菜单ID |
-| created_at | datetime | 创建时间 |
-
-主键：`(role_id, menu_id)`。
-
-#### `sys_role_permission`
-
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| role_id | bigint | 角色ID |
-| permission_id | bigint | 权限点ID |
-| created_at | datetime | 创建时间 |
-
-主键：`(role_id, permission_id)`。
-
-### 4.3 数据范围（可一期建表、二期启用）
-
-#### `sys_dept`
-
-部门树（`id`, `parent_id`, `name`, `ancestors`, `status` ...）。
-
-#### `sys_role_data_scope_dept`
-
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| role_id | bigint | 角色ID |
-| dept_id | bigint | 部门ID |
-
-用于 `CUSTOM` 数据范围。
-
-### 4.4 审计与版本
-
-#### `sys_audit_log`
-
-记录登录、授权失败、角色变更、菜单变更、权限变更。
-
-#### `sys_authz_version`
-
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| app_key | varchar(32) pk | 应用标识 |
-| version | bigint | 权限版本号 |
-| updated_at | datetime | 更新时间 |
-
-每次角色授权关系变化后 `version + 1`，用于前端缓存失效。
-
----
-
-## 5. 接口设计（后端）
-
-### 5.1 统一返回结构
-
-```json
-{
-  "code": 0,
-  "msg": "ok",
-  "data": {},
-  "requestId": "...",
-  "timestamp": 1741104000000
-}
-```
-
-### 5.2 认证接口
-
-1. `POST /api/auth/login`
-2. `POST /api/auth/logout`
-3. `POST /api/auth/refresh`
-4. `GET /api/auth/me`
-
-### 5.3 授权快照接口（登录后关键）
-
-`GET /api/authz/bootstrap?app=admin`
-
-返回：
-
-```json
-{
-  "user": {
-    "id": "1001",
-    "username": "admin",
-    "nickname": "系统管理员",
-    "isSuperAdmin": true
-  },
-  "roles": ["admin"],
-  "authzVersion": 12,
-  "menus": [
-    {
-      "id": "1",
-      "parentId": null,
-      "app": "admin",
-      "title": "系统管理",
-      "path": "/system",
-      "icon": "setting",
-      "order": 1,
-      "hidden": false
-    },
-    {
-      "id": "2",
-      "parentId": "1",
-      "app": "admin",
-      "title": "用户管理",
-      "path": "/user",
-      "icon": "user",
-      "order": 10,
-      "hidden": false
-    }
-  ],
-  "permissions": [
-    "admin:user:list:view",
-    "admin:user:item:create",
-    "admin:user:item:update",
-    "admin:user:item:delete"
-  ],
-  "apiPermissions": [
-    "admin:api:/api/admin/user:GET",
-    "admin:api:/api/admin/user:POST"
-  ]
-}
-```
-
-### 5.4 RBAC 管理接口
-
-#### 用户管理
-
-1. `GET /api/admin/users`
-2. `POST /api/admin/users`
-3. `PUT /api/admin/users/{id}`
-4. `PATCH /api/admin/users/{id}/status`
-5. `POST /api/admin/users/{id}/roles`
-6. `POST /api/admin/users/{id}/reset-password`
-
-#### 角色管理
-
-1. `GET /api/admin/roles`
-2. `POST /api/admin/roles`
-3. `PUT /api/admin/roles/{id}`
-4. `PATCH /api/admin/roles/{id}/status`
-5. `POST /api/admin/roles/{id}/menus`
-6. `POST /api/admin/roles/{id}/permissions`
-7. `POST /api/admin/roles/{id}/data-scope`
-
-#### 菜单管理
-
-1. `GET /api/admin/menus/tree?app=admin`
-2. `POST /api/admin/menus`
-3. `PUT /api/admin/menus/{id}`
-4. `DELETE /api/admin/menus/{id}`
-
-#### 权限点管理
-
-1. `GET /api/admin/permissions`
-2. `POST /api/admin/permissions`
-3. `PUT /api/admin/permissions/{id}`
-4. `DELETE /api/admin/permissions/{id}`
-
-#### 审计
-
-1. `GET /api/admin/audit-logs`
-
----
-
-## 6. 前端权限接入设计（适配当前仓库）
-
-### 6.1 新增状态模型
-
-建议新增 `permission store`（建议文件：`src/stores/permission.ts`）：
-
-```ts
-interface PermissionState {
-  initialized: boolean
-  appKey: string
-  authzVersion: number
-  menus: MenuNode[]
-  menuPathSet: Set<string>
-  permissionSet: Set<string>
-  apiPermissionSet: Set<string>
-}
-```
-
-核心方法：
-
-1. `loadAuthz(appKey)`：拉取 bootstrap 并构建缓存。
-2. `hasPermission(code)`：按钮权限判断。
-3. `canAccessRoute(to)`：路由权限判断。
-4. `clearAuthz()`：登出清理。
-
-### 6.2 路由守卫流程
-
-```mermaid
-flowchart TD
-  A[进入路由] --> B{是否public}
-  B -- 是 --> Z[放行]
-  B -- 否 --> C{是否已登录}
-  C -- 否 --> L[跳转/login]
-  C -- 是 --> D{权限是否已初始化}
-  D -- 否 --> E[加载authz bootstrap]
-  E --> F[构建menuPathSet/permissionSet]
-  D -- 是 --> G[读取meta.access]
-  F --> G
-  G --> H{mode=login?}
-  H -- 是 --> Z
-  H -- 否 --> I{mode=inherit?}
-  I -- 是 --> J[校验access.from是否授权]
-  I -- 否 --> K[校验access.path或route.path是否授权]
-  J --> M{通过?}
-  K --> M
-  M -- 是 --> Z
-  M -- 否 --> N[跳转403或首个可访问页]
-```
-
-### 6.3 按钮权限控制
-
-两种并行方式：
-
-1. 组合式函数：`const canCreate = hasPermission('admin:user:item:create')`。
-2. 指令：`v-permission="'admin:user:item:create'"`。
-
-说明：
-
-1. 前端只负责显示层和交互层屏蔽。
-2. 后端 API 必须再次校验用户是否拥有对应权限。
-
-### 6.4 菜单构建策略
-
-1. 后端返回菜单树为主。
-2. 前端用 `router.getRoutes()` 做存在性校验与回填。
-3. 不存在的菜单路由：可标记异常并过滤，避免死链接。
-4. `hidden=true` 仅影响导航显示，不影响权限判定。
-
----
-
-## 7. RBAC 后台管理页面设计
-
-> 建议一级菜单：`系统管理`，二级菜单包含：用户管理、角色管理、菜单管理、权限点管理、审计日志。
-
-### 7.1 用户管理页
-
-列表字段：
-
-1. 用户ID
-2. 用户名
-3. 昵称
-4. 手机号/邮箱
-5. 所属部门
-6. 状态
-7. 最近登录时间
-8. 创建时间
-9. 操作
-
-操作：
-
-1. 新建用户
-2. 编辑用户
-3. 启用/禁用
-4. 分配角色（抽屉 + 多选）
-5. 重置密码
-6. 批量导出（有权限时显示）
-
-### 7.2 角色管理页
-
-列表字段：
-
-1. 角色ID
-2. 角色标识（role_key）
-3. 角色名称
-4. 数据范围类型
-5. 状态
-6. 排序
-7. 操作
-
-操作：
-
-1. 新建角色
-2. 编辑角色
-3. 分配菜单（树选择）
-4. 分配权限点（按模块分组穿梭框）
-5. 配置数据范围（全部/本部门/本人/自定义）
-6. 删除角色（需校验是否有绑定用户）
-
-### 7.3 菜单管理页
-
-形态：树表（Tree Table）。
-
-字段：
-
-1. 菜单名称
-2. 类型（目录/菜单/外链）
-3. 路径
-4. 图标
-5. 排序
-6. 隐藏
-7. 状态
-8. 操作
+`sys_login_log` 和 `sys_operation_log` 说明系统不仅关心“谁拥有什么权限”，也关心：
 
-规则：
-
-1. 目录可有子节点；菜单节点必须指向可访问路由或外链。
-2. 删除节点前需确认无子节点与角色绑定，或采用逻辑删除并同步失效。
+- 谁登录了系统
+- 谁进行了什么操作
+- 操作是否成功
+- 请求 URL、方法、参数、响应和耗时是什么
+- 该操作对应哪个 `permissionCode`
 
-### 7.4 权限点管理页
+这代表我们的业务模式明显偏向企业后台治理：
 
-字段：
+- 权限系统必须可审计
+- 管理行为必须留痕
+- 后续可以做风控、审计、问题追查
 
-1. 权限名称
-2. 权限编码
-3. 类型（按钮/API）
-4. 关联菜单
-5. API Method/Path（API 类型）
-6. 状态
-7. 操作
+## 2. 基于当前表结构反推的业务模式
 
-规则：
+从目前 schema 可以大致反推出，本项目想做的不是简单的账号体系，而是一套标准后台管理底座，业务形态大概如下：
 
-1. 权限编码唯一。
-2. API 类型权限建议由接口注册自动生成，页面仅做启停和说明维护。
+- 系统首先是一个管理端，而不是开放式前台应用。
+- 系统采用“用户 -> 角色 -> 菜单/按钮”的经典后台权限链路。
+- 系统需要支持菜单树、按钮权限、接口权限、日志审计、字典和系统配置。
+- 系统已经为组织能力预留了入口，如 `deptId`，但部门体系尚未正式成型。
+- 系统已经为多租户预留了入口，如 `tenantId`，但租户管理尚未正式成型。
 
-### 7.5 审计日志页
+结合现有表名，项目大概率的业务边界包括：
 
-字段：
+- 用户管理
+- 角色管理
+- 菜单与按钮权限管理
+- 字典管理
+- 系统配置管理
+- 登录日志
+- 操作日志
 
-1. 操作人
-2. 操作类型（新增/修改/删除/授权/登录等）
-3. 目标对象
-4. 请求路径
-5. 请求IP
-6. 结果
-7. 时间
+这说明本项目更像是一个“可承载后续业务模块的通用管理平台”，而不是一个只服务单一业务的孤立后台。
 
-支持：按时间范围、操作人、操作类型筛选。
+## 3. 我们的 RBAC 实体分层
 
----
+### 3.1 账号层
 
-## 8. 安全设计与一致性策略
+`sys_user`
 
-### 8.1 安全基线
+职责：
 
-1. 前端权限永远不作为最终裁决依据。
-2. 所有敏感 API 统一走后端鉴权中间件。
-3. 超级管理员仅后端保留兜底，前端不硬编码超级权限。
-4. 登录 token 采用短期 access token + refresh token 机制。
-5. 密码仅存哈希（Argon2/Bcrypt），禁止明文与可逆加密。
+- 表示后台登录主体。
+- 维护账号基本信息和登录属性。
+- 承担状态控制、超级管理员标识、审计字段。
 
-### 8.2 权限变更一致性
+设计解读：
 
-1. 角色/菜单/权限关系变更后，`authzVersion + 1`。
-2. 前端每次进入受保护路由时对比版本；版本变化自动重载授权快照。
-3. 可配合 WebSocket/SSE 做主动踢出或强制刷新权限。
+- `username` 是登录标识之一。
+- `status` 决定账号是否可用。
+- `isSuperAdmin` 代表是否跳过常规角色授权链。
+- `deptId` 说明未来可能会接入部门维度的数据权限或组织归属。
 
-### 8.3 关键防护
+### 3.2 角色层
 
-1. 防越权：接口按 `perm_code` 校验。
-2. 防水平越权：资源归属校验（如用户只能改自己可管理范围内账号）。
-3. 防误删：关键删除操作二次确认 + 审计日志 + 可恢复策略。
-4. 防并发覆盖：角色/菜单编辑启用 `updated_at` 乐观锁校验。
+`sys_role`
 
----
+职责：
 
-## 9. 分阶段实施计划
+- 表示一组可复用的授权集合。
+- 承载面向业务的角色语义，如系统管理员、审计员、运营专员等。
 
-### 阶段 A（基础可用）
+设计解读：
 
-1. 建表与初始化脚本（用户、角色、菜单、权限点、关联表）。
-2. 登录与 `authz/bootstrap` 接口落地。
-3. 前端 permission store + 路由守卫接入。
-4. 菜单渲染改为后端驱动。
+- `roleCode` 是稳定机器标识，适合程序判断和系统约束。
+- `roleName` 是展示名称。
+- `isSystem` 表示系统内置角色，不建议允许任意删除。
+- `sort` 说明角色管理界面需要稳定排序。
 
-交付标准：已登录用户可按角色看到不同菜单并控制页面访问。
+### 3.3 权限资源层
 
-### 阶段 B（完整 RBAC 管理）
+`sys_menu`
 
-1. 用户管理页 + 角色分配。
-2. 角色管理页 + 菜单/权限点授权。
-3. 菜单管理页 + 权限点管理页。
-4. 关键操作审计日志。
+职责：
 
-交付标准：平台管理员可以在线维护 RBAC 数据并实时生效。
+- 统一抽象目录、页面菜单、按钮动作三种权限载体。
+- 同时服务前端路由渲染和后端权限识别。
 
-### 阶段 C（增强能力）
+设计解读：
 
-1. 数据范围权限启用。
-2. API 权限自动注册/扫描。
-3. 权限版本主动推送与会话策略优化。
+- `menuType = 1`：目录
+- `menuType = 2`：菜单页面
+- `menuType = 3`：按钮权限
 
-交付标准：实现数据级隔离与大规模权限变更稳定性。
+这意味着我们的权限粒度天然至少覆盖到按钮级。
 
----
+### 3.4 关联层
 
-## 10. 验收与测试清单
+`sys_user_role`
 
-### 10.1 功能验收
+职责：
 
-1. 未登录访问受保护页面会跳转登录。
-2. 登录后仅可访问授权菜单及继承页面。
-3. 未授权按钮不显示或不可用。
-4. 后端 API 对未授权调用返回 403。
-5. 角色变更后用户刷新或重进页面权限立即生效。
+- 建立用户与角色的多对多关系。
 
-### 10.2 边界场景
+`sys_role_menu`
 
-1. 菜单路径配置错误时前端不崩溃并给出告警。
-2. 动态路由（如 `/test/:form/:id`）通过 `access.path` 或 `inherit` 正常鉴权。
-3. 用户被禁用后 token 立即失效或下一次请求失效。
-4. 角色被删除且仍绑定用户时，系统有防护策略（阻止删除或自动解绑）。
+职责：
 
-### 10.3 安全验收
+- 建立角色与菜单/按钮的多对多关系。
 
-1. 越权调用敏感 API 全部被拒绝。
-2. 审计日志可追溯关键授权操作。
-3. 关键表不存在无索引全表扫描瓶颈（至少完成核心索引检查）。
+设计解读：
 
----
+- 当前关系表只有必要字段，说明我们追求简洁、稳定、高性能。
+- 这也意味着目前没有“授权来源”“临时授权”“授权有效期”等复杂治理维度。
 
-## 11. 初始化建议（首批角色与权限）
+### 3.5 治理与审计层
 
-### 11.1 角色
+`sys_login_log`
+`sys_operation_log`
 
-1. `super_admin`：系统超级管理员。
-2. `platform_admin`：平台管理员。
-3. `auditor`：审计只读角色。
-4. `operator`：运营角色（有限写权限）。
+职责：
 
-### 11.2 首批菜单
+- 记录登录行为。
+- 记录关键操作行为。
+- 为权限审计和问题追踪提供证据链。
 
-1. `/home` 首页。
-2. `/user` 用户管理。
-3. `/role` 角色管理。
-4. `/menu` 菜单管理。
-5. `/permission` 权限点管理。
-6. `/audit-log` 审计日志。
+## 4. 我们自己的权限计算方式
 
-### 11.3 首批权限点
+基于现有表结构，一个用户的有效权限应按下面的逻辑计算：
 
-1. 用户：`list/create/update/delete/assign-role/reset-password`。
-2. 角色：`list/create/update/delete/assign-menu/assign-permission/assign-data-scope`。
-3. 菜单：`list/create/update/delete`。
-4. 权限点：`list/create/update/delete`。
-5. 审计：`list/export`。
+1. 先校验用户是否存在、是否启用、是否未逻辑删除。
+2. 如果用户是超级管理员，则直接获得全量后台能力或按平台定义走超管白名单。
+3. 如果不是超级管理员，则查询用户绑定的有效角色。
+4. 过滤掉被禁用或逻辑删除的角色。
+5. 通过 `sys_role_menu` 获取这些角色关联的菜单和按钮。
+6. 过滤掉被禁用或逻辑删除的菜单。
+7. 把结果拆成两类：
+   - 前端菜单树
+   - 后端 `permissionCode` 集合
 
----
+因此，我们更适合采用下面这套权限口径：
 
-## 12. 结论
+- 页面是否可访问：看用户是否拥有对应菜单节点。
+- 按钮是否可展示：看用户是否拥有对应按钮节点。
+- 接口是否可调用：看用户是否拥有对应 `permissionCode`。
 
-本方案在你当前项目结构上可直接落地，关键是先完成“授权快照 + 前端统一权限状态 + 后端强校验”三件事。这样可以快速实现可用 RBAC，再通过数据范围与审计增强逐步演进到企业级权限系统。
+## 5. 当前系统更像什么，不像什么
+
+### 5.1 更像什么
+
+- 一个企业级后台管理底座
+- 一个偏标准化的系统管理中心
+- 一个能继续承载业务模块的管理平台
+- 一个前后端共用菜单权限模型的后台项目
+
+### 5.2 不像什么
+
+- 不像面向 C 端的大规模内容平台权限模型
+- 不像以 ABAC 为核心的属性策略系统
+- 不像以资源实例授权为核心的 IAM 产品
+- 不像带完整数据权限域、审批流、临时授权机制的重型权限平台
+
+## 6. 当前边界与保留位
+
+从表结构能明显看出，我们已经有意识地保留了未来扩展点，但暂时没有把复杂度提前引入：
+
+### 6.1 已预留但未完全落地
+
+- `tenantId`：预留多租户
+- `deptId`：预留组织/部门
+- `keepAlive`：预留菜单缓存能力
+
+### 6.2 当前暂未体现的能力
+
+- 数据权限范围，如“仅本人”“本部门”“本部门及子部门”
+- 用户直绑权限
+- 角色继承
+- 权限生效时间
+- 临时授权
+- 资源实例级授权
+- 真正的租户管理
+- 真正的组织架构管理
+
+这说明我们的产品策略是：
+
+- 先把后台管理平台最核心、最稳定的一层打牢。
+- 再按业务需要逐步增加复杂能力。
+
+## 7. 适合我们当前项目的 RBAC 设计原则
+
+结合现状，我建议把以下内容沉淀为项目内部的一致原则：
+
+### 原则一：权限配置以角色为中心，不走用户直授权
+
+除非未来明确要做例外授权，否则权限统一通过角色分配，保持模型简单和可审计。
+
+### 原则二：菜单树是前后端共享的权限基础设施
+
+菜单不是纯展示配置，而是权限主数据。前端路由、侧边栏、按钮展示、接口权限都应尽量围绕 `sys_menu` 和 `permissionCode` 收敛。
+
+### 原则三：角色编码和菜单编码必须稳定
+
+- `roleCode` 用于系统语义和程序判断。
+- `menuCode` 用于菜单资源标识。
+- `permissionCode` 用于接口和动作授权。
+
+这些编码一旦投入使用，不应随意修改。
+
+### 原则四：状态和逻辑删除优先于授权关系
+
+即使某个用户挂了角色、角色挂了菜单，只要主体、角色或菜单被禁用或逻辑删除，都应从有效权限中剔除。
+
+### 原则五：超级管理员是兜底能力，不应滥用
+
+`isSuperAdmin` 应作为平台治理的特权入口，只授予极少数管理员账号，不应把它当成普通授权手段。
+
+### 原则六：系统内置角色应受保护
+
+带 `isSystem = 1` 的角色建议默认不可删除，不可随意改编码，必要时仅允许调整少量非核心属性。
+
+### 原则七：日志与权限一起建设
+
+登录日志和操作日志应随着权限系统一起落地，而不是等系统上线后再补。因为后台权限的核心价值之一就是可审计。
+
+## 8. 一个符合当前结构的典型业务流程
+
+### 8.1 账号开通
+
+1. 创建用户
+2. 绑定一个或多个角色
+3. 用户登录后台
+
+### 8.2 权限装配
+
+1. 预置系统角色
+2. 为角色配置菜单和按钮
+3. 通过角色把权限赋给用户
+
+### 8.3 运行时鉴权
+
+1. 登录后拉取用户信息
+2. 查询用户角色
+3. 汇总角色对应菜单
+4. 组装前端路由树
+5. 抽取按钮权限与 `permissionCode`
+6. 前端控制页面和按钮展示
+7. 后端控制接口访问
+
+### 8.4 审计留痕
+
+1. 登录行为写入 `sys_login_log`
+2. 关键操作写入 `sys_operation_log`
+3. 权限拒绝、异常操作可以进一步纳入日志策略
+
+## 9. 总结
+
+我们当前的 RBAC 设计，本质上是一套面向管理后台的、菜单驱动的、角色中心的权限模型。
+
+它的关键特征是：
+
+- 以用户、角色、菜单、关联表构成最小闭环
+- 以按钮和 `permissionCode` 作为细粒度权限表达
+- 以日志审计作为治理补充
+- 以 `tenantId` 和 `deptId` 作为未来扩展位
+- 以 UUIDv7、逻辑删除、状态控制、乐观锁作为统一底层规范
+
+这套设计足够支撑一个标准后台管理平台的第一阶段建设，也为未来扩展到多租户、组织架构、数据权限和更复杂治理能力留出了空间。
