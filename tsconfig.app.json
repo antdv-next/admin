@@ -6,7 +6,7 @@
     "paths": {
       "@/*": ["src/*"],
       "@apps/admin/*": ["apps/admin/src/*"],
-      "#db": ["server/db"]
+      "#db/*": ["server/db/schema/*"]
     },
 
     "types": ["vite/client"],

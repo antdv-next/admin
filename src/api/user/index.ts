@@ -1,12 +1,3 @@
-export interface UserInfo {
-  // 用户id
-  id: string
-  // 用户名
-  username: string
-  // 头像
-  avatar: string
-  //  昵称
-  nickname: string
-  // 邮箱
-  email: string
-}
+import type { SysUser } from '#db/user'
+
+export type UserInfo = Omit<SysUser, 'password' | 'version' | 'isDeleted'>

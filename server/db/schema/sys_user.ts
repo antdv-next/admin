@@ -1,4 +1,4 @@
-import { integer, pgTable, smallint, timestamp, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core'
+import { index, integer, pgTable, smallint, timestamp, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core'
 import { v7 as uuidv7 } from 'uuid'
 
 export const sysUser = pgTable(
@@ -8,6 +8,8 @@ export const sysUser = pgTable(
     id: uuid('id').primaryKey().$defaultFn(() => uuidv7()),
     // 租户 ID，预留字段；暂不建立租户表或外键关联
     tenantId: uuid('tenant_id').notNull().default('00000000-0000-0000-0000-000000000000'),
+    // 部门id，用户的主部门，这个也是冗余字段，暂不使用
+    deptId: uuid('dept_id').notNull().default('00000000-0000-0000-000000000000'),
     // 用户名
     username: varchar('username', { length: 64 }).notNull(),
     // 密码哈希
@@ -50,8 +52,9 @@ export const sysUser = pgTable(
   table => [
     // 针对某个租户唯一的用户名，支持未来多租户场景
     uniqueIndex('uk_tenant_username').on(table.tenantId, table.username),
+    index('idx_tenant_status').on(table.tenantId, table.status),
+    index('idx_tenant_dept').on(table.tenantId, table.deptId),
   ],
 )
 
 export type SysUser = typeof sysUser.$inferSelect
-export type NewSysUser = typeof sysUser.$inferInsert
