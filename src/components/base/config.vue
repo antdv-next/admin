@@ -22,7 +22,7 @@ watchEffect(() => {
   <a-style-provider layer>
     <a-config-provider :theme="theme">
       <BaseToken>
-        <a-app>
+        <a-app class="min-h-screen">
           <BaseApp>
             <slot />
           </BaseApp>

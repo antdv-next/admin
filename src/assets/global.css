@@ -5,3 +5,20 @@
 @import 'antdv-next/dist/reset.css' layer(reset);
 @import 'antdv-next/dist/antd.css' layer(antd);
 @import 'trickling/lib/style.css' layer(base);
+
+@layer base {
+  html,
+  body,
+  #app {
+    min-height: 100%;
+  }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  #app {
+    min-height: 100vh;
+  }
+}
