@@ -11,7 +11,7 @@ export const sysUser = pgTable(
     // 用户名
     username: varchar('username', { length: 64 }).notNull(),
     // 密码哈希
-    passwordHash: varchar('password_hash', { length: 255 }).notNull(),
+    password: varchar('password', { length: 255 }).notNull(),
     // 昵称
     nickname: varchar('nickname', { length: 64 }),
     // 真实姓名
