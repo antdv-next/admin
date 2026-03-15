@@ -81,7 +81,7 @@ interface TryIt {
     fn: TFn,
     ...args: Parameters<TFn>
   ) => Promise<TryItResult<Awaited<ReturnType<TFn>>, TError>>
-  result<TResult, TError = unknown>(): <TFn extends TryItFn>(
+  result: <TResult, TError = unknown>() => <TFn extends TryItFn>(
     fn: TFn,
     ...args: Parameters<TFn>
   ) => Promise<TryItResult<TResult, TError>>

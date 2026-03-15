@@ -36,17 +36,15 @@ const loading = ref(false)
 const { message } = useApp()
 async function handleFinish(_values: any) {
   loading.value = true
-  const [err, res] = await tryIt<{ msg: string }>()(loginApi, formModel)
+  const [err, res] = await tryIt<ER>()(loginApi, formModel)
   loading.value = false
   if (err) {
-    message.error(err.msg || '登录失败')
     return
   }
 
   if (res && res.data && res.data?.token) {
-    // TODO
+    message.success('登录成功')
   }
-  message.success('登录成功')
 }
 </script>
 

@@ -9,5 +9,5 @@ export interface LoginResponse {
 }
 
 export async function loginApi(params: LoginParams) {
-  return usePost<R<LoginResponse>>('/auth/login', params)
+  return usePost<R<LoginResponse>>('/login', params)
 }

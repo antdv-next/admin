@@ -31,7 +31,6 @@ export function setupMockGuard(http: AxiosInstance) {
         'content-type': 'application/json',
         ...resolved.headers,
       } as RawAxiosResponseHeaders
-
       if (resolved.delay && resolved.delay > 0) {
         await sleep(resolved.delay)
       }
