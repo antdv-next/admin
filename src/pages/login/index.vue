@@ -32,9 +32,10 @@ const formRules: FormProps['rules'] = {
 }
 
 const loading = ref(false)
-
+const router = useRouter()
 const { message } = useApp()
-async function handleFinish(_values: any) {
+const authorization = useAuthorization()
+async function handleFinish() {
   loading.value = true
   const [err, res] = await tryIt<ER>()(loginApi, formModel)
   loading.value = false
@@ -43,6 +44,9 @@ async function handleFinish(_values: any) {
   }
 
   if (res && res.data && res.data?.token) {
+    authorization.value = res.data?.token
+    // 这里可以存储 token，例如使用 Pinia 或 localStorage
+    router.push('/admin')
     message.success('登录成功')
   }
 }

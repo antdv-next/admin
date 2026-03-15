@@ -7,4 +7,6 @@ export interface UserInfo {
   avatar: string
   //  昵称
   nickname: string
+  // 邮箱
+  email: string
 }

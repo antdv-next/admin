@@ -1,23 +1,29 @@
 import antfu from '@antfu/eslint-config'
 
-export default antfu({
-  formatters: {
-    css: true,
+export default antfu(
+  {
+    formatters: {
+      css: true,
+    },
+    rules: {
+      'e18e/prefer-static-regex': 'off',
+      'e18e/ban-dependencies': [
+        'error',
+        {
+          allowed: ['axios'],
+        },
+      ],
+    },
+    ignores: ['.agents/**', './claude/**'],
   },
-  rules: {
-    'e18e/prefer-static-regex': 'off',
-    'e18e/ban-dependencies': [
-      'error',
-      {
-        allowed: ['axios'],
-      },
+  {
+    files: [
+      'server/**',
+      'drizzle.config.ts',
     ],
+    rules: {
+      'no-console': 'off',
+      'node/prefer-global/process': 'off',
+    },
   },
-}, {
-  files: [
-    'server/**',
-  ],
-  rules: {
-    'no-console': 'off',
-  },
-})
+)

@@ -1,6 +1,7 @@
 import type { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig, RawAxiosResponseHeaders } from 'axios'
 import type { MockContext, MockDefinition, MockHandlerValue, MockMethod, ResolvedMockResponse } from '../../../../mock'
 import type { RequestConfig } from '../interface'
+import { AxiosError } from 'axios'
 import { MOCK_METHODS } from '../../../../mock'
 
 interface MockMatcher {
@@ -35,7 +36,7 @@ export function setupMockGuard(http: AxiosInstance) {
         await sleep(resolved.delay)
       }
 
-      return {
+      const response = {
         config,
         data: resolved.body,
         headers,
@@ -43,6 +44,8 @@ export function setupMockGuard(http: AxiosInstance) {
         status: resolved.status ?? 200,
         statusText: resolved.statusText ?? 'OK',
       } satisfies AxiosResponse
+
+      return settleMockResponse(response)
     }
 
     return config
@@ -244,6 +247,21 @@ function appendQueryValue(searchParams: URLSearchParams, key: string, value: unk
 
 function isResolvedMockResponse(value: unknown): value is ResolvedMockResponse {
   return typeof value === 'object' && value !== null && '__mockResponse' in value
+}
+
+function settleMockResponse(response: AxiosResponse) {
+  const validateStatus = response.config.validateStatus
+  if (!response.status || !validateStatus || validateStatus(response.status)) {
+    return response
+  }
+
+  throw new AxiosError(
+    `Request failed with status code ${response.status}`,
+    response.status >= 500 ? AxiosError.ERR_BAD_RESPONSE : AxiosError.ERR_BAD_REQUEST,
+    response.config,
+    response.request,
+    response,
+  )
 }
 
 function sleep(delay: number) {

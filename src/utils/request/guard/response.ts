@@ -1,4 +1,4 @@
-import type { AxiosInstance, AxiosResponse } from 'axios'
+import type { AxiosError, AxiosInstance, AxiosResponse } from 'axios'
 
 export function setupResponseGuard(http: AxiosInstance) {
   const handleResponse = (response: AxiosResponse) => {
@@ -10,7 +10,15 @@ export function setupResponseGuard(http: AxiosInstance) {
     return response
   }
 
-  const handleError = (error: any) => {
+  const handleError = (error: AxiosError) => {
+    const data = error.response?.data as ER
+    const { message } = useApp()
+    if (data && data.msg) {
+      message.error(data.msg)
+    }
+    else {
+      message.error(error.message ?? 'Server Error')
+    }
     return Promise.reject(error)
   }
   http.interceptors.response.use(handleResponse, handleError)

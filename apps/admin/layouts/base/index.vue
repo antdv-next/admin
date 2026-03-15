@@ -3,7 +3,6 @@
 
 <template>
   <div>
-    aaa
     <router-view />
   </div>
 </template>

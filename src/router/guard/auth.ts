@@ -6,7 +6,11 @@ import { NOT_FOUND_NAME, notFoundRoute, ROUTE_NAME } from '@/router/constant'
 
 let hasRoute = false
 export function setupAuthGuard(router: Router) {
+  const authorization = useAuthorization()
   router.beforeEach(async (to) => {
+    if (!authorization.value) {
+      // 如果不存在的情况，获取用户的信息和可用的菜单的信息
+    }
     if (!hasRoute) {
       if (router.hasRoute(NOT_FOUND_NAME)) {
         router.removeRoute(NOT_FOUND_NAME)
