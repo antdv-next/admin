@@ -5,7 +5,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@apps/admin/*": ["apps/admin/src/*"]
+      "@apps/admin/*": ["apps/admin/src/*"],
+      "#db": ["server/db"]
     },
 
     "types": ["vite/client"],
