@@ -40,8 +40,8 @@ export const sysDictItem = pgTable(
     version: integer('version').notNull().default(0),
   },
   table => [
-    unique('uk_tenant_dict_type_value').on(table.tenantId, table.dictTypeId, table.value),
-    index('idx_tenant_dict_type').on(table.tenantId, table.dictTypeId),
-    index('idx_tenant_status').on(table.tenantId, table.status),
+    unique('uk_tenant_dict_item_value').on(table.tenantId, table.dictTypeId, table.value),
+    index('idx_tenant_dict_item').on(table.tenantId, table.dictTypeId),
+    index('idx_tenant_dict_item_status').on(table.tenantId, table.status),
   ],
 )

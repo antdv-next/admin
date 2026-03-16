@@ -51,9 +51,9 @@ export const sysUser = pgTable(
   },
   table => [
     // 针对某个租户唯一的用户名，支持未来多租户场景
-    uniqueIndex('uk_tenant_username').on(table.tenantId, table.username),
-    index('idx_tenant_status').on(table.tenantId, table.status),
-    index('idx_tenant_dept').on(table.tenantId, table.deptId),
+    uniqueIndex('uk_tenant_user_username').on(table.tenantId, table.username),
+    index('idx_tenant_user_status').on(table.tenantId, table.status),
+    index('idx_tenant_user_dept').on(table.tenantId, table.deptId),
   ],
 )
 

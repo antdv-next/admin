@@ -24,6 +24,6 @@ export const sysConfig = pgTable(
     updatedAt: timestamp('updated_at', { mode: 'date' }).notNull().defaultNow().$onUpdate(() => new Date()),
   },
   table => [
-    unique('uk_tenant_key').on(table.tenantId, table.configKey),
+    unique('uk_tenant_config_key').on(table.tenantId, table.configKey),
   ],
 )

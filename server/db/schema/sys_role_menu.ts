@@ -17,6 +17,6 @@ export const sysRoleMenu = pgTable(
   },
   table => [
     uniqueIndex('uk_tenant_role_menu').on(table.tenantId, table.roleId, table.menuId),
-    index('idx_tenant_menu').on(table.tenantId, table.menuId),
+    index('idx_tenant_role_menu').on(table.tenantId, table.menuId),
   ],
 )

@@ -31,6 +31,6 @@ export const sysDictType = pgTable(
   },
   table => [
     unique('uk_tenant_dict_code').on(table.tenantId, table.dictCode),
-    index('idx_tenant_status').on(table.tenantId, table.status),
+    index('idx_tenant_dict_status').on(table.tenantId, table.status),
   ],
 )

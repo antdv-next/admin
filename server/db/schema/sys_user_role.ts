@@ -18,6 +18,6 @@ export const sysUserRole = pgTable(
   },
   table => [
     uniqueIndex('uk_tenant_user_role').on(table.tenantId, table.userId, table.roleId),
-    index('idx_tenant_role').on(table.tenantId, table.roleId),
+    index('idx_tenant_user_role').on(table.tenantId, table.roleId),
   ],
 )

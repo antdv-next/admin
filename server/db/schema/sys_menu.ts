@@ -52,7 +52,7 @@ export const sysMenu = pgTable(
   table => [
     // 设置租户相关的索引，支持未来多租户场景
     uniqueIndex('uk_tenant_menu_code').on(table.tenantId, table.menuCode),
-    index('idx_tenant_parent').on(table.tenantId, table.parentId),
-    index('idx_tenant_type_status').on(table.tenantId, table.menuType, table.status),
+    index('idx_tenant_menu_parent').on(table.tenantId, table.parentId),
+    index('idx_tenant_menu_type_status').on(table.tenantId, table.menuType, table.status),
   ],
 )

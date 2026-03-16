@@ -34,8 +34,8 @@ export const sysLoginLog = pgTable(
     loginAt: timestamp('login_at', { mode: 'date' }).notNull().defaultNow(),
   },
   table => [
-    index('idx_tenant_user').on(table.tenantId, table.userId),
-    index('idx_tenant_status').on(table.tenantId, table.status),
-    index('idx_login_at').on(table.loginAt),
+    index('idx_tenant_log_user').on(table.tenantId, table.userId),
+    index('idx_tenant_log_status').on(table.tenantId, table.status),
+    index('idx_login_log_at').on(table.loginAt),
   ],
 )

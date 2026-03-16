@@ -37,7 +37,7 @@ export const sysRole = pgTable(
     // 针对某个租户唯一的角色编码，支持未来多租户场景
     uniqueIndex('uk_tenant_role_code').on(table.tenantId, table.roleCode),
     // 按租户和状态筛选角色
-    index('idx_tenant_status').on(table.tenantId, table.status),
+    index('idx_tenant_role_status').on(table.tenantId, table.status),
   ],
 )
 
