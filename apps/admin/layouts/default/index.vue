@@ -13,7 +13,7 @@ const themeConfig = computed(() => {
     colorBgLayout: 'transparent',
     headerHeight: 56,
     siderBg: token.value?.colorBgContainer,
-    headerPadding: '0 24px',
+    headerPadding: '0 20px',
   }
 
   return {
