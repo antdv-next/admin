@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { ConfigProviderProps } from 'antdv-next'
 import { useGlobalToken } from '@/composables/token'
+import { defaultConfig } from '../components/config.ts'
+import DefaultHeader from './components/header.vue'
 
 type ThemeType = NonNullable<ConfigProviderProps['theme']>
 type ComponentsType = NonNullable<ThemeType['components']>
@@ -11,6 +13,7 @@ const themeConfig = computed(() => {
     colorBgLayout: 'transparent',
     headerHeight: 56,
     siderBg: token.value?.colorBgContainer,
+    headerPadding: '0 24px',
   }
 
   return {
@@ -27,10 +30,13 @@ const themeConfig = computed(() => {
   >
     <a-layout class="min-h-screen">
       <a-layout-header>
-        header
+        <DefaultHeader />
       </a-layout-header>
       <a-layout>
-        <a-layout-sider :width="245" :collapsed-width="56">
+        <a-layout-sider
+          :width="defaultConfig.siderWidth"
+          :collapsed-width="defaultConfig.collapsedWidth"
+        >
           sider
         </a-layout-sider>
         <a-layout>
