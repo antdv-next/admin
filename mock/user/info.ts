@@ -12,6 +12,8 @@ export default defineMock({
         nickname: '管理员',
         avatar: '',
       },
+    }, {
+      delay: 2000,
     })
   },
 })

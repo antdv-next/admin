@@ -2,6 +2,7 @@
 import type { FormProps } from 'antdv-next'
 import { LockOutlined, MoonOutlined, SunOutlined, UserOutlined } from '@antdv-next/icons'
 import { loginApi } from '@/api/auth/login.ts'
+import { useUserStore } from '@/stores/user'
 
 defineOptions({ name: 'LoginPage' })
 
@@ -34,7 +35,7 @@ const formRules: FormProps['rules'] = {
 const loading = ref(false)
 const router = useRouter()
 const { message } = useApp()
-const authorization = useAuthorization()
+const userStore = useUserStore()
 async function handleFinish() {
   loading.value = true
   const [err, res] = await tryIt<ER>()(loginApi, formModel)
@@ -44,8 +45,7 @@ async function handleFinish() {
   }
 
   if (res && res.data && res.data?.token) {
-    authorization.value = res.data?.token
-    // 这里可以存储 token，例如使用 Pinia 或 localStorage
+    userStore.setToken(res.data.token)
     router.push('/admin')
     message.success('登录成功')
   }
