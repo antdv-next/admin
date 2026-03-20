@@ -1,13 +1,13 @@
-import { index, integer, pgTable, smallint, timestamp, unique, uuid, varchar } from 'drizzle-orm/pg-core'
+import { index, integer, pgTable, smallint, timestamp, unique, varchar } from 'drizzle-orm/pg-core'
 import { v7 as uuidv7 } from 'uuid'
 
 export const sysDictType = pgTable(
   'sys_dict_type',
   {
     // 主键 ID
-    id: uuid('id').primaryKey().$defaultFn(() => uuidv7()),
+    id: varchar('id', { length: 36 }).primaryKey().$defaultFn(() => uuidv7()),
     // 租户 ID，预留字段；暂不建立租户表或外键关联
-    tenantId: uuid('tenant_id').notNull().default('00000000-0000-0000-0000-000000000000'),
+    tenantId: varchar('tenant_id', { length: 36 }).notNull().default('00000000-0000-0000-0000-000000000000'),
     // 字典名称
     dictName: varchar('dict_name', { length: 64 }).notNull(),
     // 字典编码
@@ -17,9 +17,13 @@ export const sysDictType = pgTable(
     // 备注
     remark: varchar('remark', { length: 255 }),
     // 创建人
-    createdBy: uuid('created_by'),
+    createdBy: varchar('created_by', { length: 36 }),
+    // 创建人名称
+    createdByName: varchar('created_by_name', { length: 64 }),
     // 更新人
-    updatedBy: uuid('updated_by'),
+    updatedBy: varchar('updated_by', { length: 36 }),
+    // 更新人名称
+    updatedByName: varchar('updated_by_name', { length: 64 }),
     // 创建时间
     createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
     // 更新时间

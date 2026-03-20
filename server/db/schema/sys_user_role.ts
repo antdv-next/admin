@@ -1,4 +1,4 @@
-import { index, pgTable, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core'
+import { index, pgTable, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
 import { v7 as uuidv7 } from 'uuid'
 
 // 用户角色关联表
@@ -6,13 +6,13 @@ export const sysUserRole = pgTable(
   'sys_user_role',
   {
     // 主键id
-    id: uuid('id').primaryKey().$defaultFn(() => uuidv7()),
+    id: varchar('id', { length: 36 }).primaryKey().$defaultFn(() => uuidv7()),
     // 租户 ID，预留字段；暂不建立租户表或外键关联
-    tenantId: uuid('tenant_id').notNull().default('00000000-0000-0000-0000-000000000000'),
+    tenantId: varchar('tenant_id', { length: 36 }).notNull().default('00000000-0000-0000-0000-000000000000'),
     // 用户id
-    userId: uuid('user_id').notNull(),
+    userId: varchar('user_id', { length: 36 }).notNull(),
     // 角色ID
-    roleId: uuid('role_id').notNull(),
+    roleId: varchar('role_id', { length: 36 }).notNull(),
     // 创建时间
     createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
   },
