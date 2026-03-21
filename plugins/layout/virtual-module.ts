@@ -181,6 +181,29 @@ function wrapWithLayout(route, layoutKey) {
   }
 }
 
+function mergePath(parentPath, childPath) {
+  if (!childPath) return parentPath
+  if (childPath.startsWith('/')) return childPath
+  const base = parentPath.replace(/\\/$/, '')
+  return base ? \`\${base}/\${childPath}\` : \`/\${childPath}\`
+}
+
+function flattenRoutes(routes, parentPath = '') {
+  const result = []
+  for (const route of routes) {
+    const fullPath = mergePath(parentPath, route.path)
+    if (route.children?.length) {
+      if (route.component) {
+        result.push({ ...route, path: fullPath, children: undefined })
+      }
+      result.push(...flattenRoutes(route.children, fullPath))
+    } else {
+      result.push({ ...route, path: fullPath })
+    }
+  }
+  return result
+}
+
 function deepSetupLayout(routes, top = true) {
   return routes.map((route) => {
     const nextRoute = route.children?.length
@@ -209,8 +232,10 @@ function deepSetupLayout(routes, top = true) {
   })
 }
 
-export function setupLayouts(routes) {
-  return deepSetupLayout(routes)
+export function setupLayouts(routes, options = {}) {
+  const { flatten = false } = options
+  const processedRoutes = flatten ? flattenRoutes(routes) : routes
+  return deepSetupLayout(processedRoutes)
 }
 
 export function createGetRoutes(router, withLayout = false) {
