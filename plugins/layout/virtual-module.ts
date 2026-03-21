@@ -192,13 +192,23 @@ function flattenRoutes(routes, parentPath = '') {
   const result = []
   for (const route of routes) {
     const fullPath = mergePath(parentPath, route.path)
-    if (route.children?.length) {
-      if (route.component) {
-        result.push({ ...route, path: fullPath, children: undefined })
+
+    if (!route.children?.length) {
+      result.push({ ...route, path: fullPath })
+      continue
+    }
+
+    if (route.component) {
+      result.push({
+        ...route,
+        path: fullPath,
+        children: flattenRoutes(route.children, ''),
+      })
+    } else {
+      if (route.redirect) {
+        result.push({ path: fullPath, redirect: route.redirect, meta: route.meta })
       }
       result.push(...flattenRoutes(route.children, fullPath))
-    } else {
-      result.push({ ...route, path: fullPath })
     }
   }
   return result
