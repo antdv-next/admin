@@ -1,6 +1,6 @@
-import type { UserConfig } from 'vite'
+import type { UserConfig } from 'vite-plus'
 import { fileURLToPath } from 'node:url'
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig, loadEnv } from 'vite-plus'
 import { loadPlugins } from './plugins'
 import { loadAlias } from './plugins/alias'
 import { loadSever } from './plugins/server'
@@ -24,6 +24,9 @@ export default defineConfig(({ mode }) => {
       rolldownOptions: {
         // devtools: {},
       },
+    },
+    staged: {
+      '*.{js,ts,tsx,vue,json,css,less,sass,scss,md}': 'vp check --fix',
     },
   } as UserConfig
 })

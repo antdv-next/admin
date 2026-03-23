@@ -57,6 +57,7 @@
     "vite": "^8.0.1",
     "vite-plugin-dayjs": "^1.0.1",
     "vite-plugin-inspect": "^11.3.3",
+    "vite-plus": "^0.1.13",
     "vue-tsc": "^3.2.6"
   }
 }
