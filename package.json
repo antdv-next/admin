@@ -2,9 +2,9 @@
   "name": "antdv-next-admin",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vp dev",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview",
+    "preview": "vp preview",
     "db:generate:dev": "cross-env NODE_ENV=development drizzle-kit generate",
     "db:migrate:dev": "cross-env NODE_ENV=development drizzle-kit migrate",
     "db:pull:dev": "cross-env NODE_ENV=development drizzle-kit pull",
