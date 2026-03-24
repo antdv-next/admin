@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import { ConfigProvider } from 'antdv-next';
+import { ConfigProvider } from 'antdv-next'
 
-import { useTheme } from '@/components/base/theme';
+import { useTheme } from '@/components/base/theme'
 
-import BaseApp from './app.vue';
-import BaseToken from './token.vue';
+import BaseApp from './app.vue'
+import BaseToken from './token.vue'
 
 defineOptions({
   name: 'BaseConfig',
-});
-const { theme } = useTheme();
-const instance = getCurrentInstance();
+})
+const { theme } = useTheme()
+const instance = getCurrentInstance()
 watchEffect(() => {
   // 兼容使用静态方法的情况
   ConfigProvider.config({
     theme: theme.value,
     appContext: instance?.appContext,
-  });
-});
+  })
+})
 </script>
 
 <template>

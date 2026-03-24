@@ -1,5 +1,5 @@
-import { index, integer, pgTable, smallint, timestamp, unique, varchar } from 'drizzle-orm/pg-core';
-import { v7 as uuidv7 } from 'uuid';
+import { index, integer, pgTable, smallint, timestamp, unique, varchar } from 'drizzle-orm/pg-core'
+import { v7 as uuidv7 } from 'uuid'
 
 export const sysDictItem = pgTable(
   'sys_dict_item',
@@ -55,4 +55,4 @@ export const sysDictItem = pgTable(
     index('idx_tenant_dict_item').on(table.tenantId, table.dictTypeId),
     index('idx_tenant_dict_item_status').on(table.tenantId, table.status),
   ],
-);
+)

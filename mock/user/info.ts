@@ -1,6 +1,6 @@
-import { v7 } from 'uuid';
+import { v7 } from 'uuid'
 
-import { defineMock, response } from '../index';
+import { defineMock, response } from '../index'
 
 export default defineMock({
   GET() {
@@ -18,6 +18,6 @@ export default defineMock({
       {
         delay: 2000,
       },
-    );
+    )
   },
-});
+})

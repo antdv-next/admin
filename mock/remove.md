@@ -36,25 +36,25 @@ rm src/utils/request/guard/mock.ts
 **修改前：**
 
 ```ts
-import { mockGuard } from './guard/mock';
-import { requestGuard } from './guard/request';
-import { responseGuard } from './guard/response';
+import { mockGuard } from './guard/mock'
+import { requestGuard } from './guard/request'
+import { responseGuard } from './guard/response'
 
 // 注册拦截器
-mockGuard(instance);
-requestGuard(instance);
-responseGuard(instance);
+mockGuard(instance)
+requestGuard(instance)
+responseGuard(instance)
 ```
 
 **修改后：**
 
 ```ts
-import { requestGuard } from './guard/request';
-import { responseGuard } from './guard/response';
+import { requestGuard } from './guard/request'
+import { responseGuard } from './guard/response'
 
 // 注册拦截器
-requestGuard(instance);
-responseGuard(instance);
+requestGuard(instance)
+responseGuard(instance)
 ```
 
 ## 步骤四：更新 TypeScript 配置
@@ -162,7 +162,7 @@ git checkout HEAD -- mock/ src/utils/request/guard/mock.ts
    ```ts
    // 仅在开发环境且未禁用 Mock 时启用
    if (import.meta.env.DEV && !import.meta.env.VITE_DISABLE_MOCK) {
-     mockGuard(instance);
+     mockGuard(instance)
    }
    ```
 

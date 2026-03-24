@@ -1,5 +1,5 @@
-import { index, pgTable, smallint, timestamp, varchar } from 'drizzle-orm/pg-core';
-import { v7 as uuidv7 } from 'uuid';
+import { index, pgTable, smallint, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { v7 as uuidv7 } from 'uuid'
 
 export const sysLoginLog = pgTable(
   'sys_login_log',
@@ -42,4 +42,4 @@ export const sysLoginLog = pgTable(
     index('idx_tenant_log_status').on(table.tenantId, table.status),
     index('idx_login_log_at').on(table.loginAt),
   ],
-);
+)

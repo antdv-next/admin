@@ -1,5 +1,5 @@
-import { index, integer, pgTable, smallint, timestamp, unique, varchar } from 'drizzle-orm/pg-core';
-import { v7 as uuidv7 } from 'uuid';
+import { index, integer, pgTable, smallint, timestamp, unique, varchar } from 'drizzle-orm/pg-core'
+import { v7 as uuidv7 } from 'uuid'
 
 export const sysDictType = pgTable(
   'sys_dict_type',
@@ -44,4 +44,4 @@ export const sysDictType = pgTable(
     unique('uk_tenant_dict_code').on(table.tenantId, table.dictCode),
     index('idx_tenant_dict_status').on(table.tenantId, table.status),
   ],
-);
+)

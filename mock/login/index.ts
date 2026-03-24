@@ -1,13 +1,13 @@
-import type { MockContext } from '../index';
+import type { MockContext } from '../index'
 
-import { defineMock, response } from '../index';
+import { defineMock, response } from '../index'
 
 export default defineMock({
   POST({ data }: MockContext) {
     const payload =
-      typeof data === 'object' && data !== null ? (data as Record<string, unknown>) : {};
-    const username = typeof payload.username === 'string' ? payload.username : '';
-    const password = typeof payload.password === 'string' ? payload.password : '';
+      typeof data === 'object' && data !== null ? (data as Record<string, unknown>) : {}
+    const username = typeof payload.username === 'string' ? payload.username : ''
+    const password = typeof payload.password === 'string' ? payload.password : ''
 
     if (username !== 'admin' || password !== 'admin') {
       return response(
@@ -21,7 +21,7 @@ export default defineMock({
           status: 400,
           statusText: 'Error',
         },
-      );
+      )
     }
 
     return response(
@@ -35,6 +35,6 @@ export default defineMock({
       {
         delay: 3000,
       },
-    );
+    )
   },
-});
+})

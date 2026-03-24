@@ -6,8 +6,8 @@ import {
   timestamp,
   uniqueIndex,
   varchar,
-} from 'drizzle-orm/pg-core';
-import { v7 as uuidv7 } from 'uuid';
+} from 'drizzle-orm/pg-core'
+import { v7 as uuidv7 } from 'uuid'
 
 export const sysMenu = pgTable(
   'sys_menu',
@@ -74,4 +74,4 @@ export const sysMenu = pgTable(
     index('idx_tenant_menu_parent').on(table.tenantId, table.parentId),
     index('idx_tenant_menu_type_status').on(table.tenantId, table.menuType, table.status),
   ],
-);
+)

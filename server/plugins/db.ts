@@ -1,3 +1,3 @@
-import { definePlugin } from 'nitro/h3';
+import { definePlugin } from 'nitro/h3'
 
-export default definePlugin(() => {});
+export default definePlugin(() => {})

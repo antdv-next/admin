@@ -1,4 +1,4 @@
-import { defineMock, response } from '..';
+import { defineMock, response } from '..'
 
 export default defineMock({
   GET() {
@@ -10,7 +10,7 @@ export default defineMock({
         },
       },
       { delay: 300 },
-    );
+    )
   },
 
   POST() {
@@ -22,7 +22,7 @@ export default defineMock({
         },
       },
       { delay: 500 },
-    );
+    )
   },
   PUT() {
     return response(
@@ -33,7 +33,7 @@ export default defineMock({
         },
       },
       { delay: 500 },
-    );
+    )
   },
 
   DELETE() {
@@ -45,6 +45,6 @@ export default defineMock({
         },
       },
       { delay: 1000 },
-    );
+    )
   },
-});
+})

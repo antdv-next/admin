@@ -4,4 +4,4 @@ export const useAppStore = defineStore('app', {
   state: (): AppState => ({}),
   actions: {},
   getters: {},
-});
+})

@@ -1,5 +1,5 @@
-import { pgTable, smallint, text, timestamp, unique, varchar } from 'drizzle-orm/pg-core';
-import { v7 as uuidv7 } from 'uuid';
+import { pgTable, smallint, text, timestamp, unique, varchar } from 'drizzle-orm/pg-core'
+import { v7 as uuidv7 } from 'uuid'
 
 export const sysConfig = pgTable(
   'sys_config',
@@ -31,4 +31,4 @@ export const sysConfig = pgTable(
       .$onUpdate(() => new Date()),
   },
   (table) => [unique('uk_tenant_config_key').on(table.tenantId, table.configKey)],
-);
+)

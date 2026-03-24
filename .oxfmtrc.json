@@ -12,7 +12,7 @@
     "types/vue-router.d.ts",
     "types/layout-generated.d.ts"
   ],
-  "semi": true,
+  "semi": false,
   "singleQuote": true,
   "jsxSingleQuote": true,
   "sortImports": {

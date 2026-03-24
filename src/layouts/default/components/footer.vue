@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { useDarkMode } from '@/composables/dark';
+import { useDarkMode } from '@/composables/dark'
 
-defineOptions({ name: 'LayoutFooter' });
+defineOptions({ name: 'LayoutFooter' })
 
-const { isDark } = useDarkMode();
+const { isDark } = useDarkMode()
 
-const currentYear = new Date().getFullYear();
+const currentYear = new Date().getFullYear()
 
 const footerLinks = [
   { label: '更新日志', href: 'https://www.antdv-next.com/components/changelog' },
   { label: '赞助项目', href: 'https://www.antdv-next.com/sponsor' },
   { label: '贡献指南', href: 'https://www.antdv-next.com/docs/vue/contributing' },
-];
+]
 
-const isExternalLink = (href: string) => /^https?:\/\//.test(href);
+const isExternalLink = (href: string) => /^https?:\/\//.test(href)
 </script>
 
 <template>

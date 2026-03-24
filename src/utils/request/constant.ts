@@ -1,1 +1,1 @@
-export const AUTHORIZATION_KEY = 'Authorization';
+export const AUTHORIZATION_KEY = 'Authorization'

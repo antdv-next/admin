@@ -1,31 +1,31 @@
-import { AntdvNextResolver } from '@antdv-next/auto-import-resolver';
-import tailwindcss from '@tailwindcss/vite';
+import { AntdvNextResolver } from '@antdv-next/auto-import-resolver'
+import tailwindcss from '@tailwindcss/vite'
 // import { DevTools } from '@vitejs/devtools'
-import vue from '@vitejs/plugin-vue';
-import { nitro } from 'nitro/vite';
-import autoImport from 'unplugin-auto-import/vite';
-import components from 'unplugin-vue-components/vite';
-import { loadEnv } from 'vite';
-import dayjs from 'vite-plugin-dayjs';
-import vueRouter from 'vue-router/vite';
+import vue from '@vitejs/plugin-vue'
+import { nitro } from 'nitro/vite'
+import autoImport from 'unplugin-auto-import/vite'
+import components from 'unplugin-vue-components/vite'
+import { loadEnv } from 'vite'
+import dayjs from 'vite-plugin-dayjs'
+import vueRouter from 'vue-router/vite'
 
-import type { LayoutPluginOptions } from './layout';
+import type { LayoutPluginOptions } from './layout'
 
-import { layout } from './layout';
-import { loadRouter } from './router';
+import { layout } from './layout'
+import { loadRouter } from './router'
 
 export function loadPlugins(mode: string, baseUrl: string) {
-  const isProd = mode === 'production';
-  const env = loadEnv(mode, baseUrl);
+  const isProd = mode === 'production'
+  const env = loadEnv(mode, baseUrl)
   const layoutOptions: LayoutPluginOptions = {
     globalFallbackLayout: false,
     exclude: ['**/components/**', '**/hooks/**', '**/composables/**'],
-  };
+  }
 
   // 需要判断生产环境是否开启nitro
-  const plugins = [];
+  const plugins = []
   if (!isProd || env.VITE_APP_NITRO_ENABLED === 'true') {
-    plugins.push(nitro());
+    plugins.push(nitro())
   }
   return [
     // DevTools(),
@@ -58,5 +58,5 @@ export function loadPlugins(mode: string, baseUrl: string) {
       ],
       dts: 'types/components.d.ts',
     }),
-  ];
+  ]
 }

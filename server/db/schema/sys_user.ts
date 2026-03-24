@@ -6,8 +6,8 @@ import {
   timestamp,
   uniqueIndex,
   varchar,
-} from 'drizzle-orm/pg-core';
-import { v7 as uuidv7 } from 'uuid';
+} from 'drizzle-orm/pg-core'
+import { v7 as uuidv7 } from 'uuid'
 
 export const sysUser = pgTable(
   'sys_user',
@@ -76,6 +76,6 @@ export const sysUser = pgTable(
     index('idx_tenant_user_status').on(table.tenantId, table.status),
     index('idx_tenant_user_dept').on(table.tenantId, table.deptId),
   ],
-);
+)
 
-export type SysUser = typeof sysUser.$inferSelect;
+export type SysUser = typeof sysUser.$inferSelect

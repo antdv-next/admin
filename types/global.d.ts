@@ -1,18 +1,18 @@
 declare global {
   interface ResponseBody<T = any> {
-    code: number;
-    data?: T;
-    msg: string;
+    code: number
+    data?: T
+    msg: string
   }
 
   interface ErrorResponse {
-    code: number;
-    msg: string;
+    code: number
+    msg: string
   }
 
-  type R<T = any> = ResponseBody<T>;
+  type R<T = any> = ResponseBody<T>
 
-  type ER = ErrorResponse;
+  type ER = ErrorResponse
 }
 
-export {};
+export {}

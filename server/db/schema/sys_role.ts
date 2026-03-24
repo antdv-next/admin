@@ -6,8 +6,8 @@ import {
   timestamp,
   uniqueIndex,
   varchar,
-} from 'drizzle-orm/pg-core';
-import { v7 as uuidv7 } from 'uuid';
+} from 'drizzle-orm/pg-core'
+import { v7 as uuidv7 } from 'uuid'
 
 export const sysRole = pgTable(
   'sys_role',
@@ -58,7 +58,7 @@ export const sysRole = pgTable(
     // 按租户和状态筛选角色
     index('idx_tenant_role_status').on(table.tenantId, table.status),
   ],
-);
+)
 
-export type SysRole = typeof sysRole.$inferSelect;
-export type NewSysRole = typeof sysRole.$inferInsert;
+export type SysRole = typeof sysRole.$inferSelect
+export type NewSysRole = typeof sysRole.$inferInsert

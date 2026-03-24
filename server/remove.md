@@ -26,24 +26,24 @@ grep -r "#db/" src/
 修改前（`src/api/user/index.ts`）：
 
 ```ts
-import type { SysUser } from '#db/sys_user';
+import type { SysUser } from '#db/sys_user'
 
-export type UserInfo = Omit<SysUser, 'password' | 'version' | 'isDeleted'>;
+export type UserInfo = Omit<SysUser, 'password' | 'version' | 'isDeleted'>
 ```
 
 修改后：
 
 ```ts
 export interface UserInfo {
-  id: string;
-  username: string;
-  email: string;
-  realName?: string;
-  phone?: string;
-  avatar?: string;
-  status: number;
-  createdAt: Date;
-  updatedAt: Date;
+  id: string
+  username: string
+  email: string
+  realName?: string
+  phone?: string
+  avatar?: string
+  status: number
+  createdAt: Date
+  updatedAt: Date
 }
 ```
 
@@ -154,7 +154,7 @@ pnpm remove nitro
 const instance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   timeout: 10000,
-});
+})
 ```
 
 ## 步骤六：验证和测试

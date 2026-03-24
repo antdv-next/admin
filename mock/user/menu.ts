@@ -1,4 +1,4 @@
-import { defineMock, response } from '../index';
+import { defineMock, response } from '../index'
 
 export default defineMock({
   GET() {
@@ -6,6 +6,6 @@ export default defineMock({
       code: 200,
       msg: 'Success',
       data: [],
-    });
+    })
   },
-});
+})

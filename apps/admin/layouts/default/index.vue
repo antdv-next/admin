@@ -1,29 +1,29 @@
 <script setup lang="ts">
-import type { ConfigProviderProps } from 'antdv-next';
+import type { ConfigProviderProps } from 'antdv-next'
 
-import { useGlobalToken } from '@/composables/token';
+import { useGlobalToken } from '@/composables/token'
 
-import { defaultConfig } from '../components/config.ts';
-import DefaultHeader from './components/header.vue';
+import { defaultConfig } from '../components/config.ts'
+import DefaultHeader from './components/header.vue'
 
-type ThemeType = NonNullable<ConfigProviderProps['theme']>;
-type ComponentsType = NonNullable<ThemeType['components']>;
-type LayoutType = NonNullable<ComponentsType['Layout']>;
-const { token } = useGlobalToken();
+type ThemeType = NonNullable<ConfigProviderProps['theme']>
+type ComponentsType = NonNullable<ThemeType['components']>
+type LayoutType = NonNullable<ComponentsType['Layout']>
+const { token } = useGlobalToken()
 const themeConfig = computed(() => {
   const layoutConfig: LayoutType = {
     colorBgLayout: 'transparent',
     headerHeight: 56,
     siderBg: token.value?.colorBgContainer,
     headerPadding: '0 20px',
-  };
+  }
 
   return {
     components: {
       Layout: layoutConfig,
     },
-  } as ThemeType;
-});
+  } as ThemeType
+})
 </script>
 
 <template>

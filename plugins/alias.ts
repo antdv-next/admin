@@ -1,6 +1,6 @@
-import type { UserConfig } from 'vite';
+import type { UserConfig } from 'vite'
 
-import * as path from 'node:path';
+import * as path from 'node:path'
 
 export function loadAlias(baseUrl: string) {
   return [
@@ -12,5 +12,5 @@ export function loadAlias(baseUrl: string) {
       find: '@apps/admin',
       replacement: path.resolve(baseUrl, 'apps/admin', 'src'),
     },
-  ] as NonNullable<UserConfig['resolve']>['alias'];
+  ] as NonNullable<UserConfig['resolve']>['alias']
 }

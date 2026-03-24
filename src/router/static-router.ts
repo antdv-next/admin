@@ -1,6 +1,6 @@
-import type { RouteRecordRaw } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router'
 
-import { notFoundRoute } from '@/router/constant';
+import { notFoundRoute } from '@/router/constant'
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -9,4 +9,4 @@ export const routes: RouteRecordRaw[] = [
     redirect: '/home',
   },
   notFoundRoute,
-];
+]

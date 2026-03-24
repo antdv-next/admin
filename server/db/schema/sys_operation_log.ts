@@ -1,5 +1,5 @@
-import { index, integer, json, pgTable, smallint, timestamp, varchar } from 'drizzle-orm/pg-core';
-import { v7 as uuidv7 } from 'uuid';
+import { index, integer, json, pgTable, smallint, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { v7 as uuidv7 } from 'uuid'
 
 export const sysOperationLog = pgTable(
   'sys_operation_log',
@@ -53,4 +53,4 @@ export const sysOperationLog = pgTable(
     index('idx_tenant_operation_log_status').on(table.tenantId, table.status),
     index('idx_operated_operation_log_at').on(table.operatedAt),
   ],
-);
+)

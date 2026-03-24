@@ -5,21 +5,21 @@ import {
   MoonOutlined,
   SunOutlined,
   UserOutlined,
-} from '@antdv-next/icons';
+} from '@antdv-next/icons'
 
-import { useDarkMode } from '@/composables/dark';
-import { useUserStore } from '@/stores/user';
+import { useDarkMode } from '@/composables/dark'
+import { useUserStore } from '@/stores/user'
 
-defineOptions({ name: 'LayoutHeader' });
+defineOptions({ name: 'LayoutHeader' })
 
-const { isDark, toggleDark } = useDarkMode();
-const userStore = useUserStore();
-const router = useRouter();
+const { isDark, toggleDark } = useDarkMode()
+const userStore = useUserStore()
+const router = useRouter()
 
-const isLoggedIn = computed(() => !!userStore.token);
+const isLoggedIn = computed(() => !!userStore.token)
 
-const navLinks = [{ label: '文档', href: 'https://www.antdv-next.com' }];
-const isExternalLink = (href: string) => /^https?:\/\//.test(href);
+const navLinks = [{ label: '文档', href: 'https://www.antdv-next.com' }]
+const isExternalLink = (href: string) => /^https?:\/\//.test(href)
 </script>
 
 <template>

@@ -1,5 +1,5 @@
-import { index, pgTable, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core';
-import { v7 as uuidv7 } from 'uuid';
+import { index, pgTable, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
+import { v7 as uuidv7 } from 'uuid'
 
 export const sysRoleMenu = pgTable(
   'sys_role_menu',
@@ -23,4 +23,4 @@ export const sysRoleMenu = pgTable(
     uniqueIndex('uk_tenant_role_menu').on(table.tenantId, table.roleId, table.menuId),
     index('idx_tenant_role_menu').on(table.tenantId, table.menuId),
   ],
-);
+)

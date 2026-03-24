@@ -1,16 +1,16 @@
-import type { UserInfo } from '@/api/user';
+import type { UserInfo } from '@/api/user'
 
-import { getUserInfoApi } from '@/api/user';
-import { useAuthorization } from '@/composables/authorization';
+import { getUserInfoApi } from '@/api/user'
+import { useAuthorization } from '@/composables/authorization'
 
 export interface UserState {
-  token: string | null;
-  userInfo?: UserInfo;
-  userInfoLoading: boolean;
+  token: string | null
+  userInfo?: UserInfo
+  userInfoLoading: boolean
 }
 
-const authorization = useAuthorization();
-let userInfoPromise: Promise<UserInfo | undefined> | null = null;
+const authorization = useAuthorization()
+let userInfoPromise: Promise<UserInfo | undefined> | null = null
 
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
@@ -20,66 +20,66 @@ export const useUserStore = defineStore('user', {
   }),
   actions: {
     setToken(token: string | null) {
-      const isChanged = this.token !== token;
-      this.token = token;
-      authorization.value = token;
+      const isChanged = this.token !== token
+      this.token = token
+      authorization.value = token
       if (!token || isChanged) {
-        this.userInfo = undefined;
+        this.userInfo = undefined
       }
       if (!token) {
-        this.userInfoLoading = false;
-        userInfoPromise = null;
+        this.userInfoLoading = false
+        userInfoPromise = null
       }
     },
     setUserInfo(userInfo?: UserInfo) {
-      this.userInfo = userInfo;
+      this.userInfo = userInfo
     },
     async fetchUserInfo() {
-      const currentToken = this.token;
+      const currentToken = this.token
       if (!currentToken) {
-        return undefined;
+        return undefined
       }
       if (userInfoPromise) {
-        return userInfoPromise;
+        return userInfoPromise
       }
 
-      this.userInfoLoading = true;
+      this.userInfoLoading = true
       userInfoPromise = (async () => {
-        const [error, res] = await tryIt<ER>()(getUserInfoApi);
+        const [error, res] = await tryIt<ER>()(getUserInfoApi)
         if (this.token !== currentToken) {
-          return this.userInfo;
+          return this.userInfo
         }
         if (error || !res?.data) {
-          this.userInfo = undefined;
-          return undefined;
+          this.userInfo = undefined
+          return undefined
         }
 
-        this.userInfo = res.data;
-        return this.userInfo;
-      })();
+        this.userInfo = res.data
+        return this.userInfo
+      })()
 
       try {
-        return await userInfoPromise;
+        return await userInfoPromise
       } finally {
         if (this.token === currentToken) {
-          this.userInfoLoading = false;
+          this.userInfoLoading = false
         }
-        userInfoPromise = null;
+        userInfoPromise = null
       }
     },
     async ensureUserInfo() {
       if (this.userInfo || !this.token) {
-        return this.userInfo;
+        return this.userInfo
       }
 
-      return this.fetchUserInfo();
+      return this.fetchUserInfo()
     },
     logout() {
-      this.setToken(null);
-      this.userInfo = undefined;
-      this.userInfoLoading = false;
-      userInfoPromise = null;
+      this.setToken(null)
+      this.userInfo = undefined
+      this.userInfoLoading = false
+      userInfoPromise = null
     },
   },
   getters: {},
-});
+})

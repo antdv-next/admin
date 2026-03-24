@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import type { FormProps } from 'antdv-next';
+import type { FormProps } from 'antdv-next'
 
-import { LockOutlined, MoonOutlined, SunOutlined, UserOutlined } from '@antdv-next/icons';
+import { LockOutlined, MoonOutlined, SunOutlined, UserOutlined } from '@antdv-next/icons'
 
-import { loginApi } from '@/api/auth/login.ts';
-import { useUserStore } from '@/stores/user';
+import { loginApi } from '@/api/auth/login.ts'
+import { useUserStore } from '@/stores/user'
 
-defineOptions({ name: 'LoginPage' });
+defineOptions({ name: 'LoginPage' })
 
 definePage({
   meta: {
     layout: false,
     title: '登录',
   },
-});
+})
 
-const { isDark, toggleDark } = useDarkMode();
+const { isDark, toggleDark } = useDarkMode()
 
 const formModel = reactive({
   username: '',
   password: '',
   remember: true,
-});
+})
 
 const formRules: FormProps['rules'] = {
   username: [
@@ -32,24 +32,24 @@ const formRules: FormProps['rules'] = {
     { required: true, message: '请输入密码' },
     { min: 5, message: '密码至少 5 个字符' },
   ],
-};
+}
 
-const loading = ref(false);
-const router = useRouter();
-const { message } = useApp();
-const userStore = useUserStore();
+const loading = ref(false)
+const router = useRouter()
+const { message } = useApp()
+const userStore = useUserStore()
 async function handleFinish() {
-  loading.value = true;
-  const [err, res] = await tryIt<ER>()(loginApi, formModel);
-  loading.value = false;
+  loading.value = true
+  const [err, res] = await tryIt<ER>()(loginApi, formModel)
+  loading.value = false
   if (err) {
-    return;
+    return
   }
 
   if (res && res.data && res.data?.token) {
-    userStore.setToken(res.data.token);
-    router.push('/admin');
-    message.success('登录成功');
+    userStore.setToken(res.data.token)
+    router.push('/admin')
+    message.success('登录成功')
   }
 }
 </script>

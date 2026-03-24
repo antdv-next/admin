@@ -1,5 +1,5 @@
-import { defineHandler } from 'nitro/h3';
+import { defineHandler } from 'nitro/h3'
 
 export default defineHandler(() => {
-  return { hello: 'API' };
-});
+  return { hello: 'API' }
+})

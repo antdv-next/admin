@@ -1,5 +1,5 @@
-import { index, pgTable, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core';
-import { v7 as uuidv7 } from 'uuid';
+import { index, pgTable, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
+import { v7 as uuidv7 } from 'uuid'
 
 // 用户角色关联表
 export const sysUserRole = pgTable(
@@ -24,4 +24,4 @@ export const sysUserRole = pgTable(
     uniqueIndex('uk_tenant_user_role').on(table.tenantId, table.userId, table.roleId),
     index('idx_tenant_user_role').on(table.tenantId, table.roleId),
   ],
-);
+)
