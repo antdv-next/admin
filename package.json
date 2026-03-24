@@ -3,8 +3,9 @@
   "type": "module",
   "scripts": {
     "dev": "vp dev",
-    "build": "vue-tsc -b && vite build",
+    "build": "vue-tsc -b && vp build",
     "preview": "vp preview",
+    "check": "vp check --fix",
     "db:generate:dev": "cross-env NODE_ENV=development drizzle-kit generate",
     "db:migrate:dev": "cross-env NODE_ENV=development drizzle-kit migrate",
     "db:pull:dev": "cross-env NODE_ENV=development drizzle-kit pull",
@@ -15,8 +16,7 @@
     "db:pull:prod": "cross-env NODE_ENV=production drizzle-kit pull",
     "db:push:prod": "cross-env NODE_ENV=production drizzle-kit push",
     "db:up:prod": "cross-env NODE_ENV=production drizzle-kit up",
-    "start": "node ./.output/server/index.mjs",
-    "lint": "eslint . --fix"
+    "start": "node ./.output/server/index.mjs"
   },
   "dependencies": {
     "@antdv-next/icons": "^1.0.5",
@@ -35,7 +35,6 @@
   },
   "devDependencies": {
     "@antdv-next/auto-import-resolver": "^1.0.7",
-    "@antfu/eslint-config": "^7.7.3",
     "@types/node": "^24.12.0",
     "@types/pg": "^8.20.0",
     "@vitejs/devtools": "0.0.0-alpha.34",
@@ -45,10 +44,10 @@
     "dayjs": "^1.11.20",
     "drizzle-kit": "^0.31.10",
     "drizzle-orm": "^0.45.1",
-    "eslint": "^10.1.0",
-    "eslint-plugin-format": "^2.0.1",
     "jiti": "^2.6.1",
     "nitro": "^3.0.260311-beta",
+    "oxfmt": "^0.42.0",
+    "oxlint": "^1.57.0",
     "pg": "^8.20.0",
     "typescript": "~5.9.3",
     "unplugin-auto-import": "^21.0.0",
