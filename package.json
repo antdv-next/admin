@@ -16,7 +16,8 @@
     "db:pull:prod": "cross-env NODE_ENV=production drizzle-kit pull",
     "db:push:prod": "cross-env NODE_ENV=production drizzle-kit push",
     "db:up:prod": "cross-env NODE_ENV=production drizzle-kit up",
-    "start": "node ./.output/server/index.mjs"
+    "start": "node ./.output/server/index.mjs",
+    "prepare": "vp config"
   },
   "dependencies": {
     "@antdv-next/icons": "^1.0.5",

@@ -15,6 +15,7 @@
   "semi": false,
   "singleQuote": true,
   "jsxSingleQuote": true,
+  "arrowParens": "avoid",
   "sortImports": {
     "groups": [
       "type-import",
