@@ -1,13 +1,13 @@
-import type { GeneratedLayoutType } from './layout-generated'
-import 'vue-router'
+import type { GeneratedLayoutType } from './layout-generated';
+import 'vue-router';
 
-export {}
+export {};
 
 declare module 'vue-router' {
   interface RouteMeta {
-    title?: string
-    layout?: GeneratedLayoutType | false
-    isLayout?: boolean
+    title?: string;
+    layout?: GeneratedLayoutType | false;
+    isLayout?: boolean;
     // 是否不需要权限控制
     access?: {
       /**
@@ -17,7 +17,7 @@ declare module 'vue-router' {
        * - `menu` 需要在菜单权限列表中。
        * - `inherit` 继承自 `access.from` 指定的路径的访问模式。
        */
-      mode?: 'public' | 'login' | 'menu' | 'inherit'
-    }
+      mode?: 'public' | 'login' | 'menu' | 'inherit';
+    };
   }
 }

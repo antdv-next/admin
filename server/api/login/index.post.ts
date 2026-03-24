@@ -1,5 +1,3 @@
-import { defineHandler } from 'nitro/h3'
+import { defineHandler } from 'nitro/h3';
 
-export default defineHandler(() => {
-
-})
+export default defineHandler(() => {});

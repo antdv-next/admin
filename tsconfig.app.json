@@ -2,11 +2,10 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@apps/admin/*": ["apps/admin/src/*"],
-      "#db/*": ["server/db/schema/*"]
+      "@/*": ["./src/*"],
+      "@apps/admin/*": ["./apps/admin/src/*"],
+      "#db/*": ["./server/db/schema/*"]
     },
 
     "types": ["vite/client"],

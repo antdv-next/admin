@@ -1,15 +1,7 @@
-export interface AppState {
-
-}
+export interface AppState {}
 
 export const useAppStore = defineStore('app', {
-  state: (): AppState => ({
-
-  }),
-  actions: {
-
-  },
-  getters: {
-
-  },
-})
+  state: (): AppState => ({}),
+  actions: {},
+  getters: {},
+});

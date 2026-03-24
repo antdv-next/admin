@@ -1,9 +1,7 @@
 <script setup lang="ts">
-const route = useRoute()
+const route = useRoute();
 </script>
 
 <template>
-  <div>
-    带参数测试2 {{ route.params }}
-  </div>
+  <div>带参数测试2 {{ route.params }}</div>
 </template>

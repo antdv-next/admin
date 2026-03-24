@@ -1,15 +1,29 @@
-import { index, integer, pgTable, smallint, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
-import { v7 as uuidv7 } from 'uuid'
+import {
+  index,
+  integer,
+  pgTable,
+  smallint,
+  timestamp,
+  uniqueIndex,
+  varchar,
+} from 'drizzle-orm/pg-core';
+import { v7 as uuidv7 } from 'uuid';
 
 export const sysUser = pgTable(
   'sys_user',
   {
     // 主键 ID
-    id: varchar('id', { length: 36 }).primaryKey().$defaultFn(() => uuidv7()),
+    id: varchar('id', { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => uuidv7()),
     // 租户 ID，预留字段；暂不建立租户表或外键关联
-    tenantId: varchar('tenant_id', { length: 36 }).notNull().default('00000000-0000-0000-0000-000000000000'),
+    tenantId: varchar('tenant_id', { length: 36 })
+      .notNull()
+      .default('00000000-0000-0000-0000-000000000000'),
     // 部门id，用户的主部门，这个也是冗余字段，暂不使用
-    deptId: varchar('dept_id', { length: 36 }).notNull().default('00000000-0000-0000-0000-000000000000'),
+    deptId: varchar('dept_id', { length: 36 })
+      .notNull()
+      .default('00000000-0000-0000-0000-000000000000'),
     // 用户名
     username: varchar('username', { length: 64 }).notNull(),
     // 密码哈希
@@ -47,18 +61,21 @@ export const sysUser = pgTable(
     // 创建时间
     createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
     // 更新时间
-    updatedAt: timestamp('updated_at', { mode: 'date' }).notNull().defaultNow().$onUpdateFn(() => new Date()),
+    updatedAt: timestamp('updated_at', { mode: 'date' })
+      .notNull()
+      .defaultNow()
+      .$onUpdateFn(() => new Date()),
     // 逻辑删除：1 已删除，0 未删除
     isDeleted: smallint('is_deleted').notNull().default(0),
     // 乐观锁版本号
     version: integer('version').notNull().default(0),
   },
-  table => [
+  (table) => [
     // 针对某个租户唯一的用户名，支持未来多租户场景
     uniqueIndex('uk_tenant_user_username').on(table.tenantId, table.username),
     index('idx_tenant_user_status').on(table.tenantId, table.status),
     index('idx_tenant_user_dept').on(table.tenantId, table.deptId),
   ],
-)
+);
 
-export type SysUser = typeof sysUser.$inferSelect
+export type SysUser = typeof sysUser.$inferSelect;

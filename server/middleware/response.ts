@@ -1,13 +1,12 @@
-import { defineMiddleware, HTTPResponse } from 'nitro/h3'
-import { createResponseBody } from '../common/response'
+import { defineMiddleware, HTTPResponse } from 'nitro/h3';
 
-export default defineMiddleware(
-  async (_, next) => {
-    const data = await next()
-    if (data instanceof HTTPResponse || data instanceof Response) {
-      return data
-    }
+import { createResponseBody } from '../common/response';
 
-    return createResponseBody(200, 'success', data)
-  },
-)
+export default defineMiddleware(async (_, next) => {
+  const data = await next();
+  if (data instanceof HTTPResponse || data instanceof Response) {
+    return data;
+  }
+
+  return createResponseBody(200, 'success', data);
+});

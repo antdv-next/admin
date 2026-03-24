@@ -1,13 +1,25 @@
-import { index, integer, pgTable, smallint, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
-import { v7 as uuidv7 } from 'uuid'
+import {
+  index,
+  integer,
+  pgTable,
+  smallint,
+  timestamp,
+  uniqueIndex,
+  varchar,
+} from 'drizzle-orm/pg-core';
+import { v7 as uuidv7 } from 'uuid';
 
 export const sysMenu = pgTable(
   'sys_menu',
   {
     // 主键 ID
-    id: varchar('id', { length: 36 }).primaryKey().$defaultFn(() => uuidv7()),
+    id: varchar('id', { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => uuidv7()),
     // 租户 ID，预留字段；暂不建立租户表或外键关联
-    tenantId: varchar('tenant_id', { length: 36 }).notNull().default('00000000-0000-0000-0000-000000000000'),
+    tenantId: varchar('tenant_id', { length: 36 })
+      .notNull()
+      .default('00000000-0000-0000-0000-000000000000'),
     // 父级ID
     parentId: varchar('parent_id', { length: 36 }),
     // 类型: 1目录 2菜单 3按钮
@@ -47,16 +59,19 @@ export const sysMenu = pgTable(
     // 创建时间
     createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
     // 更新时间
-    updatedAt: timestamp('updated_at', { mode: 'date' }).notNull().defaultNow().$onUpdateFn(() => new Date()),
+    updatedAt: timestamp('updated_at', { mode: 'date' })
+      .notNull()
+      .defaultNow()
+      .$onUpdateFn(() => new Date()),
     // 逻辑删除：1 已删除，0 未删除
     isDeleted: smallint('is_deleted').notNull().default(0),
     // 乐观锁版本号
     version: integer('version').notNull().default(0),
   },
-  table => [
+  (table) => [
     // 设置租户相关的索引，支持未来多租户场景
     uniqueIndex('uk_tenant_menu_code').on(table.tenantId, table.menuCode),
     index('idx_tenant_menu_parent').on(table.tenantId, table.parentId),
     index('idx_tenant_menu_type_status').on(table.tenantId, table.menuType, table.status),
   ],
-)
+);

@@ -12,9 +12,9 @@
 
 ```ts
 // plugins/index.ts
-import vueRouter from 'vue-router/vite'
-import { layout } from './layout'
-import { loadRouter } from './router'
+import vueRouter from 'vue-router/vite';
+import { layout } from './layout';
+import { loadRouter } from './router';
 
 const layoutOptions = {
   layoutDirs: ['src/layouts', 'apps/*/layouts'],
@@ -31,7 +31,7 @@ const layoutOptions = {
     },
   },
   exclude: ['**/components/**', '**/hooks/**', '**/composables/**'],
-} as const
+} as const;
 
 export function loadPlugins() {
   return [
@@ -40,7 +40,7 @@ export function loadPlugins() {
       routesFolder: loadRouter(layoutOptions),
     }),
     layout(layoutOptions),
-  ]
+  ];
 }
 ```
 
@@ -73,19 +73,22 @@ export function loadPlugins() {
 
 ```ts
 interface LayoutPluginOptions {
-  defaultLayout?: string
-  globalFallbackLayout?: string | false
-  modules?: Record<string, {
-    module?: string
-    layout?: string
-    fallbackLayout?: string | false
-  }>
-  layoutDirs?: string | string[]
-  exclude?: string | string[]
-  importMode?: 'sync' | 'async'
+  defaultLayout?: string;
+  globalFallbackLayout?: string | false;
+  modules?: Record<
+    string,
+    {
+      module?: string;
+      layout?: string;
+      fallbackLayout?: string | false;
+    }
+  >;
+  layoutDirs?: string | string[];
+  exclude?: string | string[];
+  importMode?: 'sync' | 'async';
 
   // 兼容旧配置
-  fallbackToGlobalDefault?: boolean
+  fallbackToGlobalDefault?: boolean;
 }
 ```
 
@@ -135,4 +138,3 @@ interface LayoutPluginOptions {
 - `types/layout-generated.d.ts`
 
 其中包含扫描到的布局 key，以及配置中显式声明的布局 key（如模块显式 layout/fallback）。
-

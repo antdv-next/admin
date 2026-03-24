@@ -1,13 +1,14 @@
-import axios from 'axios'
-import { setupMockGuard } from './guard/mock'
-import { setupRequestGuard } from './guard/request'
-import { setupResponseGuard } from './guard/response'
+import axios from 'axios';
+
+import { setupMockGuard } from './guard/mock';
+import { setupRequestGuard } from './guard/request';
+import { setupResponseGuard } from './guard/response';
 
 export const http = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_API || '/api',
   timeout: 6000,
-})
+});
 
-setupMockGuard(http)
-setupRequestGuard(http)
-setupResponseGuard(http)
+setupMockGuard(http);
+setupRequestGuard(http);
+setupResponseGuard(http);

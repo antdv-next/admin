@@ -1,25 +1,27 @@
 <script setup lang="ts">
-import type { FormProps } from 'antdv-next'
-import { LockOutlined, MoonOutlined, SunOutlined, UserOutlined } from '@antdv-next/icons'
-import { loginApi } from '@/api/auth/login.ts'
-import { useUserStore } from '@/stores/user'
+import type { FormProps } from 'antdv-next';
 
-defineOptions({ name: 'LoginPage' })
+import { LockOutlined, MoonOutlined, SunOutlined, UserOutlined } from '@antdv-next/icons';
+
+import { loginApi } from '@/api/auth/login.ts';
+import { useUserStore } from '@/stores/user';
+
+defineOptions({ name: 'LoginPage' });
 
 definePage({
   meta: {
     layout: false,
     title: '登录',
   },
-})
+});
 
-const { isDark, toggleDark } = useDarkMode()
+const { isDark, toggleDark } = useDarkMode();
 
 const formModel = reactive({
   username: '',
   password: '',
   remember: true,
-})
+});
 
 const formRules: FormProps['rules'] = {
   username: [
@@ -30,24 +32,24 @@ const formRules: FormProps['rules'] = {
     { required: true, message: '请输入密码' },
     { min: 5, message: '密码至少 5 个字符' },
   ],
-}
+};
 
-const loading = ref(false)
-const router = useRouter()
-const { message } = useApp()
-const userStore = useUserStore()
+const loading = ref(false);
+const router = useRouter();
+const { message } = useApp();
+const userStore = useUserStore();
 async function handleFinish() {
-  loading.value = true
-  const [err, res] = await tryIt<ER>()(loginApi, formModel)
-  loading.value = false
+  loading.value = true;
+  const [err, res] = await tryIt<ER>()(loginApi, formModel);
+  loading.value = false;
   if (err) {
-    return
+    return;
   }
 
   if (res && res.data && res.data?.token) {
-    userStore.setToken(res.data.token)
-    router.push('/admin')
-    message.success('登录成功')
+    userStore.setToken(res.data.token);
+    router.push('/admin');
+    message.success('登录成功');
   }
 }
 </script>
@@ -58,12 +60,8 @@ async function handleFinish() {
   >
     <!-- Background glow -->
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-      <div
-        class="absolute left-1/4 top-1/4 h-125 w-125 rounded-full bg-primary/15 blur-[150px]"
-      />
-      <div
-        class="absolute bottom-1/4 right-1/4 h-100 w-100 rounded-full bg-info/10 blur-[150px]"
-      />
+      <div class="absolute left-1/4 top-1/4 h-125 w-125 rounded-full bg-primary/15 blur-[150px]" />
+      <div class="absolute bottom-1/4 right-1/4 h-100 w-100 rounded-full bg-info/10 blur-[150px]" />
     </div>
 
     <!-- Login Card -->
@@ -81,13 +79,9 @@ async function handleFinish() {
 
       <!-- Header -->
       <div class="mb-10 text-center">
-        <img src="/antdv-next.svg" alt="Antdv Next" class="mx-auto mb-4 h-12 w-12">
-        <h2 class="text-2xl font-bold tracking-tight">
-          欢迎回来
-        </h2>
-        <p class="mt-2 text-sm text-text-secondary">
-          Hi, 欢迎登录 Antdv Next 管理后台
-        </p>
+        <img src="/antdv-next.svg" alt="Antdv Next" class="mx-auto mb-4 h-12 w-12" />
+        <h2 class="text-2xl font-bold tracking-tight">欢迎回来</h2>
+        <p class="mt-2 text-sm text-text-secondary">Hi, 欢迎登录 Antdv Next 管理后台</p>
       </div>
 
       <!-- Login Form -->
@@ -132,9 +126,7 @@ async function handleFinish() {
         <a-form-item>
           <a-flex justify="space-between" align="center">
             <a-form-item name="remember" no-style>
-              <a-checkbox v-model:checked="formModel.remember">
-                记住我
-              </a-checkbox>
+              <a-checkbox v-model:checked="formModel.remember"> 记住我 </a-checkbox>
             </a-form-item>
             <a
               href="#"
@@ -146,22 +138,14 @@ async function handleFinish() {
         </a-form-item>
 
         <a-form-item>
-          <a-button
-            block
-            type="primary"
-            html-type="submit"
-            size="large"
-            :loading="loading"
-          >
+          <a-button block type="primary" html-type="submit" size="large" :loading="loading">
             立即登录
           </a-button>
         </a-form-item>
       </a-form>
 
       <!-- Footer -->
-      <div
-        class="mt-8 border-t border-border pt-8 text-center text-sm text-text-tertiary"
-      >
+      <div class="mt-8 border-t border-border pt-8 text-center text-sm text-text-tertiary">
         还没有账号？
         <a
           href="#"

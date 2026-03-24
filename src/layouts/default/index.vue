@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { useDarkMode } from '@/composables/dark'
-import LayoutFooter from './components/footer.vue'
-import LayoutHeader from './components/header.vue'
+import { useDarkMode } from '@/composables/dark';
 
-const { isDark } = useDarkMode()
+import LayoutFooter from './components/footer.vue';
+import LayoutHeader from './components/header.vue';
+
+const { isDark } = useDarkMode();
 </script>
 
 <template>

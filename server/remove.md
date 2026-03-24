@@ -24,24 +24,26 @@ grep -r "#db/" src/
 **示例：用户信息类型**
 
 修改前（`src/api/user/index.ts`）：
-```ts
-import type { SysUser } from '#db/sys_user'
 
-export type UserInfo = Omit<SysUser, 'password' | 'version' | 'isDeleted'>
+```ts
+import type { SysUser } from '#db/sys_user';
+
+export type UserInfo = Omit<SysUser, 'password' | 'version' | 'isDeleted'>;
 ```
 
 修改后：
+
 ```ts
 export interface UserInfo {
-  id: string
-  username: string
-  email: string
-  realName?: string
-  phone?: string
-  avatar?: string
-  status: number
-  createdAt: Date
-  updatedAt: Date
+  id: string;
+  username: string;
+  email: string;
+  realName?: string;
+  phone?: string;
+  avatar?: string;
+  status: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 ```
 
@@ -86,6 +88,7 @@ pnpm remove nitro
 ### 4.2 更新 `package.json`
 
 移除与 Server 相关的脚本命令：
+
 - `db:*` 相关命令
 - `server:*` 相关命令
 
@@ -94,6 +97,7 @@ pnpm remove nitro
 移除 Server 相关的路径别名配置和文件包含：
 
 **移除前：**
+
 ```json
 {
   "compilerOptions": {
@@ -119,6 +123,7 @@ pnpm remove nitro
 ```
 
 **移除后：**
+
 ```json
 {
   "compilerOptions": {
@@ -149,22 +154,25 @@ pnpm remove nitro
 const instance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   timeout: 10000,
-})
+});
 ```
 
 ## 步骤六：验证和测试
 
 1. **类型检查**
+
    ```bash
    pnpm run type-check
    ```
 
 2. **构建测试**
+
    ```bash
    pnpm run build
    ```
 
 3. **运行开发服务器**
+
    ```bash
    pnpm run dev
    ```

@@ -31,7 +31,7 @@
 基础异常类，所有业务异常都应该继承它。
 
 ```ts
-throw new HttpException(400, '参数错误')
+throw new HttpException(400, '参数错误');
 ```
 
 说明：
@@ -66,22 +66,22 @@ import {
   ForbiddenException,
   NotFoundException,
   UnauthorizedException,
-} from '../../common/exception'
+} from '../../common/exception';
 ```
 
 示例：
 
 ```ts
 if (!token) {
-  throw new UnauthorizedException('请先登录')
+  throw new UnauthorizedException('请先登录');
 }
 
 if (!user) {
-  throw new NotFoundException('用户不存在')
+  throw new NotFoundException('用户不存在');
 }
 
 if (isDuplicateName) {
-  throw new ConflictException('名称已存在')
+  throw new ConflictException('名称已存在');
 }
 ```
 
@@ -100,15 +100,15 @@ if (isDuplicateName) {
 不建议在业务代码里直接写：
 
 ```ts
-throw new HttpException(403, 'Forbidden')
-throw new HttpException(404, 'Not Found')
+throw new HttpException(403, 'Forbidden');
+throw new HttpException(404, 'Not Found');
 ```
 
 更推荐：
 
 ```ts
-throw new ForbiddenException('没有权限')
-throw new NotFoundException('资源不存在')
+throw new ForbiddenException('没有权限');
+throw new NotFoundException('资源不存在');
 ```
 
 这样代码语义更清晰，也便于后续统一维护。

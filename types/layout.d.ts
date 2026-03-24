@@ -1,5 +1,5 @@
 declare module 'virtual:layout' {
-  import type { Router, RouteRecordRaw } from 'vue-router'
+  import type { Router, RouteRecordRaw } from 'vue-router';
 
   export interface SetupLayoutsOptions {
     /**
@@ -7,13 +7,16 @@ declare module 'virtual:layout' {
      * to avoid keep-alive duplicate mount issues in nested router-views.
      * @default false
      */
-    flatten?: boolean
+    flatten?: boolean;
   }
 
-  export function setupLayouts(routes: readonly RouteRecordRaw[], options?: SetupLayoutsOptions): RouteRecordRaw[]
+  export function setupLayouts(
+    routes: readonly RouteRecordRaw[],
+    options?: SetupLayoutsOptions,
+  ): RouteRecordRaw[];
 
   export function createGetRoutes(
     router: Router,
     withLayout?: boolean,
-  ): ReturnType<Router['getRoutes']> | (() => ReturnType<Router['getRoutes']>)
+  ): ReturnType<Router['getRoutes']> | (() => ReturnType<Router['getRoutes']>);
 }

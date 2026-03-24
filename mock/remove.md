@@ -15,6 +15,7 @@ rm -rf mock/
 ```
 
 该目录包含：
+
 - `mock/index.ts` - Mock 服务入口
 - `mock/login/` - 登录相关 Mock 数据
 - `mock/user/` - 用户相关 Mock 数据
@@ -33,25 +34,27 @@ rm src/utils/request/guard/mock.ts
 修改 `src/utils/request/instance.ts`（或相关的 axios 实例配置文件），移除 Mock 拦截器的引用：
 
 **修改前：**
+
 ```ts
-import { mockGuard } from './guard/mock'
-import { requestGuard } from './guard/request'
-import { responseGuard } from './guard/response'
+import { mockGuard } from './guard/mock';
+import { requestGuard } from './guard/request';
+import { responseGuard } from './guard/response';
 
 // 注册拦截器
-mockGuard(instance)
-requestGuard(instance)
-responseGuard(instance)
+mockGuard(instance);
+requestGuard(instance);
+responseGuard(instance);
 ```
 
 **修改后：**
+
 ```ts
-import { requestGuard } from './guard/request'
-import { responseGuard } from './guard/response'
+import { requestGuard } from './guard/request';
+import { responseGuard } from './guard/response';
 
 // 注册拦截器
-requestGuard(instance)
-responseGuard(instance)
+requestGuard(instance);
+responseGuard(instance);
 ```
 
 ## 步骤四：更新 TypeScript 配置
@@ -59,6 +62,7 @@ responseGuard(instance)
 修改 `tsconfig.app.json`，从 `include` 中移除 mock 目录：
 
 **修改前：**
+
 ```json
 {
   "include": [
@@ -75,6 +79,7 @@ responseGuard(instance)
 ```
 
 **修改后：**
+
 ```json
 {
   "include": [
@@ -94,12 +99,14 @@ responseGuard(instance)
 确保所有 API 请求指向真实的后端服务。检查并配置环境变量：
 
 **.env.development**
+
 ```env
 VITE_API_BASE_URL=http://localhost:3000/api
 # 或者你的后端 API 地址
 ```
 
 **.env.production**
+
 ```env
 VITE_API_BASE_URL=https://api.example.com
 ```
@@ -107,11 +114,13 @@ VITE_API_BASE_URL=https://api.example.com
 ## 步骤六：验证和测试
 
 1. **类型检查**
+
    ```bash
    pnpm run type-check
    ```
 
 2. **启动开发服务器**
+
    ```bash
    pnpm run dev
    ```
@@ -149,14 +158,16 @@ git checkout HEAD -- mock/ src/utils/request/guard/mock.ts
 1. **使用环境变量控制**
 
    在 `src/utils/request/instance.ts` 中：
+
    ```ts
    // 仅在开发环境且未禁用 Mock 时启用
    if (import.meta.env.DEV && !import.meta.env.VITE_DISABLE_MOCK) {
-     mockGuard(instance)
+     mockGuard(instance);
    }
    ```
 
    然后通过环境变量控制：
+
    ```env
    # .env.development
    VITE_DISABLE_MOCK=true  # 禁用 Mock
@@ -165,6 +176,7 @@ git checkout HEAD -- mock/ src/utils/request/guard/mock.ts
 2. **保留 Mock 代码但不注册**
 
    注释掉 Mock 拦截器的注册，保留代码供后续使用：
+
    ```ts
    // mockGuard(instance)  // 暂时禁用 Mock
    ```

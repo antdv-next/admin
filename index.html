@@ -8,11 +8,12 @@
 
     <script>
       (function () {
-        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-        const setting = localStorage.getItem('antdv-color-scheme') || 'auto'
+        const prefersDark =
+          window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const setting = localStorage.getItem('antdv-color-scheme') || 'auto';
         if (setting === 'dark' || (prefersDark && setting !== 'light'))
-          document.documentElement.classList.toggle('dark', true)
-      })()
+          document.documentElement.classList.toggle('dark', true);
+      })();
     </script>
   </head>
   <body>

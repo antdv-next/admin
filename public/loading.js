@@ -3,10 +3,10 @@
  * 解决首次加载时白屏的问题
  */
 (function () {
-  const div = document.createElement('div')
-  const body = document.querySelector('body')
-  body.appendChild(div)
-  div.setAttribute('id', 'loading-app')
+  const div = document.createElement('div');
+  const body = document.querySelector('body');
+  body.appendChild(div);
+  div.setAttribute('id', 'loading-app');
   if (div && div.innerHTML === '') {
     div.innerHTML = `
       <style>
@@ -206,6 +206,6 @@
           初次加载资源可能需要较多时间 请耐心等待
         </div>
       </div>
-    `
+    `;
   }
-})()
+})();

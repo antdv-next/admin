@@ -1,0 +1,29 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [
+    "dist/**",
+    "node_modules/**",
+    "idea",
+    ".output/**",
+    ".agents",
+    ".claude",
+    "types/auto-imports.d.ts",
+    "types/components.d.ts",
+    "types/vue-router.d.ts",
+    "types/layout-generated.d.ts"
+  ],
+  "semi": true,
+  "singleQuote": true,
+  "jsxSingleQuote": true,
+  "sortImports": {
+    "groups": [
+      "type-import",
+      ["value-builtin", "value-external"],
+      "type-internal",
+      "value-internal",
+      ["type-parent", "type-sibling", "type-index"],
+      ["value-parent", "value-sibling", "value-index"],
+      "unknown"
+    ]
+  }
+}

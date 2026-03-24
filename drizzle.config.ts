@@ -1,14 +1,10 @@
-import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'drizzle-kit'
-import { loadEnv } from 'vite'
+import { defineConfig } from 'drizzle-kit';
+import { fileURLToPath } from 'node:url';
+import { loadEnv } from 'vite';
 
-const baseUrl = fileURLToPath(new URL('.', import.meta.url))
+const baseUrl = fileURLToPath(new URL('.', import.meta.url));
 
-const env = loadEnv(
-  process.env.NODE_ENV ?? 'development',
-  baseUrl,
-  ['DRIZZLE_'],
-)
+const env = loadEnv(process.env.NODE_ENV ?? 'development', baseUrl, ['DRIZZLE_']);
 export default defineConfig({
   dialect: 'postgresql',
   schema: './server/db/schema/*',
@@ -16,4 +12,4 @@ export default defineConfig({
   dbCredentials: {
     url: env.DATABASE_URL,
   },
-})
+});

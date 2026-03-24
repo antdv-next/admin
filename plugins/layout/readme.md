@@ -12,9 +12,9 @@
 
 ```ts
 // plugins/index.ts
-import vueRouter from 'vue-router/vite'
-import { layout } from './layout'
-import { loadRouter } from './router'
+import vueRouter from 'vue-router/vite';
+import { layout } from './layout';
+import { loadRouter } from './router';
 
 const layoutOptions = {
   layoutDirs: ['src/layouts', 'apps/*/layouts'],
@@ -31,7 +31,7 @@ const layoutOptions = {
     },
   },
   exclude: ['**/components/**', '**/hooks/**', '**/composables/**'],
-} as const
+} as const;
 
 export function loadPlugins() {
   return [
@@ -40,7 +40,7 @@ export function loadPlugins() {
       routesFolder: loadRouter(layoutOptions),
     }),
     layout(layoutOptions),
-  ]
+  ];
 }
 ```
 
@@ -73,19 +73,22 @@ If `modules[routePrefix].module` is configured, it overrides the auto module nam
 
 ```ts
 interface LayoutPluginOptions {
-  defaultLayout?: string
-  globalFallbackLayout?: string | false
-  modules?: Record<string, {
-    module?: string
-    layout?: string
-    fallbackLayout?: string | false
-  }>
-  layoutDirs?: string | string[]
-  exclude?: string | string[]
-  importMode?: 'sync' | 'async'
+  defaultLayout?: string;
+  globalFallbackLayout?: string | false;
+  modules?: Record<
+    string,
+    {
+      module?: string;
+      layout?: string;
+      fallbackLayout?: string | false;
+    }
+  >;
+  layoutDirs?: string | string[];
+  exclude?: string | string[];
+  importMode?: 'sync' | 'async';
 
   // backward compatibility
-  fallbackToGlobalDefault?: boolean
+  fallbackToGlobalDefault?: boolean;
 }
 ```
 
@@ -137,4 +140,3 @@ The plugin generates:
 - `types/layout-generated.d.ts`
 
 It includes discovered layout keys plus configured explicit/fallback layout keys.
-

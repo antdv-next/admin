@@ -1,20 +1,25 @@
 <script setup lang="ts">
-import { GithubOutlined, LoginOutlined, MoonOutlined, SunOutlined, UserOutlined } from '@antdv-next/icons'
-import { useDarkMode } from '@/composables/dark'
-import { useUserStore } from '@/stores/user'
+import {
+  GithubOutlined,
+  LoginOutlined,
+  MoonOutlined,
+  SunOutlined,
+  UserOutlined,
+} from '@antdv-next/icons';
 
-defineOptions({ name: 'LayoutHeader' })
+import { useDarkMode } from '@/composables/dark';
+import { useUserStore } from '@/stores/user';
 
-const { isDark, toggleDark } = useDarkMode()
-const userStore = useUserStore()
-const router = useRouter()
+defineOptions({ name: 'LayoutHeader' });
 
-const isLoggedIn = computed(() => !!userStore.token)
+const { isDark, toggleDark } = useDarkMode();
+const userStore = useUserStore();
+const router = useRouter();
 
-const navLinks = [
-  { label: '文档', href: 'https://www.antdv-next.com' },
-]
-const isExternalLink = (href: string) => /^https?:\/\//.test(href)
+const isLoggedIn = computed(() => !!userStore.token);
+
+const navLinks = [{ label: '文档', href: 'https://www.antdv-next.com' }];
+const isExternalLink = (href: string) => /^https?:\/\//.test(href);
 </script>
 
 <template>
@@ -25,7 +30,7 @@ const isExternalLink = (href: string) => /^https?:\/\//.test(href)
     <div class="mx-auto max-w-7xl px-6 h-full flex items-center justify-between">
       <!-- Logo -->
       <router-link to="/" class="flex items-center gap-2">
-        <img src="/antdv-next.svg" alt="Antdv Next" class="h-8 w-8">
+        <img src="/antdv-next.svg" alt="Antdv Next" class="h-8 w-8" />
         <span class="text-xl font-bold tracking-tight">
           Antdv <span class="text-primary">Next</span>
         </span>
@@ -58,11 +63,7 @@ const isExternalLink = (href: string) => /^https?:\/\//.test(href)
         </a-button>
 
         <!-- GitHub link -->
-        <a-button
-          size="small"
-          href="https://github.com/antdv-next/antdv-next"
-          target="_blank"
-        >
+        <a-button size="small" href="https://github.com/antdv-next/antdv-next" target="_blank">
           <template #icon>
             <GithubOutlined />
           </template>
@@ -72,7 +73,13 @@ const isExternalLink = (href: string) => /^https?:\/\//.test(href)
         <!-- User Info / Login -->
         <template v-if="isLoggedIn && userStore.userInfo">
           <a-dropdown
-            :menu="{ items: [{ key: 'profile', label: '个人中心' }, { type: 'divider' }, { key: 'logout', label: '退出登录', danger: true }] }"
+            :menu="{
+              items: [
+                { key: 'profile', label: '个人中心' },
+                { type: 'divider' },
+                { key: 'logout', label: '退出登录', danger: true },
+              ],
+            }"
           >
             <div class="flex cursor-pointer items-center gap-2">
               <a-avatar :size="32" :src="userStore.userInfo.avatar">
@@ -80,7 +87,9 @@ const isExternalLink = (href: string) => /^https?:\/\//.test(href)
                   <UserOutlined />
                 </template>
               </a-avatar>
-              <span class="text-sm font-medium">{{ userStore.userInfo.nickname || userStore.userInfo.username }}</span>
+              <span class="text-sm font-medium">{{
+                userStore.userInfo.nickname || userStore.userInfo.username
+              }}</span>
             </div>
           </a-dropdown>
         </template>

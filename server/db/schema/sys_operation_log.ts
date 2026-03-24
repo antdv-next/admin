@@ -1,13 +1,17 @@
-import { index, integer, json, pgTable, smallint, timestamp, varchar } from 'drizzle-orm/pg-core'
-import { v7 as uuidv7 } from 'uuid'
+import { index, integer, json, pgTable, smallint, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { v7 as uuidv7 } from 'uuid';
 
 export const sysOperationLog = pgTable(
   'sys_operation_log',
   {
     // 主键 ID
-    id: varchar('id', { length: 36 }).primaryKey().$defaultFn(() => uuidv7()),
+    id: varchar('id', { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => uuidv7()),
     // 租户 ID，预留字段；暂不建立租户表或外键关联
-    tenantId: varchar('tenant_id', { length: 36 }).notNull().default('00000000-0000-0000-0000-000000000000'),
+    tenantId: varchar('tenant_id', { length: 36 })
+      .notNull()
+      .default('00000000-0000-0000-0000-000000000000'),
     // 操作用户ID
     userId: varchar('user_id', { length: 36 }),
     // 用户名
@@ -43,10 +47,10 @@ export const sysOperationLog = pgTable(
     // 操作时间
     operatedAt: timestamp('operated_at', { mode: 'date' }).notNull().defaultNow(),
   },
-  table => [
+  (table) => [
     index('idx_tenant_operation_log_user').on(table.tenantId, table.userId),
     index('idx_tenant_operation_log_module').on(table.tenantId, table.moduleName),
     index('idx_tenant_operation_log_status').on(table.tenantId, table.status),
     index('idx_operated_operation_log_at').on(table.operatedAt),
   ],
-)
+);

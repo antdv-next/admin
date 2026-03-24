@@ -1,6 +1,7 @@
-import { defineHandler } from 'nitro/h3'
-import { BadRequestException } from '../../common/exception'
+import { defineHandler } from 'nitro/h3';
+
+import { BadRequestException } from '../../common/exception';
 
 export default defineHandler(() => {
-  throw new BadRequestException()
-})
+  throw new BadRequestException();
+});

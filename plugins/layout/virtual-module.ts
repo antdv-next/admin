@@ -1,22 +1,22 @@
-import type { ResolvedLayoutPluginOptions } from './types'
-import { normalizeGlobPath, toViteExcludeGlob } from './utils'
+import type { ResolvedLayoutPluginOptions } from './types';
+
+import { normalizeGlobPath, toViteExcludeGlob } from './utils';
 
 export function createVirtualModuleCode(options: ResolvedLayoutPluginOptions) {
   const includeGlobs = options.layoutDirs
-    .map(dir => normalizeGlobPath(dir))
-    .map(dir => `'${dir}/**/*.vue'`)
+    .map((dir) => normalizeGlobPath(dir))
+    .map((dir) => `'${dir}/**/*.vue'`);
 
   const excludeGlobs = options.exclude
-    .map(pattern => toViteExcludeGlob(pattern))
-    .map(pattern => `'${pattern}'`)
+    .map((pattern) => toViteExcludeGlob(pattern))
+    .map((pattern) => `'${pattern}'`);
 
-  const globs = [...includeGlobs, ...excludeGlobs]
-    .join(', ')
+  const globs = [...includeGlobs, ...excludeGlobs].join(', ');
 
-  const defaultLayoutLiteral = JSON.stringify(options.defaultLayout)
-  const globalFallbackLayoutLiteral = JSON.stringify(options.globalFallbackLayout)
-  const modulesLiteral = JSON.stringify(options.modules)
-  const layoutSourcesLiteral = JSON.stringify(options.layoutSources)
+  const defaultLayoutLiteral = JSON.stringify(options.defaultLayout);
+  const globalFallbackLayoutLiteral = JSON.stringify(options.globalFallbackLayout);
+  const modulesLiteral = JSON.stringify(options.modules);
+  const layoutSourcesLiteral = JSON.stringify(options.layoutSources);
 
   return `
 const modules = import.meta.glob([${globs}], { eager: ${options.importMode === 'sync'} })
@@ -255,5 +255,5 @@ export function createGetRoutes(router, withLayout = false) {
 
   return () => routes.filter(route => !route.meta?.isLayout)
 }
-`
+`;
 }

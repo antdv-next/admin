@@ -1,27 +1,33 @@
 <script setup lang="ts">
-import { LoginOutlined, UserOutlined } from '@antdv-next/icons'
-import { useUserStore } from '@/stores/user'
-import Logo from '../../components/logo.vue'
+import { LoginOutlined, UserOutlined } from '@antdv-next/icons';
+
+import { useUserStore } from '@/stores/user';
+
+import Logo from '../../components/logo.vue';
 
 defineOptions({
   name: 'DefaultHeader',
-})
+});
 
-const router = useRouter()
-const userStore = useUserStore()
+const router = useRouter();
+const userStore = useUserStore();
 
-const isLoggedIn = computed(() => !!userStore.token)
-const showUserLoading = computed(() => isLoggedIn.value && (userStore.userInfoLoading || !userStore.userInfo))
-const displayName = computed(() => userStore.userInfo?.nickname || userStore.userInfo?.username || '用户')
-const avatar = computed(() => userStore.userInfo?.avatar || undefined)
+const isLoggedIn = computed(() => !!userStore.token);
+const showUserLoading = computed(
+  () => isLoggedIn.value && (userStore.userInfoLoading || !userStore.userInfo),
+);
+const displayName = computed(
+  () => userStore.userInfo?.nickname || userStore.userInfo?.username || '用户',
+);
+const avatar = computed(() => userStore.userInfo?.avatar || undefined);
 
 function handleLogin() {
-  router.push('/login')
+  router.push('/login');
 }
 
 function handleLogout() {
-  userStore.logout()
-  router.push('/login')
+  userStore.logout();
+  router.push('/login');
 }
 </script>
 
@@ -38,9 +44,7 @@ function handleLogout() {
 
       <a-popover v-else-if="isLoggedIn" trigger="click">
         <template #content>
-          <a-button danger type="text" @click="handleLogout">
-            退出登录
-          </a-button>
+          <a-button danger type="text" @click="handleLogout"> 退出登录 </a-button>
         </template>
 
         <button
