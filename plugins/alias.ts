@@ -1,4 +1,4 @@
-import type { UserConfig } from 'vite'
+import type { UserConfig } from 'vite-plus'
 
 import * as path from 'node:path'
 

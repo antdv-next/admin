@@ -19,7 +19,7 @@ const showUserLoading = computed(
 const displayName = computed(
   () => userStore.userInfo?.nickname || userStore.userInfo?.username || '用户',
 )
-const avatar = computed(() => userStore.userInfo?.avatar || undefined)
+const avatar = computed<string | undefined>(() => undefined)
 
 function handleLogin() {
   router.push('/login')

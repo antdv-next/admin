@@ -1,4 +1,4 @@
-/// <reference types="vite/client" />
+/// <reference types="vite-plus/client" />
 /// <reference types="antdv-next/global" />
 
 declare module '*.vue' {
@@ -10,6 +10,7 @@ declare module '*.vue' {
 
 interface ImportMetaEnv {
   readonly VITE_APP_BASE_API: string
+  readonly VITE_APP_MOCK_ENABLED: string
   readonly VITE_APP_TITLE_SUFFIX: string
 }
 

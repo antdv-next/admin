@@ -1,6 +1,6 @@
 import { defineConfig } from 'drizzle-kit'
 import { fileURLToPath } from 'node:url'
-import { loadEnv } from 'vite'
+import { loadEnv } from 'vite-plus'
 
 const baseUrl = fileURLToPath(new URL('.', import.meta.url))
 

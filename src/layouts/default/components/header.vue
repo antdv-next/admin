@@ -17,6 +17,7 @@ const userStore = useUserStore()
 const router = useRouter()
 
 const isLoggedIn = computed(() => !!userStore.token)
+const avatar = computed<string | undefined>(() => undefined)
 
 const navLinks = [{ label: '文档', href: 'https://www.antdv-next.com' }]
 const isExternalLink = (href: string) => /^https?:\/\//.test(href)
@@ -82,7 +83,7 @@ const isExternalLink = (href: string) => /^https?:\/\//.test(href)
             }"
           >
             <div class="flex cursor-pointer items-center gap-2">
-              <a-avatar :size="32" :src="userStore.userInfo.avatar">
+              <a-avatar :size="32" :src="avatar">
                 <template #icon>
                   <UserOutlined />
                 </template>

@@ -8,7 +8,7 @@
       "#db/*": ["./server/db/schema/*"]
     },
 
-    "types": ["vite/client"],
+    "types": ["vite-plus/client"],
     /* Linting */
     "strict": true,
     "noFallthroughCasesInSwitch": true,

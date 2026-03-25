@@ -1,4 +1,4 @@
-import type { Plugin } from 'vite'
+import type { Plugin } from 'vite-plus'
 
 import { matchesGlob, relative } from 'node:path'
 
@@ -18,12 +18,12 @@ export function layout(userOptions: LayoutPluginOptions = {}): Plugin {
   const options = resolveLayoutOptions(userOptions)
   // eslint-disable-next-line node/prefer-global/process
   let root = process.cwd()
-  const normalizedExcludes = options.exclude.map((pattern) => normalizeExcludeGlob(pattern))
+  const normalizedExcludes = options.exclude.map(pattern => normalizeExcludeGlob(pattern))
 
   const shouldExclude = (filePath: string) => {
     const relativePath = normalizeFsPath(relative(root, filePath))
     const normalizedRelativePath = `/${relativePath.replace(/^\/+/, '')}`
-    return normalizedExcludes.some((pattern) => matchesGlob(normalizedRelativePath, pattern))
+    return normalizedExcludes.some(pattern => matchesGlob(normalizedRelativePath, pattern))
   }
 
   const generateTypes = () => {
