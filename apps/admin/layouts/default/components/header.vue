@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { LoginOutlined, UserOutlined } from '@antdv-next/icons'
+import type { MenuEmits } from 'antdv-next'
+
+import { UserOutlined } from '@antdv-next/icons'
 
 import { useUserStore } from '@/stores/user'
 
@@ -21,13 +23,27 @@ const displayName = computed(
 )
 const avatar = computed<string | undefined>(() => undefined)
 
-function handleLogin() {
-  router.push('/login')
-}
-
 function handleLogout() {
   userStore.logout()
   router.push('/login')
+}
+
+const menuItems = computed(() => [
+  {
+    key: 'profile',
+    label: '个人中心',
+  },
+  {
+    key: 'logout',
+    label: '退出登录',
+  },
+])
+
+const handleClickMenu: MenuEmits['click'] = info => {
+  const key = info.key
+  if (key === 'logout') {
+    handleLogout()
+  }
 }
 </script>
 
@@ -37,18 +53,18 @@ function handleLogout() {
       <Logo />
     </div>
     <div class="flex items-center gap-3">
-      <div v-if="showUserLoading" class="flex items-center gap-2 px-2 py-1">
-        <a-skeleton-avatar active :size="32" />
-        <a-skeleton-button size="small" active :width="100" />
+      <div class="flex items-center justify-center h-full" v-if="showUserLoading">
+        <div class="gap-2 px-2 py-1 h-8 flex">
+          <a-skeleton-avatar active size="small" />
+          <a-skeleton-button size="small" active style="width: 60px" />
+        </div>
       </div>
 
-      <a-popover v-else-if="isLoggedIn" trigger="click">
-        <template #content>
-          <a-button danger type="text" @click="handleLogout"> 退出登录 </a-button>
+      <a-dropdown v-else :trigger="['click']">
+        <template #popupRender>
+          <a-menu :items="menuItems" @click="handleClickMenu"></a-menu>
         </template>
-
-        <button
-          type="button"
+        <div
           class="flex items-center gap-2 rounded-md px-2 py-1 text-sm text-text transition-colors hover:bg-black/5"
         >
           <a-avatar :size="32" :src="avatar">
@@ -57,15 +73,8 @@ function handleLogout() {
             </template>
           </a-avatar>
           <span class="font-medium">{{ displayName }}</span>
-        </button>
-      </a-popover>
-
-      <a-button v-else type="primary" size="small" @click="handleLogin">
-        <template #icon>
-          <LoginOutlined />
-        </template>
-        登录
-      </a-button>
+        </div>
+      </a-dropdown>
     </div>
   </div>
 </template>
