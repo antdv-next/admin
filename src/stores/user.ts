@@ -1,22 +1,30 @@
+import type { MenuInfo } from '@/api/menu'
 import type { UserInfo } from '@/api/user'
 
-import { getUserInfoApi } from '@/api/user'
+import { getUserInfoApi, getUserMenuApi } from '@/api/user'
 import { useAuthorization } from '@/composables/authorization'
 
 export interface UserState {
   token: string | null
   userInfo?: UserInfo
   userInfoLoading: boolean
+  menus: MenuInfo[]
+  menusLoading: boolean
+  menusLoaded: boolean
 }
 
 const authorization = useAuthorization()
 let userInfoPromise: Promise<UserInfo | undefined> | null = null
+let menusPromise: Promise<MenuInfo[] | undefined> | null = null
 
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
     token: authorization.value,
     userInfo: undefined,
     userInfoLoading: false,
+    menus: [],
+    menusLoading: false,
+    menusLoaded: false,
   }),
   actions: {
     setToken(token: string | null) {
@@ -25,10 +33,14 @@ export const useUserStore = defineStore('user', {
       authorization.value = token
       if (!token || isChanged) {
         this.userInfo = undefined
+        this.menus = []
+        this.menusLoaded = false
       }
-      if (!token) {
+      if (!token || isChanged) {
         this.userInfoLoading = false
+        this.menusLoading = false
         userInfoPromise = null
+        menusPromise = null
       }
     },
     setUserInfo(userInfo?: UserInfo) {
@@ -74,11 +86,67 @@ export const useUserStore = defineStore('user', {
 
       return this.fetchUserInfo()
     },
+    async fetchMenus() {
+      const currentToken = this.token
+      if (!currentToken) {
+        return undefined
+      }
+      if (menusPromise) {
+        return menusPromise
+      }
+
+      this.menusLoading = true
+      menusPromise = (async () => {
+        const [error, res] = await tryIt<ER>()(getUserMenuApi)
+        if (this.token !== currentToken) {
+          return this.menus
+        }
+        if (error || !res?.data) {
+          this.menus = []
+          this.menusLoaded = false
+          return undefined
+        }
+
+        this.menus = res.data
+        this.menusLoaded = true
+        return this.menus
+      })()
+
+      try {
+        return await menusPromise
+      } finally {
+        if (this.token === currentToken) {
+          this.menusLoading = false
+        }
+        menusPromise = null
+      }
+    },
+    async ensureMenus() {
+      if (!this.token) {
+        return undefined
+      }
+      if (this.menusLoaded) {
+        return this.menus
+      }
+
+      return this.fetchMenus()
+    },
+    async ensureAuthContext() {
+      const [userInfo, menus] = await Promise.all([this.ensureUserInfo(), this.ensureMenus()])
+      return {
+        userInfo,
+        menus,
+      }
+    },
     logout() {
       this.setToken(null)
       this.userInfo = undefined
       this.userInfoLoading = false
+      this.menus = []
+      this.menusLoading = false
+      this.menusLoaded = false
       userInfoPromise = null
+      menusPromise = null
     },
   },
   getters: {},

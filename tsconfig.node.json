@@ -27,6 +27,7 @@
     "plugins/**/*.ts",
     "nitro.config.ts",
     "eslint.config.ts",
-    "drizzle.config.ts"
+    "drizzle.config.ts",
+    "vitest.config.ts"
   ]
 }

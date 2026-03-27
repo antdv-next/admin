@@ -12,7 +12,7 @@ const AUTH_HOME_PATH = '/admin'
 
 export function setupAuthGuard(router: Router) {
   const authorization = useAuthorization()
-  router.beforeEach(async (to) => {
+  router.beforeEach(async to => {
     const userStore = useUserStore()
 
     if (!authorization.value) {
@@ -66,17 +66,17 @@ export function setupAuthGuard(router: Router) {
       }
     }
 
-    if (!userStore.userInfo && !userStore.userInfoLoading) {
-      void userStore.ensureUserInfo().then((userInfo) => {
-        if (userInfo || !userStore.token) {
-          return
-        }
+    if (!userStore.userInfo || !userStore.menusLoaded) {
+      const { userInfo } = await userStore.ensureAuthContext()
+      if (userInfo || !userStore.token) {
+        return
+      }
 
-        userStore.logout()
-        if (router.currentRoute.value.path !== LOGIN_PATH) {
-          void router.replace(LOGIN_PATH)
-        }
-      })
+      userStore.logout()
+      return {
+        path: LOGIN_PATH,
+        replace: true,
+      }
     }
   })
 }

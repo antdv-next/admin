@@ -27,5 +27,11 @@
     "apps/**/*.tsx",
     "apps/**/*.vue",
     "mock/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.spec.ts",
+    "src/**/*.spec.tsx",
+    "src/**/__tests__/*.test.ts",
+    "src/**/__tests__/*.test.tsx"
   ]
 }
