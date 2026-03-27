@@ -120,3 +120,47 @@ So `/admin/**` routes are treated as a sub-app and default to `admin/default`.
 - Use `apps/<app-name>/pages` and `apps/<app-name>/layouts` for isolated module applications.
 - Prefer `layouts/default/index.vue` as the default entry layout for each sub-app.
 - Add `meta.layout` only when a route needs to opt out or switch away from the sub-app default.
+
+## When A User Asks To Create A New Sub App
+
+Use a short Q&A flow instead of creating a module silently.
+
+Default first question:
+
+- `你要创建的子应用名字是什么？`
+
+If the user does not provide more constraints, initialize the minimum usable structure under `apps/<app-name>/`:
+
+```text
+apps/
+  <app-name>/
+    layouts/
+      default/
+        index.vue
+    pages/
+      index.vue
+```
+
+## Purpose Of The Default Structure
+
+- `apps/<app-name>/pages/index.vue`
+  This creates the route entry for `/<app-name>`.
+- `apps/<app-name>/layouts/default/index.vue`
+  This provides the module default layout key `<app-name>/default`, so routes in this sub app can be wrapped automatically by the layout plugin.
+- `layouts/default` is the default initialization choice because the current plugin rules already look for `<moduleName>/default` before any extra fallback logic.
+
+## How To Explain The Scaffold To The User
+
+When creating the sub app, explain the purpose of the initialized files in plain language:
+
+- the `pages` directory is the route source for the sub app
+- the `layouts/default` directory is the default shell for the sub app
+- this structure is enough to make the module route and module layout work with the current plugin rules
+
+## Default Response Pattern
+
+After the user gives the app name, respond with the structure and purpose before or while creating it:
+
+- `我会先初始化 apps/<app-name>/pages/index.vue 和 apps/<app-name>/layouts/default/index.vue。`
+- `这样做的目的是先让 /<app-name> 路由可用，同时让这个子应用自动命中 <app-name>/default 作为默认布局。`
+- `后续如果这个子应用需要独立的用户页、设置页或不同布局，再在这个基础结构上继续扩展。`
