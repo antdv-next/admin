@@ -16,7 +16,6 @@ export type { LayoutPluginOptions } from './types'
 
 export function layout(userOptions: LayoutPluginOptions = {}): Plugin {
   const options = resolveLayoutOptions(userOptions)
-  // eslint-disable-next-line node/prefer-global/process
   let root = process.cwd()
   const normalizedExcludes = options.exclude.map(pattern => normalizeExcludeGlob(pattern))
 

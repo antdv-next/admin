@@ -16,8 +16,13 @@ declare module 'vue-router' {
        * - `login` 需要登录态，但不需要特定权限。
        * - `menu` 需要在菜单权限列表中。
        * - `inherit` 继承自 `access.from` 指定的路径的访问模式。
+       * @default menu 默认情况下就是menu，也就是说所有的菜单，都受到后端的控制
        */
       mode?: 'public' | 'login' | 'menu' | 'inherit'
+      /**
+       * 权限是同某个菜单是一致的
+       */
+      from?: string
     }
   }
 }

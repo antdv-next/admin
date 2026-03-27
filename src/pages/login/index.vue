@@ -10,6 +10,9 @@ defineOptions({ name: 'LoginPage' })
 
 definePage({
   meta: {
+    access: {
+      mode: 'public',
+    },
     layout: false,
     title: '登录',
   },

@@ -5,8 +5,9 @@ import { setupLayouts } from 'virtual:layout'
 import { routes } from 'vue-router/auto-routes'
 
 import { NOT_FOUND_NAME, notFoundRoute, ROUTE_NAME } from '@/router/constant'
+import { filterRoutesByAccess } from '@/router/guard-menu'
 
-let hasRoute = false
+let routeAccessKey: string | null = null
 const LOGIN_PATH = '/login'
 const AUTH_HOME_PATH = '/admin'
 
@@ -14,6 +15,7 @@ export function setupAuthGuard(router: Router) {
   const authorization = useAuthorization()
   router.beforeEach(async to => {
     const userStore = useUserStore()
+    const isAuthenticated = Boolean(authorization.value)
 
     if (!authorization.value) {
       userStore.logout()
@@ -21,22 +23,27 @@ export function setupAuthGuard(router: Router) {
       userStore.setToken(authorization.value)
     }
 
-    if (!hasRoute) {
-      if (router.hasRoute(NOT_FOUND_NAME)) {
-        router.removeRoute(NOT_FOUND_NAME)
+    const isLoginRoute = to.path === LOGIN_PATH
+    if (isAuthenticated && (!userStore.userInfo || !userStore.menusLoaded)) {
+      const { userInfo } = await userStore.ensureAuthContext()
+      if (!userInfo && userStore.token) {
+        userStore.logout()
+        return {
+          path: LOGIN_PATH,
+          replace: true,
+        }
       }
-      const route: RouteRecordRaw = {
-        path: '/ROOT_ROUTE',
-        name: ROUTE_NAME,
-        redirect: '',
-        children: setupLayouts(routes),
-      }
-      router.addRoute(route)
-      router.addRoute(notFoundRoute)
-      hasRoute = true
+    }
+
+    if (
+      syncAccessibleRoutes(
+        router,
+        filterRoutesByAccess(setupLayouts(routes), userStore.menus, isAuthenticated),
+        createRouteAccessKey(isAuthenticated, userStore.menus),
+      )
+    ) {
       // @ts-expect-error this is a hack to trigger the router to re-evaluate the routes
       if (to && to.name && to.name === NOT_FOUND_NAME) {
-        // TODO: 这里需要处理一下
         return {
           ...omit(to, ['matched', 'name', 'redirectedFrom', 'params']),
           replace: true,
@@ -48,8 +55,7 @@ export function setupAuthGuard(router: Router) {
       }
     }
 
-    const isLoginRoute = to.path === LOGIN_PATH
-    if (!authorization.value) {
+    if (!isAuthenticated) {
       if (!isLoginRoute) {
         return {
           path: LOGIN_PATH,
@@ -65,18 +71,47 @@ export function setupAuthGuard(router: Router) {
         replace: true,
       }
     }
-
-    if (!userStore.userInfo || !userStore.menusLoaded) {
-      const { userInfo } = await userStore.ensureAuthContext()
-      if (userInfo || !userStore.token) {
-        return
-      }
-
-      userStore.logout()
-      return {
-        path: LOGIN_PATH,
-        replace: true,
-      }
-    }
   })
+}
+
+function syncAccessibleRoutes(router: Router, children: RouteRecordRaw[], nextKey: string) {
+  if (routeAccessKey === nextKey && router.hasRoute(ROUTE_NAME)) {
+    return false
+  }
+
+  if (router.hasRoute(ROUTE_NAME)) {
+    router.removeRoute(ROUTE_NAME)
+  }
+  if (router.hasRoute(NOT_FOUND_NAME)) {
+    router.removeRoute(NOT_FOUND_NAME)
+  }
+
+  const route: RouteRecordRaw = {
+    path: '/ROOT_ROUTE',
+    name: ROUTE_NAME,
+    redirect: '',
+    children,
+  }
+
+  router.addRoute(route)
+  router.addRoute(notFoundRoute)
+  routeAccessKey = nextKey
+
+  return true
+}
+
+function createRouteAccessKey(
+  isAuthenticated: boolean,
+  menus: readonly { routePath: string | null }[],
+) {
+  if (!isAuthenticated) {
+    return 'public'
+  }
+
+  const routePaths = menus
+    .map(menu => menu.routePath)
+    .filter((routePath): routePath is string => Boolean(routePath))
+    .sort()
+
+  return `auth:${routePaths.join('|')}`
 }
