@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { theme } from 'antdv-next'
-
 import { useGlobalToken } from '@/composables/token'
 
 defineOptions({

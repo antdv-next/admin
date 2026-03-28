@@ -1,5 +1,4 @@
 import type { RouteRecordRaw } from 'vue-router'
-
 import { notFoundRoute } from '@/router/constant'
 
 export const routes: RouteRecordRaw[] = [

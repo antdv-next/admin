@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useDarkMode } from '@/composables/dark'
-
 import LayoutFooter from './components/footer.vue'
 import LayoutHeader from './components/header.vue'
 

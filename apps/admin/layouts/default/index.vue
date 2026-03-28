@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import type { ConfigProviderProps } from 'antdv-next'
-
 import { useGlobalToken } from '@/composables/token'
-
-import { defaultConfig } from '../components/config.ts'
+import { defaultConfig } from '../components/config'
 import DefaultHeader from './components/header.vue'
 
 type ThemeType = NonNullable<ConfigProviderProps['theme']>

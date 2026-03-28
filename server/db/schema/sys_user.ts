@@ -70,7 +70,7 @@ export const sysUser = pgTable(
     // 乐观锁版本号
     version: integer('version').notNull().default(0),
   },
-  (table) => [
+  table => [
     // 针对某个租户唯一的用户名，支持未来多租户场景
     uniqueIndex('uk_tenant_user_username').on(table.tenantId, table.username),
     index('idx_tenant_user_status').on(table.tenantId, table.status),

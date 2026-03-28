@@ -1,7 +1,5 @@
 import type { ConfigProviderProps } from 'antdv-next'
-
 import { theme as themeConfig } from 'antdv-next'
-
 import { useDarkMode } from '@/composables/dark.ts'
 
 export function useTheme() {

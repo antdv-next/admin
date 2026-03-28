@@ -4,9 +4,7 @@ import type {
   InternalAxiosRequestConfig,
   RawAxiosResponseHeaders,
 } from 'axios'
-
 import { AxiosError } from 'axios'
-
 import type {
   MockContext,
   MockDefinition,
@@ -14,9 +12,8 @@ import type {
   MockMethod,
   ResolvedMockResponse,
 } from '../../../../mock'
-import type { RequestConfig } from '../interface'
-
 import { MOCK_METHODS } from '../../../../mock'
+import type { RequestConfig } from '../interface'
 
 interface MockMatcher {
   handler: MockHandlerValue
@@ -34,7 +31,7 @@ const MOCK_MODULES = import.meta.glob('../../../../mock/**/*.ts', { eager: true 
 const MOCK_REGISTRY = createMockRegistry()
 
 export function setupMockGuard(http: AxiosInstance) {
-  http.interceptors.request.use((config) => {
+  http.interceptors.request.use(config => {
     if (!isMockEnabled(config as RequestConfig)) return config
 
     const matchedMock = findMock(config)
@@ -192,7 +189,7 @@ function toMethod(method?: string | null) {
   if (!method) return null
 
   const normalizedMethod = method.toUpperCase()
-  return MOCK_METHODS.find((item) => item === normalizedMethod) ?? null
+  return MOCK_METHODS.find(item => item === normalizedMethod) ?? null
 }
 
 function normalizeHeaders(config: InternalAxiosRequestConfig) {
@@ -287,7 +284,7 @@ function settleMockResponse(response: AxiosResponse) {
 }
 
 function sleep(delay: number) {
-  return new Promise((resolve) => setTimeout(resolve, delay))
+  return new Promise(resolve => setTimeout(resolve, delay))
 }
 
 function getOrigin() {

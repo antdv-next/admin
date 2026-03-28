@@ -1,7 +1,6 @@
-import type { LayoutPluginOptions, ModuleLayoutOptions, ResolvedLayoutPluginOptions } from './types'
-
 import { DEFAULT_LAYOUT_DIRS } from './constants'
 import { resolveLayoutSources } from './sources'
+import type { LayoutPluginOptions, ModuleLayoutOptions, ResolvedLayoutPluginOptions } from './types'
 import { normalizeFsPath } from './utils'
 
 function toArray(value: string | string[] | undefined, fallback: readonly string[]) {

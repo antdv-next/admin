@@ -1,5 +1,4 @@
 import { v7 } from 'uuid'
-
 import { defineMock, response } from '../index'
 
 export default defineMock({

@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import type { FormProps } from 'antdv-next'
-
 import { LockOutlined, MoonOutlined, SunOutlined, UserOutlined } from '@antdv-next/icons'
-
+import type { FormProps } from 'antdv-next'
 import { loginApi } from '@/api/auth/login.ts'
 import { useUserStore } from '@/stores/user'
 

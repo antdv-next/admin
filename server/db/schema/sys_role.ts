@@ -52,7 +52,7 @@ export const sysRole = pgTable(
     // 乐观锁版本号
     version: integer('version').notNull().default(0),
   },
-  (table) => [
+  table => [
     // 针对某个租户唯一的角色编码，支持未来多租户场景
     uniqueIndex('uk_tenant_role_code').on(table.tenantId, table.roleCode),
     // 按租户和状态筛选角色

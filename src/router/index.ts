@@ -1,8 +1,6 @@
-import { setupLayouts } from 'virtual:layout'
 import { createRouter, createWebHistory } from 'vue-router'
-
+import { setupLayouts } from 'virtual:layout'
 import { setupAuthGuard } from '@/router/guard/auth'
-
 import { setupLoadingGuard } from './guard/loading'
 import { setupTitleGuard } from './guard/title'
 import { routes } from './static-router'

@@ -47,7 +47,7 @@ export const sysOperationLog = pgTable(
     // 操作时间
     operatedAt: timestamp('operated_at', { mode: 'date' }).notNull().defaultNow(),
   },
-  (table) => [
+  table => [
     index('idx_tenant_operation_log_user').on(table.tenantId, table.userId),
     index('idx_tenant_operation_log_module').on(table.tenantId, table.moduleName),
     index('idx_tenant_operation_log_status').on(table.tenantId, table.status),

@@ -1,6 +1,5 @@
-import type { useAppProps } from 'antdv-next/dist/app/context'
-
 import { message as messageApi, Modal, notification as notificationApi } from 'antdv-next'
+import type { useAppProps } from 'antdv-next/dist/app/context'
 
 export const useApp = createGlobalState(() => {
   const _message = {} as useAppProps['message']

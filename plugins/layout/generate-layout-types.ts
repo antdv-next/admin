@@ -1,9 +1,7 @@
 import { existsSync, globSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
-
-import type { ResolvedLayoutPluginOptions } from './types'
-
 import { LAYOUT_TYPES_DTS_PATH } from './constants'
+import type { ResolvedLayoutPluginOptions } from './types'
 import { normalizeExcludeGlob, normalizeFsPath } from './utils'
 
 function normalizeLayoutDir(layoutDir: string) {
@@ -86,7 +84,7 @@ export function generateLayoutTypeDts(root: string, options: ResolvedLayoutPlugi
   if (typeof options.globalFallbackLayout === 'string' && options.globalFallbackLayout.length > 0)
     layoutNames.add(options.globalFallbackLayout)
 
-  Object.values(options.modules).forEach((moduleOptions) => {
+  Object.values(options.modules).forEach(moduleOptions => {
     if (typeof moduleOptions.layout === 'string' && moduleOptions.layout.length > 0)
       layoutNames.add(moduleOptions.layout)
 
@@ -94,7 +92,7 @@ export function generateLayoutTypeDts(root: string, options: ResolvedLayoutPlugi
       layoutNames.add(moduleOptions.fallbackLayout)
   })
 
-  const exclude = options.exclude.map((pattern) => {
+  const exclude = options.exclude.map(pattern => {
     return normalizeExcludeGlob(pattern).replace(/^\/+/, '')
   })
 

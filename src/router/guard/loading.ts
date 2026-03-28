@@ -1,5 +1,4 @@
 import type { Router } from 'vue-router'
-
 import { useLoading } from '@/composables/loading'
 import { useGlobalToken } from '@/composables/token'
 

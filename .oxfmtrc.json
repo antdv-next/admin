@@ -17,13 +17,57 @@
   "jsxSingleQuote": true,
   "arrowParens": "avoid",
   "sortImports": {
+    "internalPattern": ["@/", "@apps/admin/", "#db/", "~/"],
+    "newlinesBetween": false,
+    "customGroups": [
+      {
+        "groupName": "type-framework",
+        "selector": "external",
+        "modifiers": ["type"],
+        "elementNamePattern": [
+          "vue",
+          "vue-router",
+          "pinia",
+          "vue-i18n",
+          "@vueuse/core",
+          "antdv-next",
+          "@antdv-next/**"
+        ]
+      },
+      {
+        "groupName": "value-framework",
+        "selector": "external",
+        "modifiers": ["value"],
+        "elementNamePattern": [
+          "vue",
+          "vue-router",
+          "pinia",
+          "vue-i18n",
+          "@vueuse/core",
+          "antdv-next",
+          "@antdv-next/**"
+        ]
+      },
+      {
+        "groupName": "type-internal-alias",
+        "selector": "import",
+        "modifiers": ["type"],
+        "elementNamePattern": ["@/**", "@apps/admin/**", "#db/**", "~/**"]
+      },
+      {
+        "groupName": "value-internal-alias",
+        "selector": "import",
+        "modifiers": ["value"],
+        "elementNamePattern": ["@/**", "@apps/admin/**", "#db/**", "~/**"]
+      }
+    ],
     "groups": [
-      "type-import",
-      ["value-builtin", "value-external"],
-      "type-internal",
-      "value-internal",
-      ["type-parent", "type-sibling", "type-index"],
-      ["value-parent", "value-sibling", "value-index"],
+      ["type-builtin", "value-builtin"],
+      ["type-framework", "value-framework"],
+      ["type-external", "value-external"],
+      ["type-internal-alias", "value-internal-alias", "type-internal", "value-internal", "subpath"],
+      ["type-parent", "value-parent", "type-sibling", "value-sibling", "type-index", "value-index"],
+      ["side_effect_style", "style"],
       "unknown"
     ]
   }

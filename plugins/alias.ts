@@ -1,6 +1,5 @@
-import type { UserConfig } from 'vite-plus'
-
 import * as path from 'node:path'
+import type { UserConfig } from 'vite-plus'
 
 export function loadAlias(baseUrl: string) {
   return [

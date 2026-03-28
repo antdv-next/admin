@@ -1,7 +1,5 @@
 import type { RoutesFolder } from 'vue-router/unplugin'
-
 import type { LayoutPluginOptions } from './layout'
-
 import { resolveLayoutOptions } from './layout/options'
 
 const commonExclude = ['**/components/**', '**/hooks/**', '**/composables/**']
@@ -33,7 +31,7 @@ export function loadRouter(layoutOptions: LayoutPluginOptions = {}): RoutesFolde
   const routesFolder: RoutesFolder = []
   const seen = new Set<string>()
 
-  layoutSources.forEach((source) => {
+  layoutSources.forEach(source => {
     if (source.kind === 'global') {
       const src = `${source.rootDir}/pages`
       const key = `global:${src}`

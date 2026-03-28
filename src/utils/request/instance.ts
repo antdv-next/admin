@@ -1,5 +1,4 @@
 import axios from 'axios'
-
 import { setupMockGuard } from './guard/mock'
 import { setupRequestGuard } from './guard/request'
 import { setupResponseGuard } from './guard/response'

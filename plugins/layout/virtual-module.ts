@@ -1,15 +1,14 @@
 import type { ResolvedLayoutPluginOptions } from './types'
-
 import { normalizeGlobPath, toViteExcludeGlob } from './utils'
 
 export function createVirtualModuleCode(options: ResolvedLayoutPluginOptions) {
   const includeGlobs = options.layoutDirs
-    .map((dir) => normalizeGlobPath(dir))
-    .map((dir) => `'${dir}/**/*.vue'`)
+    .map(dir => normalizeGlobPath(dir))
+    .map(dir => `'${dir}/**/*.vue'`)
 
   const excludeGlobs = options.exclude
-    .map((pattern) => toViteExcludeGlob(pattern))
-    .map((pattern) => `'${pattern}'`)
+    .map(pattern => toViteExcludeGlob(pattern))
+    .map(pattern => `'${pattern}'`)
 
   const globs = [...includeGlobs, ...excludeGlobs].join(', ')
 

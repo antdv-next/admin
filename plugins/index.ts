@@ -8,9 +8,7 @@ import components from 'unplugin-vue-components/vite'
 import dayjs from 'vite-plugin-dayjs'
 import { loadEnv } from 'vite-plus'
 import vueRouter from 'vue-router/vite'
-
 import type { LayoutPluginOptions } from './layout'
-
 import { layout } from './layout'
 import { loadRouter } from './router'
 

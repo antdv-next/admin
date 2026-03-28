@@ -1,6 +1,5 @@
-import type { RequestConfig } from './interface'
-
 import { http } from './instance'
+import type { RequestConfig } from './interface'
 
 export type TryItResult<T, E = unknown> = [error: E, result: undefined] | [error: null, result: T]
 

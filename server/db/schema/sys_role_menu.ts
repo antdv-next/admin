@@ -19,7 +19,7 @@ export const sysRoleMenu = pgTable(
     // 创建时间
     createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
   },
-  (table) => [
+  table => [
     uniqueIndex('uk_tenant_role_menu').on(table.tenantId, table.roleId, table.menuId),
     index('idx_tenant_role_menu').on(table.tenantId, table.menuId),
   ],

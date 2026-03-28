@@ -1,9 +1,7 @@
 import type { Router, RouteRecordRaw } from 'vue-router'
-
 import { omit } from 'es-toolkit'
 import { setupLayouts } from 'virtual:layout'
 import { routes } from 'vue-router/auto-routes'
-
 import { NOT_FOUND_NAME, notFoundRoute, ROUTE_NAME } from '@/router/constant'
 import { filterRoutesByAccess } from '@/router/guard-menu'
 

@@ -40,7 +40,7 @@ export const sysDictType = pgTable(
     // 乐观锁版本号
     version: integer('version').notNull().default(0),
   },
-  (table) => [
+  table => [
     unique('uk_tenant_dict_code').on(table.tenantId, table.dictCode),
     index('idx_tenant_dict_status').on(table.tenantId, table.status),
   ],

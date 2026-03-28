@@ -1,5 +1,4 @@
 import type { MockContext } from '../index'
-
 import { defineMock, response } from '../index'
 
 export default defineMock({

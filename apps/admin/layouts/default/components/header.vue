@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import type { MenuEmits } from 'antdv-next'
-
 import { UserOutlined } from '@antdv-next/icons'
-
+import type { MenuEmits } from 'antdv-next'
 import { useUserStore } from '@/stores/user'
-
 import Logo from '../../components/logo.vue'
 
 defineOptions({

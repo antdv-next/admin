@@ -1,8 +1,6 @@
-import type { UserConfig } from 'vite-plus'
-
 import { fileURLToPath } from 'node:url'
+import type { UserConfig } from 'vite-plus'
 import { defineConfig, loadEnv } from 'vite-plus'
-
 import { loadPlugins } from './plugins'
 import { loadAlias } from './plugins/alias'
 import { loadSever } from './plugins/server'

@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { ConfigProvider } from 'antdv-next'
-
 import { useTheme } from '@/components/base/theme'
-
 import BaseApp from './app.vue'
 import BaseToken from './token.vue'
 

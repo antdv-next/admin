@@ -1,7 +1,5 @@
-import type { HTTPEvent } from 'nitro/h3'
-
 import { defineErrorHandler } from 'nitro'
-
+import type { HTTPEvent } from 'nitro/h3'
 import { HttpException } from './common/exception'
 import { createJsonResponse, createResponseBody } from './common/response'
 

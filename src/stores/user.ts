@@ -1,6 +1,5 @@
 import type { MenuInfo } from '@/api/menu'
 import type { UserInfo } from '@/api/user'
-
 import { getUserInfoApi, getUserMenuApi } from '@/api/user'
 import { useAuthorization } from '@/composables/authorization'
 

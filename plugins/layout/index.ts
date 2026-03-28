@@ -1,12 +1,9 @@
-import type { Plugin } from 'vite-plus'
-
 import { matchesGlob, relative } from 'node:path'
-
-import type { LayoutPluginOptions } from './types'
-
+import type { Plugin } from 'vite-plus'
 import { RESOLVED_VIRTUAL_MODULE_ID, VIRTUAL_MODULE_ID } from './constants'
 import { generateLayoutTypeDts } from './generate-layout-types'
 import { resolveLayoutOptions } from './options'
+import type { LayoutPluginOptions } from './types'
 import { isLayoutVueFile, normalizeExcludeGlob, normalizeFsPath, toLayoutWatchGlob } from './utils'
 import { createVirtualModuleCode } from './virtual-module'
 

@@ -30,5 +30,5 @@ export const sysConfig = pgTable(
       .defaultNow()
       .$onUpdate(() => new Date()),
   },
-  (table) => [unique('uk_tenant_config_key').on(table.tenantId, table.configKey)],
+  table => [unique('uk_tenant_config_key').on(table.tenantId, table.configKey)],
 )

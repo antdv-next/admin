@@ -1,8 +1,6 @@
 import type { AxiosInstance } from 'axios'
-
-import type { RequestConfig } from '../interface'
-
 import { AUTHORIZATION_KEY } from '../constant'
+import type { RequestConfig } from '../interface'
 
 export function setupRequestGuard(http: AxiosInstance) {
   const handleRequest = (config: RequestConfig) => {
