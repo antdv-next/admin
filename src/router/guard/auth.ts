@@ -32,7 +32,6 @@ export function setupAuthGuard(router: Router) {
         }
       }
     }
-
     if (
       syncAccessibleRoutes(
         router,
@@ -98,17 +97,14 @@ function syncAccessibleRoutes(router: Router, children: RouteRecordRaw[], nextKe
   return true
 }
 
-function createRouteAccessKey(
-  isAuthenticated: boolean,
-  menus: readonly { routePath: string | null }[],
-) {
+function createRouteAccessKey(isAuthenticated: boolean, menus: readonly { path: string | null }[]) {
   if (!isAuthenticated) {
     return 'public'
   }
 
   const routePaths = menus
-    .map(menu => menu.routePath)
-    .filter((routePath): routePath is string => Boolean(routePath))
+    .map(menu => menu.path)
+    .filter((path): path is string => Boolean(path))
     .sort()
 
   return `auth:${routePaths.join('|')}`

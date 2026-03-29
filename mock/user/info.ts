@@ -15,7 +15,7 @@ export default defineMock({
         },
       },
       {
-        delay: 2000,
+        // delay: 2000,
       },
     )
   },

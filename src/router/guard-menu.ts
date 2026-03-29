@@ -1,5 +1,4 @@
 import type { RouteMeta, RouteRecordRaw } from 'vue-router'
-
 import type { MenuInfo } from '@/api/menu'
 
 type AccessMode = NonNullable<RouteMeta['access']>['mode']
@@ -27,9 +26,7 @@ export function filterRoutesByAccess(
 function createFlatMenuPathSet(menus: readonly MenuInfo[]) {
   // Backend menus are already flattened, so permission lookup only needs a path set.
   return new Set(
-    menus
-      .map(menu => normalizePath(menu.routePath))
-      .filter((path): path is string => Boolean(path)),
+    menus.map(menu => normalizePath(menu.path)).filter((path): path is string => Boolean(path)),
   )
 }
 

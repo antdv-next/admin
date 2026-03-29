@@ -1,21 +1,18 @@
 import type { RouteRecordRaw } from 'vue-router'
-
 import { describe, expect, it } from 'vite-plus/test'
-
 import type { MenuInfo } from '@/api/menu'
-
 import { filterRoutesByAccess, filterRoutesByMenuAccess } from '@/router/guard-menu'
 
 function createRoute<T>(route: T): RouteRecordRaw {
   return route as RouteRecordRaw
 }
 
-function createMenu(routePath: string): MenuInfo {
+function createMenu(path: string): MenuInfo {
   return {
-    id: routePath,
-    menuName: routePath,
-    menuCode: routePath,
-    routePath,
+    id: path,
+    title: path,
+    code: path,
+    path,
   } as MenuInfo
 }
 

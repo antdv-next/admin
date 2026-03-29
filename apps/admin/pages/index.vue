@@ -1,4 +1,12 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+definePage({
+  meta: {
+    access: {
+      mode: 'login',
+    },
+  },
+})
+</script>
 
 <template>
   <div>

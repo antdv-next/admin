@@ -1,6 +1,5 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-
 import type { MenuInfo } from '@/api/menu'
 import type { UserInfo } from '@/api/user'
 
@@ -83,8 +82,8 @@ describe('useUserStore', () => {
       data: [
         {
           id: 'menu-1',
-          menuName: 'Dashboard',
-          menuCode: 'dashboard',
+          title: 'Dashboard',
+          code: 'dashboard',
         },
       ] as MenuInfo[],
     })
@@ -92,13 +91,13 @@ describe('useUserStore', () => {
     await expect(firstRequest).resolves.toMatchObject([
       {
         id: 'menu-1',
-        menuCode: 'dashboard',
+        code: 'dashboard',
       },
     ])
     await expect(secondRequest).resolves.toMatchObject([
       {
         id: 'menu-1',
-        menuCode: 'dashboard',
+        code: 'dashboard',
       },
     ])
     expect(store.menusLoading).toBe(false)
@@ -132,8 +131,8 @@ describe('useUserStore', () => {
     menuDeferred.resolve([
       {
         id: 'menu-1',
-        menuName: 'Dashboard',
-        menuCode: 'dashboard',
+        title: 'Dashboard',
+        code: 'dashboard',
       },
     ] as MenuInfo[])
 
@@ -145,8 +144,8 @@ describe('useUserStore', () => {
       menus: [
         {
           id: 'menu-1',
-          menuName: 'Dashboard',
-          menuCode: 'dashboard',
+          title: 'Dashboard',
+          code: 'dashboard',
         },
       ],
     })
