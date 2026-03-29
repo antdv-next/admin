@@ -53,7 +53,7 @@ export function loadRouter(layoutOptions: LayoutPluginOptions = {}): RoutesFolde
 
       routesFolder.push({
         src: source.rootDir,
-        filePatterns: ['*/pages/**'],
+        filePatterns: ['*/pages/**/*'],
         path: (filePath: string) => {
           const routePath = toRelativePath(filePath, source.rootDir)
           return routePath.replace(/^([^/]+)\/pages\//, '$1/')

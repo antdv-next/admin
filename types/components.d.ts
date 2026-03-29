@@ -26,7 +26,6 @@ declare module 'vue' {
     ALayoutHeader: typeof import('antdv-next')['LayoutHeader']
     ALayoutSider: typeof import('antdv-next')['LayoutSider']
     AMenu: typeof import('antdv-next')['Menu']
-    APopover: typeof import('antdv-next')['Popover']
     ASkeletonAvatar: typeof import('antdv-next')['SkeletonAvatar']
     ASkeletonButton: typeof import('antdv-next')['SkeletonButton']
     ASpace: typeof import('antdv-next')['Space']

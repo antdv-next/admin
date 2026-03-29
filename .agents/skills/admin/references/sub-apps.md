@@ -58,6 +58,12 @@ Examples:
 - `apps/admin/layouts/default/index.vue` -> `admin/default`
 - `apps/admin/layouts/base/index.vue` -> `admin/base`
 
+The current plugin implementation lives in:
+
+- `plugins/index.ts`
+- `plugins/layout/types.ts`
+- `plugins/layout/virtual-module.ts`
+
 ## Default Module Layout Behavior
 
 For module routes, layout resolution prefers:
@@ -84,12 +90,49 @@ That means the normal sub-app convention is:
 - create `apps/<app-name>/layouts/default/index.vue`
 - routes under `/app-name/**` will use `<app-name>/default` automatically
 
+## Layout Plugin Configuration
+
+The plugin is configured from `plugins/index.ts` via `layoutOptions`.
+
+Current repo defaults:
+
+- `globalFallbackLayout: false`
+- `exclude: ['**/components/**', '**/hooks/**', '**/composables/**']`
+
+Supported plugin options:
+
+- `defaultLayout`
+- `globalFallbackLayout`
+- `modules`
+- `layoutDirs`
+- `exclude`
+- `importMode`
+
+These options are defined in `plugins/layout/types.ts`.
+
+## Layout Resolution Priority
+
+For a route, the layout plugin resolves layout in this order:
+
+1. `meta.layout === false`
+2. explicit `meta.layout`
+3. `modules[routePrefix].layout`
+4. `<moduleName>/default`
+5. `modules[routePrefix].fallbackLayout ?? globalFallbackLayout`
+
+This means there are three customization levels:
+
+- route-level: set `meta.layout` or `meta.layout = false`
+- module-level: configure `modules[routePrefix]`
+- plugin-level: adjust `defaultLayout`, `layoutDirs`, or global fallback
+
 ## When To Add Module Config
 
 You only need `modules[routePrefix]` config when:
 
 - the route prefix and layout module name should differ
 - the default module layout is not `default`
+- the module should use a specific layout like `admin/base`
 - the module needs a fallback layout
 
 Example:
@@ -103,6 +146,33 @@ modules: {
   },
 }
 ```
+
+Use this pattern when you want `/admin/**` to default to `admin/base` instead of `admin/default`.
+
+## Route-Level Overrides
+
+For one-off pages, prefer route meta over changing global plugin config.
+
+Examples:
+
+```ts
+definePage({
+  meta: {
+    layout: 'admin/base',
+  },
+})
+```
+
+```ts
+definePage({
+  meta: {
+    layout: false,
+  },
+})
+```
+
+Use `meta.layout` for single-page layout switches.
+Use `modules[...]` when the whole route prefix should follow the same layout strategy.
 
 ## Current Repo Implication
 
@@ -120,6 +190,8 @@ So `/admin/**` routes are treated as a sub-app and default to `admin/default`.
 - Use `apps/<app-name>/pages` and `apps/<app-name>/layouts` for isolated module applications.
 - Prefer `layouts/default/index.vue` as the default entry layout for each sub-app.
 - Add `meta.layout` only when a route needs to opt out or switch away from the sub-app default.
+- Edit `plugins/index.ts` when you need to change shared layout plugin defaults.
+- Edit `modules` config when a route prefix needs a stable custom default layout.
 
 ## When A User Asks To Create A New Sub App
 
