@@ -34,6 +34,27 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/admin/system/dict/': RouteRecordInfo<
+      '/admin/system/dict/',
+      '/admin/system/dict',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/admin/system/menu/': RouteRecordInfo<
+      '/admin/system/menu/',
+      '/admin/system/menu',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/admin/test/test': RouteRecordInfo<
+      '/admin/test/test',
+      '/admin/test/test',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/admin/workspace/dashboard/': RouteRecordInfo<
       '/admin/workspace/dashboard/',
       '/admin/workspace/dashboard',
@@ -106,6 +127,24 @@ declare module 'vue-router/auto-routes' {
     'apps/admin/pages/index.vue': {
       routes:
         | '/admin/'
+      views:
+        | never
+    }
+    'apps/admin/pages/system/dict/index.vue': {
+      routes:
+        | '/admin/system/dict/'
+      views:
+        | never
+    }
+    'apps/admin/pages/system/menu/index.vue': {
+      routes:
+        | '/admin/system/menu/'
+      views:
+        | never
+    }
+    'apps/admin/pages/test/test.vue': {
+      routes:
+        | '/admin/test/test'
       views:
         | never
     }
