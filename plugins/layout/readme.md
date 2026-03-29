@@ -140,3 +140,41 @@ The plugin generates:
 - `types/layout-generated.d.ts`
 
 It includes discovered layout keys plus configured explicit/fallback layout keys.
+
+## Custom Icons
+
+The Vite plugin setup reuses the same source discovery model to expose local SVG icons through `unplugin-icons`.
+
+Main app icons live under first-level collection folders in `src/assets/icons`:
+
+```text
+src/assets/icons/
+  common/
+    logo.svg
+  nav/
+    home.svg
+```
+
+Imports:
+
+- `~icons/common/logo`
+- `~icons/nav/home`
+
+Sub-app icons live under `apps/<name>/assets/icons` and are exposed as one collection per app:
+
+```text
+apps/admin/assets/icons/
+  logo.svg
+  nav/home.svg
+```
+
+Imports:
+
+- `~icons/app-admin/logo`
+- `~icons/app-admin/nav/home`
+
+Notes:
+
+- main app icon imports use the collection folder name under `src/assets/icons`
+- sub-app icon imports always use the stable `app-<name>` collection
+- icon imports do not depend on route prefixes, layout aliases, or `modules[...].module`

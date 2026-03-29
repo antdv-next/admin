@@ -8,7 +8,7 @@
       "#db/*": ["./server/db/schema/*"]
     },
 
-    "types": ["vite-plus/client"],
+    "types": ["vite-plus/client", "unplugin-icons/types/vue"],
     /* Linting */
     "strict": true,
     "noFallthroughCasesInSwitch": true,

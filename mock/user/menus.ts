@@ -11,6 +11,7 @@ export default defineMock({
           path: '/admin/workspace',
           menuStatus: 0,
           title: '工作台',
+          icon: 'AccountBookFilled',
         },
         {
           id: '2',

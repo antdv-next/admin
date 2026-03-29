@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { MenuEmits } from 'antdv-next'
+import AntdIcon from '@/components/icons/antd.vue'
 import { useUserStore } from '@/stores/user'
 import { createSiderMenuState, resolveSiderOpenKeys } from './sider-menu'
 
@@ -43,7 +44,7 @@ watch(
 )
 
 const handleClickMenu: MenuEmits['click'] = ({ key }) => {
-  const targetPath = typeof key === 'string' ? key : String(key)
+  const targetPath = key
   if (!navigableKeys.value.has(targetPath)) {
     return
   }
@@ -51,10 +52,6 @@ const handleClickMenu: MenuEmits['click'] = ({ key }) => {
   if (targetPath.startsWith('/')) {
     router.push(targetPath)
   }
-}
-
-function handleOpenChange(nextOpenKeys: string[]) {
-  openKeys.value = nextOpenKeys
 }
 </script>
 
@@ -64,23 +61,25 @@ function handleOpenChange(nextOpenKeys: string[]) {
       mode="inline"
       :inline-collapsed="collapsed"
       :items="menuItems"
-      :open-keys="openKeys"
-      :selected-keys="selectedKeys"
+      v-model:open-keys="openKeys"
+      v-model:selected-keys="selectedKeys"
       @click="handleClickMenu"
-      @openChange="handleOpenChange"
       class="w-full"
       :classes="{
         root: 'antdv-admin-sider-root',
       }"
-    />
+    >
+      <template #iconRender="menu">
+        <template v-if="menu.icon">
+          <AntdIcon :icon="menu.icon" />
+        </template>
+      </template>
+    </a-menu>
   </div>
 </template>
 
 <style>
 .antdv-admin-sider-root {
   border-inline-end: unset;
-}
-.antdv-admin-sider-subMenu {
-  background: unset;
 }
 </style>

@@ -11,6 +11,9 @@
 ```text
 apps/
   admin/
+    assets/
+      icons/
+        logo.svg
     layouts/
       default/index.vue
       base/index.vue
@@ -19,6 +22,16 @@ apps/
       user/index.vue
     stores/
       ...
+```
+
+The main app can also define local icons under:
+
+```text
+src/
+  assets/
+    icons/
+      common/
+        logo.svg
 ```
 
 ## Route Discovery Rules
@@ -63,6 +76,63 @@ The current plugin implementation lives in:
 - `plugins/index.ts`
 - `plugins/layout/types.ts`
 - `plugins/layout/virtual-module.ts`
+
+## Icon Discovery Rules
+
+The Vite plugin setup also exposes local SVG icons through `unplugin-icons`.
+
+Main app icons:
+
+- source root: `src/assets/icons`
+- the first-level directory is the collection name
+
+Examples:
+
+- `src/assets/icons/common/logo.svg` -> `~icons/common/logo`
+- `src/assets/icons/nav/home.svg` -> `~icons/nav/home`
+
+Sub-app icons:
+
+- source root: `apps/<app-name>/assets/icons`
+- each sub-app maps to one stable collection: `app-<app-name>`
+
+Examples:
+
+- `apps/admin/assets/icons/logo.svg` -> `~icons/app-admin/logo`
+- `apps/admin/assets/icons/nav/home.svg` -> `~icons/app-admin/nav/home`
+
+Important constraints:
+
+- do not put SVG files directly under `src/assets/icons`; the main app must use a first-level collection directory
+- do not derive icon imports from `modules[routePrefix].module`, route aliases, or layout aliases
+- sub-app icon imports are always based on the physical app folder name
+
+## Third-Party Icon Collections
+
+The current Vite setup also supports standard Iconify collections such as `mdi` and `carbon`.
+
+Browse available third-party collections and icon names at:
+
+- [icones.js.org](https://icones.js.org/)
+
+Examples:
+
+- `~icons/mdi/account-box`
+- `~icons/carbon/accessibility`
+- `<i-mdi-account-box />`
+- `<i-carbon-accessibility />`
+
+Before using a third-party collection, install the matching Iconify JSON package:
+
+```bash
+pnpm add -D @iconify-json/mdi @iconify-json/carbon
+```
+
+Notes:
+
+- the repo currently does not enable `autoInstall: true`
+- third-party collections must be installed explicitly before import
+- third-party collections and local custom icons can be used together without special handling
 
 ## Default Module Layout Behavior
 
@@ -187,11 +257,37 @@ So `/admin/**` routes are treated as a sub-app and default to `admin/default`.
 ## Practical Usage
 
 - Use `src/pages` and `src/layouts` for global pages and layouts.
+- Use `src/assets/icons/<collection>/*.svg` for global custom icons.
 - Use `apps/<app-name>/pages` and `apps/<app-name>/layouts` for isolated module applications.
+- Use `apps/<app-name>/assets/icons/**/*.svg` for sub-app custom icons.
 - Prefer `layouts/default/index.vue` as the default entry layout for each sub-app.
 - Add `meta.layout` only when a route needs to opt out or switch away from the sub-app default.
-- Edit `plugins/index.ts` when you need to change shared layout plugin defaults.
+- Edit `plugins/index.ts` when you need to change shared layout or icon plugin defaults.
 - Edit `modules` config when a route prefix needs a stable custom default layout.
+
+## Import Alias Guidance
+
+If a new sub app needs a stable absolute import alias, update both:
+
+- `tsconfig.app.json`
+- `plugins/alias.ts`
+
+Recommended convention:
+
+- `@app/<app-name>/*` -> `apps/<app-name>/*`
+
+Examples:
+
+- `@app/admin/layouts/default` -> `apps/admin/layouts/default`
+- `@app/admin/pages/index.vue` -> `apps/admin/pages/index.vue`
+
+Why this convention is better:
+
+- it matches the actual sub-app directory shape under `apps/<app-name>`
+- it does not assume a nested `src/` directory inside each sub app
+- it works for layouts, pages, stores, assets, and future app-local files
+
+Do not copy the old `@apps/admin/* -> apps/admin/src/*` pattern into new apps unless the app actually has its own `src/` root.
 
 ## When A User Asks To Create A New Sub App
 
@@ -213,6 +309,50 @@ apps/
       index.vue
 ```
 
+If the user wants a slightly more complete starting point, prefer this base structure:
+
+```text
+apps/
+  <app-name>/
+    assets/
+      icons/
+        logo.svg
+    layouts/
+      default/
+        index.vue
+    pages/
+      index.vue
+    stores/
+```
+
+If the user also wants an app-level absolute import alias, update these configs at the same time:
+
+```json
+// tsconfig.app.json
+{
+  "compilerOptions": {
+    "paths": {
+      "@app/<app-name>/*": ["./apps/<app-name>/*"]
+    }
+  }
+}
+```
+
+```ts
+// plugins/alias.ts
+{
+  find: '@app/<app-name>',
+  replacement: path.resolve(baseUrl, 'apps/<app-name>'),
+}
+```
+
+Use this expanded scaffold when the sub app is expected to have:
+
+- its own local SVG icons
+- independent state
+- a recognizable app shell instead of a throwaway demo page
+- stable app-local imports that should not rely on long relative paths
+
 ## Purpose Of The Default Structure
 
 - `apps/<app-name>/pages/index.vue`
@@ -221,18 +361,36 @@ apps/
   This provides the module default layout key `<app-name>/default`, so routes in this sub app can be wrapped automatically by the layout plugin.
 - `layouts/default` is the default initialization choice because the current plugin rules already look for `<moduleName>/default` before any extra fallback logic.
 
+## Purpose Of The Expanded Base Structure
+
+- `apps/<app-name>/assets/icons`
+  This is the local icon root for the sub app and maps to imports under `~icons/app-<app-name>/*`.
+- `apps/<app-name>/stores`
+  This is the local store area for sub-app-specific state and follows the existing `apps/*/stores` auto-import convention.
+- `@app/<app-name>/*`
+  This gives the sub app one consistent absolute import root for layouts, pages, stores, assets, and local helpers when relative imports become noisy.
+- `apps/<app-name>/pages/index.vue`
+  This creates the route entry for `/<app-name>`.
+- `apps/<app-name>/layouts/default/index.vue`
+  This provides the default shell for the sub app and keeps the route/layout discovery rules aligned with the existing plugin behavior.
+
 ## How To Explain The Scaffold To The User
 
 When creating the sub app, explain the purpose of the initialized files in plain language:
 
 - the `pages` directory is the route source for the sub app
 - the `layouts/default` directory is the default shell for the sub app
-- this structure is enough to make the module route and module layout work with the current plugin rules
+- the `assets/icons` directory is the local icon source for this sub app when the app needs custom SVG icons
+- the `stores` directory is where sub-app-specific state should live
+- if the app needs stable absolute imports, `tsconfig.app.json` and `plugins/alias.ts` should be updated together
+- the minimum structure is enough to make the module route and module layout work with the current plugin rules
+- the expanded structure is the better default when the sub app is intended to grow
 
 ## Default Response Pattern
 
 After the user gives the app name, respond with the structure and purpose before or while creating it:
 
-- `我会先初始化 apps/<app-name>/pages/index.vue 和 apps/<app-name>/layouts/default/index.vue。`
-- `这样做的目的是先让 /<app-name> 路由可用，同时让这个子应用自动命中 <app-name>/default 作为默认布局。`
-- `后续如果这个子应用需要独立的用户页、设置页或不同布局，再在这个基础结构上继续扩展。`
+- `我会先初始化一个基础子应用结构，至少包含 apps/<app-name>/pages/index.vue 和 apps/<app-name>/layouts/default/index.vue。`
+- `如果这个子应用一开始就会有本地图标或独立状态，我会一起补上 apps/<app-name>/assets/icons 和 apps/<app-name>/stores。`
+- `如果这个子应用需要稳定的绝对导入路径，我也会同步更新 tsconfig.app.json 和 plugins/alias.ts，补上 @app/<app-name>/* -> apps/<app-name>/* 的映射。`
+- `这样做的目的是先让 /<app-name> 路由可用，同时让这个子应用自动命中 <app-name>/default 作为默认布局，并保留后续扩展空间。`

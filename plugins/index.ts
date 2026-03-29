@@ -4,10 +4,13 @@ import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
 import { nitro } from 'nitro/vite'
 import autoImport from 'unplugin-auto-import/vite'
+import IconsResolver from 'unplugin-icons/resolver'
+import Icons from 'unplugin-icons/vite'
 import components from 'unplugin-vue-components/vite'
 import dayjs from 'vite-plugin-dayjs'
 import { loadEnv } from 'vite-plus'
 import vueRouter from 'vue-router/vite'
+import { loadIcons } from './icons'
 import type { LayoutPluginOptions } from './layout'
 import { layout } from './layout'
 import { loadRouter } from './router'
@@ -19,6 +22,7 @@ export function loadPlugins(mode: string, baseUrl: string) {
     globalFallbackLayout: false,
     exclude: ['**/components/**', '**/hooks/**', '**/composables/**'],
   }
+  const icons = loadIcons(layoutOptions)
 
   // 需要判断生产环境是否开启nitro
   const plugins = []
@@ -34,6 +38,10 @@ export function loadPlugins(mode: string, baseUrl: string) {
     layout(layoutOptions),
     // vue-router的插件必须放在vue插件前面
     vue(),
+    Icons({
+      compiler: 'vue3',
+      customCollections: icons.customCollections,
+    }),
     tailwindcss(),
     dayjs(),
     ...plugins,
@@ -52,6 +60,9 @@ export function loadPlugins(mode: string, baseUrl: string) {
       resolvers: [
         AntdvNextResolver({
           resolveIcons: true,
+        }),
+        IconsResolver({
+          customCollections: icons.customCollectionNames,
         }),
       ],
       dts: 'types/components.d.ts',

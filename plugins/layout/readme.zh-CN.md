@@ -138,3 +138,41 @@ interface LayoutPluginOptions {
 - `types/layout-generated.d.ts`
 
 其中包含扫描到的布局 key，以及配置中显式声明的布局 key（如模块显式 layout/fallback）。
+
+## 自定义 Icons
+
+Vite 插件层会复用同一套 source 发现逻辑，通过 `unplugin-icons` 暴露本地 SVG 图标。
+
+主应用图标放在 `src/assets/icons` 的一级 collection 目录下：
+
+```text
+src/assets/icons/
+  common/
+    logo.svg
+  nav/
+    home.svg
+```
+
+导入方式：
+
+- `~icons/common/logo`
+- `~icons/nav/home`
+
+子应用图标放在 `apps/<name>/assets/icons` 下，每个子应用会映射成一个独立 collection：
+
+```text
+apps/admin/assets/icons/
+  logo.svg
+  nav/home.svg
+```
+
+导入方式：
+
+- `~icons/app-admin/logo`
+- `~icons/app-admin/nav/home`
+
+说明：
+
+- 主应用图标的 collection 名来自 `src/assets/icons` 下的一级目录名
+- 子应用图标固定使用 `app-<name>` 作为 collection
+- 图标导入路径不依赖路由前缀、布局别名或 `modules[...].module`

@@ -55,6 +55,7 @@
     "pg": "^8.20.0",
     "typescript": "^6.0.2",
     "unplugin-auto-import": "^21.0.0",
+    "unplugin-icons": "^23.0.1",
     "unplugin-vue-components": "^32.0.0",
     "uuid": "^13.0.0",
     "vite": "npm:@voidzero-dev/vite-plus-core@^0.1.14",

@@ -1,6 +1,6 @@
 ---
 name: admin
-description: Use when working in this admin repo and you need the project-specific conventions for UI styling, antdv-next usage, route access control, sub-app routing or layout plugin behavior, dynamic route injection, or test project setup.
+description: Use when working in this admin repo and you need the project-specific conventions for UI styling, antdv-next usage, route access control, sub-app routing or layout plugin behavior, local icon conventions, dynamic route injection, or test project setup.
 ---
 
 # Admin Skill
@@ -15,7 +15,7 @@ Use this skill for repo-specific conventions. Load only the reference file that 
   `references/components.md`
 - Route access, menu filtering, and dynamic route injection:
   `references/router-access.md`
-- Sub-app structure, route discovery, default module layouts, and layout plugin configuration:
+- Sub-app structure, route discovery, default module layouts, local icon conventions, and layout plugin configuration:
   `references/sub-apps.md`
 - `vite-plus` test imports, test placement, and test tsconfig:
   `references/testing.md`
@@ -28,7 +28,7 @@ Use this skill for repo-specific conventions. Load only the reference file that 
   read `references/components.md`
 - Touching `src/router`, route meta, menu permissions, or auth guard:
   read `references/router-access.md`
-- Adding a module under `apps/*`, changing `apps/*/pages` or `apps/*/layouts`, or adjusting layout plugin options in `plugins/index.ts` / `plugins/layout/*`:
+- Adding a module under `apps/*`, changing `apps/*/pages`, `apps/*/layouts`, `src/assets/icons`, `apps/*/assets/icons`, or adjusting layout and icon plugin options in `plugins/index.ts` / `plugins/layout/*`:
   read `references/sub-apps.md`
 - Adding or moving tests, or fixing test editor/type errors:
   read `references/testing.md`
