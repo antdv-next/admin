@@ -115,4 +115,19 @@ describe('resolveSiderOpenKeys', () => {
       cachedOpenKeys: ['/admin/workspace'],
     })
   })
+
+  it('merges current open keys with current route ancestors and deduplicates them', () => {
+    expect(
+      resolveSiderOpenKeys({
+        collapsed: false,
+        previousCollapsed: false,
+        currentOpenKeys: ['/admin/workspace', '/admin/system'],
+        cachedOpenKeys: ['/admin/workspace'],
+        routeOpenKeys: ['/admin/system', '/admin/system/settings'],
+      }),
+    ).toEqual({
+      openKeys: ['/admin/workspace', '/admin/system', '/admin/system/settings'],
+      cachedOpenKeys: ['/admin/workspace', '/admin/system', '/admin/system/settings'],
+    })
+  })
 })

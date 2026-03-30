@@ -162,8 +162,14 @@ export function resolveSiderOpenKeys(options: ResolveSiderOpenKeysOptions): Reso
     }
   }
 
+  const mergedOpenKeys = dedupeKeys([...currentOpenKeys, ...routeOpenKeys])
+
   return {
-    openKeys: routeOpenKeys,
-    cachedOpenKeys,
+    openKeys: mergedOpenKeys,
+    cachedOpenKeys: mergedOpenKeys,
   }
+}
+
+function dedupeKeys(keys: readonly string[]) {
+  return [...new Set(keys)]
 }
