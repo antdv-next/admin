@@ -1,5 +1,11 @@
 # Router Access
 
+Route access and button permissions are separate concerns in this repo.
+
+- Use this file for route-level `meta.access`, route injection, and menu-path filtering.
+- Use `references/permissions.md` for button/action permission codes, `<Access>`, and
+  `useAccess()`.
+
 ## Access Meta
 
 Route access is configured on `meta.access`.

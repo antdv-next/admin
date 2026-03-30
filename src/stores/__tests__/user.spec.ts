@@ -85,13 +85,34 @@ describe('useUserStore', () => {
           title: 'Dashboard',
           code: 'dashboard',
         },
-      ] as MenuInfo[],
+        {
+          id: 'btn-1',
+          menuType: 'menu_type_btn',
+          permission: 'system:user:create',
+        },
+        {
+          id: 'btn-2',
+          menuType: 'menu_type_btn',
+          code: 'system:user:update',
+        },
+      ] as unknown as MenuInfo[],
     })
 
-    await expect(firstRequest).resolves.toMatchObject([
+    await expect(firstRequest).resolves.toEqual([
       {
         id: 'menu-1',
+        title: 'Dashboard',
         code: 'dashboard',
+      },
+      {
+        id: 'btn-1',
+        menuType: 'menu_type_btn',
+        permission: 'system:user:create',
+      },
+      {
+        id: 'btn-2',
+        menuType: 'menu_type_btn',
+        code: 'system:user:update',
       },
     ])
     await expect(secondRequest).resolves.toMatchObject([
@@ -99,7 +120,16 @@ describe('useUserStore', () => {
         id: 'menu-1',
         code: 'dashboard',
       },
+      {
+        id: 'btn-1',
+        permission: 'system:user:create',
+      },
+      {
+        id: 'btn-2',
+        code: 'system:user:update',
+      },
     ])
+    expect(store.permissions).toEqual(['system:user:create', 'system:user:update'])
     expect(store.menusLoading).toBe(false)
   })
 
@@ -148,6 +178,19 @@ describe('useUserStore', () => {
           code: 'dashboard',
         },
       ],
+      permissions: [],
     })
+  })
+
+  it('clears permissions on logout', async () => {
+    const { useUserStore } = await import('@/stores/user')
+    const store = useUserStore()
+
+    store.setToken('token')
+    store.permissions = ['system:user:create']
+
+    store.logout()
+
+    expect(store.permissions).toEqual([])
   })
 })

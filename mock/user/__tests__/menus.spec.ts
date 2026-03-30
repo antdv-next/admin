@@ -26,7 +26,8 @@ describe('mock user menus', () => {
     const childPaths = menus
       .filter(menu => menu.parentId === systemMenu?.id)
       .map(menu => menu.path)
-      .sort()
+      .filter((path): path is string => Boolean(path))
+      .sort((left, right) => left.localeCompare(right))
 
     expect(childPaths).toEqual([
       '/admin/system/config',

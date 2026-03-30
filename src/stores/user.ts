@@ -2,12 +2,14 @@ import type { MenuInfo } from '@/api/menu'
 import type { UserInfo } from '@/api/user'
 import { getUserInfoApi, getUserMenuApi } from '@/api/user'
 import { useAuthorization } from '@/composables/authorization'
+import { extractMenuPermissions } from '@/utils/permission'
 
 export interface UserState {
   token: string | null
   userInfo?: UserInfo
   userInfoLoading: boolean
   menus: MenuInfo[]
+  permissions: string[]
   menusLoading: boolean
   menusLoaded: boolean
 }
@@ -22,6 +24,7 @@ export const useUserStore = defineStore('user', {
     userInfo: undefined,
     userInfoLoading: false,
     menus: [],
+    permissions: [],
     menusLoading: false,
     menusLoaded: false,
   }),
@@ -33,6 +36,7 @@ export const useUserStore = defineStore('user', {
       if (!token || isChanged) {
         this.userInfo = undefined
         this.menus = []
+        this.permissions = []
         this.menusLoaded = false
       }
       if (!token || isChanged) {
@@ -102,11 +106,13 @@ export const useUserStore = defineStore('user', {
         }
         if (error || !res?.data) {
           this.menus = []
+          this.permissions = []
           this.menusLoaded = false
           return undefined
         }
 
         this.menus = res.data
+        this.permissions = extractMenuPermissions(this.menus)
         this.menusLoaded = true
         return this.menus
       })()
@@ -135,6 +141,7 @@ export const useUserStore = defineStore('user', {
       return {
         userInfo,
         menus,
+        permissions: this.permissions,
       }
     },
     logout() {
@@ -142,6 +149,7 @@ export const useUserStore = defineStore('user', {
       this.userInfo = undefined
       this.userInfoLoading = false
       this.menus = []
+      this.permissions = []
       this.menusLoading = false
       this.menusLoaded = false
       userInfoPromise = null

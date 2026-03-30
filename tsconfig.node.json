@@ -25,6 +25,7 @@
   "include": [
     "vite.config.ts",
     "plugins/**/*.ts",
+    "scripts/**/*.ts",
     "nitro.config.ts",
     "eslint.config.ts",
     "drizzle.config.ts",

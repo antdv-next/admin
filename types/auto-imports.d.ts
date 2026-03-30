@@ -125,6 +125,7 @@ declare global {
   const unref: typeof import('vue').unref
   const unrefElement: typeof import('@vueuse/core').unrefElement
   const until: typeof import('@vueuse/core').until
+  const useAccess: typeof import('../src/composables/index').useAccess
   const useActiveElement: typeof import('@vueuse/core').useActiveElement
   const useAnimate: typeof import('@vueuse/core').useAnimate
   const useApp: typeof import('../src/composables/index').useApp

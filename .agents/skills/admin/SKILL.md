@@ -15,6 +15,8 @@ Use this skill for repo-specific conventions. Load only the reference file that 
   `references/components.md`
 - Route access, menu filtering, and dynamic route injection:
   `references/router-access.md`
+- Button permissions, generated permission types, `<Access>`, and `useAccess()`:
+  `references/permissions.md`
 - Sub-app pages, file-based routing, nested route shells, and scaffolding:
   `references/sub-app-routing.md`
 - Sub-app layouts, module default layout resolution, and layout plugin behavior:
@@ -34,6 +36,8 @@ Use this skill for repo-specific conventions. Load only the reference file that 
   read `references/components.md`
 - Touching `src/router`, route meta, menu permissions, or auth guard:
   read `references/router-access.md`
+- Changing button permissions, permission code typing, `useAccess()`, or `<Access>`:
+  read `references/permissions.md`
 - Adding pages under `apps/*/pages`, debugging file-based routing, or creating a shared route shell like `/admin/user/**`:
   read `references/sub-app-routing.md`
 - Adding or adjusting `apps/*/layouts`, changing `meta.layout`, or updating layout plugin defaults:

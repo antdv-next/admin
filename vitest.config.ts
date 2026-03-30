@@ -1,8 +1,7 @@
-import vue from '@vitejs/plugin-vue'
 import { fileURLToPath } from 'node:url'
+import vue from '@vitejs/plugin-vue'
 import autoImport from 'unplugin-auto-import/vite'
 import { defineConfig } from 'vite-plus/test/config'
-
 import { loadAlias } from './plugins/alias'
 
 const baseUrl = fileURLToPath(new URL('./', import.meta.url))

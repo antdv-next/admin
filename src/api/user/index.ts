@@ -1,5 +1,4 @@
 import type { SysUser } from '#db/sys_user'
-
 import type { MenuInfo } from '@/api/menu'
 
 export type UserInfo = Omit<SysUser, 'password' | 'isDelete'>
