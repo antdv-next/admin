@@ -211,4 +211,52 @@ describe('filterRoutesByAccess', () => {
       },
     ])
   })
+
+  it('keeps nested login-only user center routes without backend menu permissions', () => {
+    const routes: RouteRecordRaw[] = [
+      createRoute({
+        path: '/admin/user',
+        name: 'admin-user',
+        meta: {
+          access: {
+            mode: 'login',
+          },
+        },
+        children: [
+          createRoute({
+            path: '',
+            name: 'admin-user-index',
+            meta: {
+              access: {
+                mode: 'inherit',
+                from: '/admin/user',
+              },
+            },
+          }),
+          createRoute({
+            path: 'center',
+            name: 'admin-user-center',
+            meta: {
+              access: {
+                mode: 'inherit',
+                from: '/admin/user',
+              },
+            },
+          }),
+          createRoute({
+            path: 'profile',
+            name: 'admin-user-profile',
+            meta: {
+              access: {
+                mode: 'inherit',
+                from: '/admin/user',
+              },
+            },
+          }),
+        ],
+      }),
+    ]
+
+    expect(filterRoutesByAccess(routes, [], true)).toEqual(routes)
+  })
 })

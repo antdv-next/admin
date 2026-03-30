@@ -76,6 +76,36 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/admin/user': RouteRecordInfo<
+      '/admin/user',
+      '/admin/user',
+      Record<never, never>,
+      Record<never, never>,
+      | '/admin/user/'
+      | '/admin/user/center'
+      | '/admin/user/profile'
+    >,
+    '/admin/user/': RouteRecordInfo<
+      '/admin/user/',
+      '/admin/user',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/admin/user/center': RouteRecordInfo<
+      '/admin/user/center',
+      '/admin/user/center',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/admin/user/profile': RouteRecordInfo<
+      '/admin/user/profile',
+      '/admin/user/profile',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/admin/workspace/dashboard/': RouteRecordInfo<
       '/admin/workspace/dashboard/',
       '/admin/workspace/dashboard',
@@ -184,6 +214,33 @@ declare module 'vue-router/auto-routes' {
     'apps/admin/pages/test/test.vue': {
       routes:
         | '/admin/test/test'
+      views:
+        | never
+    }
+    'apps/admin/pages/user.vue': {
+      routes:
+        | '/admin/user'
+        | '/admin/user/'
+        | '/admin/user/center'
+        | '/admin/user/profile'
+      views:
+        | 'default'
+    }
+    'apps/admin/pages/user/index.vue': {
+      routes:
+        | '/admin/user/'
+      views:
+        | never
+    }
+    'apps/admin/pages/user/center.vue': {
+      routes:
+        | '/admin/user/center'
+      views:
+        | never
+    }
+    'apps/admin/pages/user/profile.vue': {
+      routes:
+        | '/admin/user/profile'
       views:
         | never
     }

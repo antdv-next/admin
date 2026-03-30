@@ -32,6 +32,42 @@ access?: {
 - Public routes stay injected even when unauthenticated.
 - `login` routes are injected only after login.
 
+## Shared Shell Access Pattern
+
+For a shared parent shell like `/admin/user/**`, set access like this:
+
+- parent shell route: `meta.access.mode = 'login'`
+- default child route: `meta.access.mode = 'inherit'`, `from = '/admin/user'`
+- named child routes like `/admin/user/center`: `meta.access.mode = 'inherit'`, `from = '/admin/user'`
+
+Example:
+
+```ts
+// apps/admin/pages/user.vue
+definePage({
+  meta: {
+    access: {
+      mode: 'login',
+    },
+  },
+})
+```
+
+```ts
+// apps/admin/pages/user/center.vue
+definePage({
+  meta: {
+    access: {
+      mode: 'inherit',
+      from: '/admin/user',
+    },
+  },
+})
+```
+
+Use this pattern when the whole section only requires login and should not depend on backend menu
+permissions for each child page.
+
 ## Injection Pattern
 
 - Fetch user info and menus concurrently before protected route injection.

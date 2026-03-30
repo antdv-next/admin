@@ -133,7 +133,11 @@ function createRoutePathMap(
 ): Map<string, RouteRecordRaw> {
   for (const route of routes) {
     const currentPath = resolveRoutePath(parentPath, route.path)
-    routePathMap.set(currentPath, route)
+    // Keep the first route for a path so parent records remain the inherit source
+    // when an index child shares the same normalized path.
+    if (!routePathMap.has(currentPath)) {
+      routePathMap.set(currentPath, route)
+    }
 
     if (route.children?.length) {
       createRoutePathMap(route.children, currentPath, routePathMap)

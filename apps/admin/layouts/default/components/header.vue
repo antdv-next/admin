@@ -62,6 +62,8 @@ const handleClickMenu: MenuEmits['click'] = info => {
   const key = info.key
   if (key === 'logout') {
     handleLogout()
+  } else if (key === 'profile') {
+    router.push('/admin/user')
   }
 }
 </script>

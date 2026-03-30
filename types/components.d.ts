@@ -30,6 +30,7 @@ declare module 'vue' {
     ASkeletonButton: typeof import('antdv-next')['SkeletonButton']
     ASpace: typeof import('antdv-next')['Space']
     AStyleProvider: typeof import('antdv-next')['StyleProvider']
+    ATag: typeof import('antdv-next')['Tag']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

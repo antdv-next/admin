@@ -36,5 +36,8 @@
     "mock/**/*.spec.ts",
     "mock/**/*.test.ts",
     "mock/**/__tests__/**/*.ts"
-  ]
+  ],
+  "vueCompilerOptions": {
+    "plugins": ["vue-router/volar/sfc-route-blocks", "vue-router/volar/sfc-typed-router"]
+  }
 }

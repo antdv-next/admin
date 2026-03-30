@@ -15,8 +15,14 @@ Use this skill for repo-specific conventions. Load only the reference file that 
   `references/components.md`
 - Route access, menu filtering, and dynamic route injection:
   `references/router-access.md`
-- Sub-app structure, route discovery, default module layouts, local icon conventions, and layout plugin configuration:
-  `references/sub-apps.md`
+- Sub-app pages, file-based routing, nested route shells, and scaffolding:
+  `references/sub-app-routing.md`
+- Sub-app layouts, module default layout resolution, and layout plugin behavior:
+  `references/sub-app-layouts.md`
+- Local SVG icon conventions for global and sub-app scopes:
+  `references/sub-app-icons.md`
+- Stable absolute import aliases for sub-apps:
+  `references/sub-app-aliases.md`
 - `vite-plus` test imports, test placement, and test tsconfig:
   `references/testing.md`
 
@@ -28,7 +34,15 @@ Use this skill for repo-specific conventions. Load only the reference file that 
   read `references/components.md`
 - Touching `src/router`, route meta, menu permissions, or auth guard:
   read `references/router-access.md`
-- Adding a module under `apps/*`, changing `apps/*/pages`, `apps/*/layouts`, `src/assets/icons`, `apps/*/assets/icons`, or adjusting layout and icon plugin options in `plugins/index.ts` / `plugins/layout/*`:
-  read `references/sub-apps.md`
+- Adding pages under `apps/*/pages`, debugging file-based routing, or creating a shared route shell like `/admin/user/**`:
+  read `references/sub-app-routing.md`
+- Adding or adjusting `apps/*/layouts`, changing `meta.layout`, or updating layout plugin defaults:
+  read `references/sub-app-layouts.md`
+- Adding or debugging local SVG icons in `src/assets/icons` or `apps/*/assets/icons`:
+  read `references/sub-app-icons.md`
+- Adding a stable absolute import alias for a sub-app:
+  read `references/sub-app-aliases.md`
+- Building a shared second-level page shell like `/admin/user/**` with common UI and child pages:
+  read `references/sub-app-routing.md` first, then `references/router-access.md`
 - Adding or moving tests, or fixing test editor/type errors:
   read `references/testing.md`
