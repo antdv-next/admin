@@ -34,6 +34,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/admin/system/config/': RouteRecordInfo<
+      '/admin/system/config/',
+      '/admin/system/config',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/admin/system/dict/': RouteRecordInfo<
       '/admin/system/dict/',
       '/admin/system/dict',
@@ -44,6 +51,20 @@ declare module 'vue-router/auto-routes' {
     '/admin/system/menu/': RouteRecordInfo<
       '/admin/system/menu/',
       '/admin/system/menu',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/admin/system/role/': RouteRecordInfo<
+      '/admin/system/role/',
+      '/admin/system/role',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/admin/system/user/': RouteRecordInfo<
+      '/admin/system/user/',
+      '/admin/system/user',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -130,6 +151,12 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'apps/admin/pages/system/config/index.vue': {
+      routes:
+        | '/admin/system/config/'
+      views:
+        | never
+    }
     'apps/admin/pages/system/dict/index.vue': {
       routes:
         | '/admin/system/dict/'
@@ -139,6 +166,18 @@ declare module 'vue-router/auto-routes' {
     'apps/admin/pages/system/menu/index.vue': {
       routes:
         | '/admin/system/menu/'
+      views:
+        | never
+    }
+    'apps/admin/pages/system/role/index.vue': {
+      routes:
+        | '/admin/system/role/'
+      views:
+        | never
+    }
+    'apps/admin/pages/system/user/index.vue': {
+      routes:
+        | '/admin/system/user/'
       views:
         | never
     }

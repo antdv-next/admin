@@ -32,6 +32,9 @@
     "src/**/*.spec.ts",
     "src/**/*.spec.tsx",
     "src/**/__tests__/*.test.ts",
-    "src/**/__tests__/*.test.tsx"
+    "src/**/__tests__/*.test.tsx",
+    "mock/**/*.spec.ts",
+    "mock/**/*.test.ts",
+    "mock/**/__tests__/**/*.ts"
   ]
 }

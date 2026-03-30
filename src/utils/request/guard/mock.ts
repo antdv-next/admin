@@ -22,7 +22,15 @@ interface MockMatcher {
 }
 
 const DEFAULT_ORIGIN = 'http://localhost'
-const MOCK_MODULES = import.meta.glob('../../../../mock/**/*.ts', { eager: true }) as Record<
+const MOCK_MODULES = import.meta.glob(
+  [
+    '../../../../mock/**/*.ts',
+    '!../../../../mock/**/*.spec.ts',
+    '!../../../../mock/**/*.test.ts',
+    '!../../../../mock/**/__tests__/**/*.ts',
+  ],
+  { eager: true },
+) as Record<
   string,
   {
     default?: MockDefinition

@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div>Dict</div>
+  <div>字典管理</div>
 </template>
 
 <style scoped></style>

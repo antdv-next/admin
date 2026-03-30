@@ -2,18 +2,19 @@ import type { Router, RouteRecordRaw } from 'vue-router'
 import { omit } from 'es-toolkit'
 import { setupLayouts } from 'virtual:layout'
 import { routes } from 'vue-router/auto-routes'
+import { LOGIN_PATH } from '@/constants/router'
 import { NOT_FOUND_NAME, notFoundRoute, ROUTE_NAME } from '@/router/constant'
 import { filterRoutesByAccess } from '@/router/guard-menu'
+import { resolveAuthGuardRedirect } from '@/router/redirect'
 
 let routeAccessKey: string | null = null
-const LOGIN_PATH = '/login'
-const AUTH_HOME_PATH = '/admin'
 
 export function setupAuthGuard(router: Router) {
   const authorization = useAuthorization()
   router.beforeEach(async to => {
     const userStore = useUserStore()
     const isAuthenticated = Boolean(authorization.value)
+    const isPublicRoute = to.matched.some(record => record.meta?.access?.mode === 'public')
 
     if (!authorization.value) {
       userStore.logout()
@@ -21,7 +22,6 @@ export function setupAuthGuard(router: Router) {
       userStore.setToken(authorization.value)
     }
 
-    const isLoginRoute = to.path === LOGIN_PATH
     if (isAuthenticated && (!userStore.userInfo || !userStore.menusLoaded)) {
       const { userInfo } = await userStore.ensureAuthContext()
       if (!userInfo && userStore.token) {
@@ -53,18 +53,28 @@ export function setupAuthGuard(router: Router) {
     }
 
     if (!isAuthenticated) {
-      if (!isLoginRoute) {
+      const redirectPath = resolveAuthGuardRedirect({
+        isAuthenticated,
+        isPublicRoute,
+        toPath: to.path,
+      })
+      if (redirectPath) {
         return {
-          path: LOGIN_PATH,
+          path: redirectPath,
           replace: true,
         }
       }
       return
     }
 
-    if (isLoginRoute) {
+    const redirectPath = resolveAuthGuardRedirect({
+      isAuthenticated,
+      isPublicRoute,
+      toPath: to.path,
+    })
+    if (redirectPath) {
       return {
-        path: AUTH_HOME_PATH,
+        path: redirectPath,
         replace: true,
       }
     }

@@ -1,3 +1,13 @@
+<script setup lang="ts">
+definePage({
+  meta: {
+    access: {
+      mode: 'public',
+    },
+  },
+})
+</script>
+
 <template>
   <div class="w-full selection:bg-primary/30">
     <!-- Hero Section -->
