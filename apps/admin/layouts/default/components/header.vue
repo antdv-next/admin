@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from '@antdv-next/icons'
-import type { MenuEmits } from 'antdv-next'
+import {
+  LogoutOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UserOutlined,
+} from '@antdv-next/icons'
+import type { MenuEmits, MenuProps } from 'antdv-next'
 import { useUserStore } from '@/stores/user'
 import Logo from '../../components/logo.vue'
 
@@ -18,6 +23,7 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const userStore = useUserStore()
+const { isDark } = useDarkMode()
 
 const isLoggedIn = computed(() => !!userStore.token)
 const showUserLoading = computed(
@@ -33,16 +39,24 @@ function handleLogout() {
   router.push('/login')
 }
 
-const menuItems = computed(() => [
-  {
-    key: 'profile',
-    label: '个人中心',
-  },
-  {
-    key: 'logout',
-    label: '退出登录',
-  },
-])
+const menuItems = computed(
+  () =>
+    [
+      {
+        key: 'profile',
+        label: '个人中心',
+        icon: UserOutlined,
+      },
+      {
+        type: 'divider',
+      },
+      {
+        key: 'logout',
+        label: '退出登录',
+        icon: LogoutOutlined,
+      },
+    ] as MenuProps['items'],
+)
 
 const handleClickMenu: MenuEmits['click'] = info => {
   const key = info.key
@@ -53,7 +67,7 @@ const handleClickMenu: MenuEmits['click'] = info => {
 </script>
 
 <template>
-  <div class="flex h-full items-center justify-between">
+  <div :class="isDark ? '' : 'text-white/80'" class="flex h-full items-center justify-between">
     <div class="flex items-center gap-3">
       <Logo />
       <a-button type="text" size="small" @click="emit('toggleCollapse')">
@@ -76,7 +90,7 @@ const handleClickMenu: MenuEmits['click'] = info => {
           <a-menu :items="menuItems" @click="handleClickMenu"></a-menu>
         </template>
         <div
-          class="flex items-center gap-2 rounded-md px-2 py-1 text-sm text-text transition-colors hover:bg-black/5"
+          class="flex items-center gap-2 cursor-pointer rounded-md px-2 py-1 text-sm transition-colors"
         >
           <a-avatar :size="32" :src="avatar">
             <template #icon>

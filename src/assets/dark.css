@@ -1,5 +1,10 @@
 html.dark {
-  background-color: #242525;
+  background-color: #2a2c2c;
   color: #f3f4f6;
   color-scheme: dark;
+}
+
+html.dark body,
+html.dark #app {
+  background-color: #2a2c2c;
 }

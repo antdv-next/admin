@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ConfigProviderProps } from 'antdv-next'
 import { storeToRefs } from 'pinia'
+import { useDarkMode } from '@/composables/dark'
 import { useGlobalToken } from '@/composables/token'
 import { useAppStore } from '@/stores/app'
 import { defaultConfig } from '../components/config'
@@ -13,6 +14,7 @@ type LayoutType = NonNullable<ComponentsType['Layout']>
 const appStore = useAppStore()
 const { collapsed } = storeToRefs(appStore)
 const { token } = useGlobalToken()
+const { isDark } = useDarkMode()
 const themeConfig = computed(() => {
   const layoutConfig: LayoutType = {
     colorBgLayout: 'transparent',
@@ -31,7 +33,7 @@ const themeConfig = computed(() => {
 
 <template>
   <a-config-provider :theme="themeConfig">
-    <a-layout class="min-h-screen">
+    <a-layout class="min-h-screen" :class="isDark ? 'bg-[#2a2c2c]' : 'bg-[#f0f2f5]'">
       <a-layout-header>
         <DefaultHeader :collapsed="collapsed" @toggle-collapse="appStore.toggleCollapsed" />
       </a-layout-header>

@@ -91,6 +91,7 @@ function mapTreeToMenuItems(nodes: readonly MenuTreeNode[]): NonNullable<MenuPro
         {
           key,
           label: node.title || node.name || key,
+          icon: node.icon ?? undefined,
           disabled: isDisabled,
           children,
           onTitleClick: () => {
@@ -104,6 +105,7 @@ function mapTreeToMenuItems(nodes: readonly MenuTreeNode[]): NonNullable<MenuPro
       {
         key,
         label: node.title || node.name || key,
+        icon: node.icon ?? undefined,
         disabled: isDisabled,
       },
     ]

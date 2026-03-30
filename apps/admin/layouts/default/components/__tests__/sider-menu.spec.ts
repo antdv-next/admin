@@ -10,6 +10,7 @@ function createMenu(menu: Partial<MenuInfo> & Pick<MenuInfo, 'id' | 'title'>): M
     code: menu.code ?? menu.id,
     path: menu.path ?? null,
     parentId: menu.parentId ?? null,
+    icon: menu.icon ?? null,
     menuType: menu.menuType ?? MENU_TYPE.MENU,
     hideInMenu: menu.hideInMenu ?? 0,
     hideChildrenInMenu: menu.hideChildrenInMenu ?? 0,
@@ -24,6 +25,7 @@ describe('createSiderMenuState', () => {
         id: 'workspace',
         title: '工作台',
         path: '/admin/workspace',
+        icon: 'AppstoreOutlined',
         menuType: MENU_TYPE.DIR,
         sort: 1,
       }),
@@ -32,6 +34,7 @@ describe('createSiderMenuState', () => {
         title: '概览',
         parentId: 'workspace',
         path: '/admin/workspace/overview',
+        icon: 'DashboardOutlined',
         sort: 1,
       }),
       createMenu({
@@ -63,10 +66,12 @@ describe('createSiderMenuState', () => {
     expect(state.items[0]).toMatchObject({
       key: '/admin/workspace',
       label: '工作台',
+      icon: 'AppstoreOutlined',
       children: [
         {
           key: '/admin/workspace/overview',
           label: '概览',
+          icon: 'DashboardOutlined',
         },
         {
           key: '/admin/workspace/dashboard',
