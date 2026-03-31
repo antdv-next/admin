@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url'
 import vue from '@vitejs/plugin-vue'
 import autoImport from 'unplugin-auto-import/vite'
+import dayjs from 'vite-plugin-dayjs'
 import { defineConfig } from 'vite-plus/test/config'
 import { loadAlias } from './plugins/alias'
 
@@ -14,6 +15,7 @@ export default defineConfig({
       imports: ['vue', 'vue-router', '@vueuse/core', 'vue-i18n', 'pinia'],
       dts: false,
     }),
+    dayjs(),
   ],
   resolve: {
     alias: loadAlias(baseUrl),

@@ -335,6 +335,6 @@ declare global {
   export type { UserState } from '../src/stores/user'
   import('../src/stores/user')
   // @ts-ignore
-  export type { RequestConfig, RequestMeta, RequestMethodConfig } from '../src/utils/request/index'
+  export type { RequestMeta } from '../src/utils/request/index'
   import('../src/utils/request/index')
 }

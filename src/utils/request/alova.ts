@@ -150,5 +150,5 @@ function resolveErrorMessage(data: unknown, fallback: string) {
   return fallback
 }
 
-export type { RequestConfig, RequestMeta, RequestMethodConfig } from './interface'
+export type { RequestMeta } from './interface'
 export { AlovaRequestError as RequestError }
