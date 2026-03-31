@@ -1,3 +1,5 @@
+import { http } from '@/utils/request'
+
 export interface LoginParams {
   username: string
   password: string
@@ -8,8 +10,8 @@ export interface LoginResponse {
   token: string
 }
 
-export function loginApi(params: LoginParams) {
-  return usePost<R<LoginResponse>>('/login', params, {
+export function loginMethod(params: LoginParams) {
+  return http.Post<R<LoginResponse>>('/login', params, {
     meta: {
       token: false,
     },

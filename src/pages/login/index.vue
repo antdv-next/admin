@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { LockOutlined, MoonOutlined, SunOutlined, UserOutlined } from '@antdv-next/icons'
 import type { FormProps } from 'antdv-next'
-import { loginApi } from '@/api/auth/login.ts'
+import { loginMethod } from '@/api/auth/login.ts'
 import { AUTH_DEFAULT_PATH } from '@/constants/router'
 import { useUserStore } from '@/stores/user'
+import { useAlovaRequest } from '@/utils/request'
 
 defineOptions({ name: 'LoginPage' })
 
@@ -36,21 +37,18 @@ const formRules: FormProps['rules'] = {
   ],
 }
 
-const loading = ref(false)
 const router = useRouter()
 const { message } = useApp()
 const userStore = useUserStore()
-async function handleFinish() {
-  loading.value = true
-  const [err, res] = await tryIt<ER>()(loginApi, formModel)
-  loading.value = false
-  if (err) {
-    return
-  }
+const { loading, send: submitLogin } = useAlovaRequest(loginMethod, {
+  immediate: false,
+})
 
+async function handleFinish() {
+  const res = await submitLogin({ ...formModel })
   if (res && res.data && res.data?.token) {
     userStore.setToken(res.data.token)
-    router.push(AUTH_DEFAULT_PATH)
+    router.push(AUTH_DEFAULT_PATH).then(() => {})
     message.success('登录成功')
   }
 }

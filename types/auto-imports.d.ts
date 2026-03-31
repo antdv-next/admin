@@ -119,7 +119,6 @@ declare global {
   const toRefs: typeof import('vue').toRefs
   const toValue: typeof import('vue').toValue
   const triggerRef: typeof import('vue').triggerRef
-  const tryIt: typeof import('../src/utils/request/index').tryIt
   const tryOnBeforeMount: typeof import('@vueuse/core').tryOnBeforeMount
   const tryOnBeforeUnmount: typeof import('@vueuse/core').tryOnBeforeUnmount
   const tryOnMounted: typeof import('@vueuse/core').tryOnMounted
@@ -130,6 +129,8 @@ declare global {
   const until: typeof import('@vueuse/core').until
   const useAccess: typeof import('../src/composables/index').useAccess
   const useActiveElement: typeof import('@vueuse/core').useActiveElement
+  const useAlovaRequest: typeof import('../src/utils/request/index').useAlovaRequest
+  const useAlovaWatcher: typeof import('../src/utils/request/index').useAlovaWatcher
   const useAnimate: typeof import('@vueuse/core').useAnimate
   const useApp: typeof import('../src/composables/index').useApp
   const useAppStore: typeof import('../src/stores/app').useAppStore
@@ -175,7 +176,6 @@ declare global {
   const useDebounce: typeof import('@vueuse/core').useDebounce
   const useDebounceFn: typeof import('@vueuse/core').useDebounceFn
   const useDebouncedRefHistory: typeof import('@vueuse/core').useDebouncedRefHistory
-  const useDelete: typeof import('../src/utils/request/index').useDelete
   const useDeviceMotion: typeof import('@vueuse/core').useDeviceMotion
   const useDeviceOrientation: typeof import('@vueuse/core').useDeviceOrientation
   const useDevicePixelRatio: typeof import('@vueuse/core').useDevicePixelRatio
@@ -203,7 +203,6 @@ declare global {
   const useFullscreen: typeof import('@vueuse/core').useFullscreen
   const useGamepad: typeof import('@vueuse/core').useGamepad
   const useGeolocation: typeof import('@vueuse/core').useGeolocation
-  const useGet: typeof import('../src/utils/request/index').useGet
   const useI18n: typeof import('vue-i18n').useI18n
   const useId: typeof import('vue').useId
   const useIdle: typeof import('@vueuse/core').useIdle
@@ -237,13 +236,11 @@ declare global {
   const usePageLeave: typeof import('@vueuse/core').usePageLeave
   const useParallax: typeof import('@vueuse/core').useParallax
   const useParentElement: typeof import('@vueuse/core').useParentElement
-  const usePatch: typeof import('../src/utils/request/index').usePatch
   const usePerformanceObserver: typeof import('@vueuse/core').usePerformanceObserver
   const usePermission: typeof import('@vueuse/core').usePermission
   const usePointer: typeof import('@vueuse/core').usePointer
   const usePointerLock: typeof import('@vueuse/core').usePointerLock
   const usePointerSwipe: typeof import('@vueuse/core').usePointerSwipe
-  const usePost: typeof import('../src/utils/request/index').usePost
   const usePreferredColorScheme: typeof import('@vueuse/core').usePreferredColorScheme
   const usePreferredContrast: typeof import('@vueuse/core').usePreferredContrast
   const usePreferredDark: typeof import('@vueuse/core').usePreferredDark
@@ -251,10 +248,8 @@ declare global {
   const usePreferredReducedMotion: typeof import('@vueuse/core').usePreferredReducedMotion
   const usePreferredReducedTransparency: typeof import('@vueuse/core').usePreferredReducedTransparency
   const usePrevious: typeof import('@vueuse/core').usePrevious
-  const usePut: typeof import('../src/utils/request/index').usePut
   const useRafFn: typeof import('@vueuse/core').useRafFn
   const useRefHistory: typeof import('@vueuse/core').useRefHistory
-  const useRequest: typeof import('../src/utils/request/index').useRequest
   const useResizeObserver: typeof import('@vueuse/core').useResizeObserver
   const useRoute: typeof import('vue-router').useRoute
   const useRouter: typeof import('vue-router').useRouter
@@ -340,6 +335,6 @@ declare global {
   export type { UserState } from '../src/stores/user'
   import('../src/stores/user')
   // @ts-ignore
-  export type { TryItResult, RequestConfig, RequestMeta } from '../src/utils/request/index'
+  export type { RequestConfig, RequestMeta, RequestMethodConfig } from '../src/utils/request/index'
   import('../src/utils/request/index')
 }

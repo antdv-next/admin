@@ -1,15 +1,39 @@
-import type { RequestBody } from 'alova'
+import type {
+  AlovaCustomTypes,
+  AlovaDefaultCacheAdapter,
+  AlovaGenerics,
+  AlovaMethodCommonConfig,
+  AlovaMethodCreateConfig,
+  MethodType,
+  RequestBody,
+  StatesExport,
+} from 'alova'
 import type { FetchRequestInit } from 'alova/fetch'
 
-export interface RequestMeta {
-  baseURL?: string
-  token?: boolean
-  mock?: boolean
-}
+type FetchMethodGenerics = AlovaGenerics<
+  unknown,
+  unknown,
+  FetchRequestInit,
+  Response,
+  Headers,
+  AlovaDefaultCacheAdapter,
+  AlovaDefaultCacheAdapter,
+  StatesExport<any>
+>
 
-export interface RequestConfig<T extends RequestBody = RequestBody> extends FetchRequestInit {
+export type RequestMeta = AlovaCustomTypes['meta']
+export type RequestMethodConfig<
+  Responded = unknown,
+  Transformed = unknown,
+> = AlovaMethodCreateConfig<FetchMethodGenerics, Responded, Transformed>
+
+export interface RequestConfig<
+  T extends RequestBody = RequestBody,
+  Responded = unknown,
+  Transformed = unknown,
+> extends Omit<AlovaMethodCommonConfig<FetchMethodGenerics, Responded, Transformed>, 'data'> {
   data?: T
-  method?: string
+  method?: MethodType
   params?: Record<string, unknown> | string
   meta?: RequestMeta
 }

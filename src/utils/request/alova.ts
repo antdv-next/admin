@@ -2,8 +2,11 @@ import { createAlovaMockAdapter } from '@alova/mock'
 import type { MockWrapper } from '@alova/mock'
 import { createAlova } from 'alova'
 import adapterFetch from 'alova/fetch'
+import VueHook from 'alova/vue'
+import { useApp } from '@/composables/app'
+import { useUserStore } from '@/stores/user'
 import { AUTHORIZATION_KEY } from './constant'
-import type { RequestConfig } from './interface'
+import type { RequestMeta } from './interface'
 
 interface CreateRequestClientOptions {
   customFetch?: typeof fetch
@@ -60,12 +63,12 @@ export function createRequestClient(options: CreateRequestClientOptions = {}) {
     baseURL: import.meta.env.VITE_APP_BASE_API || '/api',
     requestAdapter,
     shareRequest: true,
+    statesHook: VueHook,
     async beforeRequest(method) {
       if (method.config.meta?.token === false) {
         return
       }
 
-      const { useUserStore } = await import('@/stores/user')
       const userStore = useUserStore()
       if (!userStore.token) {
         return
@@ -115,7 +118,7 @@ function isMockEnabled() {
   return import.meta.env.VITE_APP_MOCK_ENABLED === 'true'
 }
 
-function shouldUseMock(meta?: RequestConfig['meta']) {
+function shouldUseMock(meta?: RequestMeta) {
   if (typeof meta?.mock === 'boolean') {
     return meta.mock
   }
@@ -124,7 +127,6 @@ function shouldUseMock(meta?: RequestConfig['meta']) {
 }
 
 async function reportRequestError(error: unknown) {
-  const { useApp } = await import('@/composables/app')
   const { message } = useApp()
 
   if (error instanceof AlovaRequestError) {
@@ -148,5 +150,5 @@ function resolveErrorMessage(data: unknown, fallback: string) {
   return fallback
 }
 
-export type { RequestConfig }
+export type { RequestConfig, RequestMeta, RequestMethodConfig } from './interface'
 export { AlovaRequestError as RequestError }

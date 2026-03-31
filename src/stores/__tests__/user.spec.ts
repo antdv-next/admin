@@ -3,12 +3,12 @@ import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import type { MenuInfo } from '@/api/menu'
 import type { UserInfo } from '@/api/user'
 
-const getUserInfoApi = vi.fn()
-const getUserMenuApi = vi.fn()
+const getUserInfoMethod = vi.fn()
+const getUserMenuMethod = vi.fn()
 
 vi.mock('@/api/user', () => ({
-  getUserInfoApi,
-  getUserMenuApi,
+  getUserInfoMethod,
+  getUserMenuMethod,
 }))
 
 function createDeferred<T>() {
@@ -26,14 +26,14 @@ function createDeferred<T>() {
 describe('useUserStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
-    getUserInfoApi.mockReset()
-    getUserMenuApi.mockReset()
+    getUserInfoMethod.mockReset()
+    getUserMenuMethod.mockReset()
     vi.resetModules()
   })
 
   it('deduplicates concurrent user info requests', async () => {
     const deferred = createDeferred<{ data: UserInfo }>()
-    getUserInfoApi.mockReturnValue(deferred.promise)
+    getUserInfoMethod.mockReturnValue(deferred.promise)
 
     const { useUserStore } = await import('@/stores/user')
     const store = useUserStore()
@@ -42,7 +42,7 @@ describe('useUserStore', () => {
     const firstRequest = store.fetchUserInfo()
     const secondRequest = store.fetchUserInfo()
 
-    expect(getUserInfoApi).toHaveBeenCalledTimes(1)
+    expect(getUserInfoMethod).toHaveBeenCalledTimes(1)
     expect(store.userInfoLoading).toBe(true)
 
     deferred.resolve({
@@ -66,7 +66,7 @@ describe('useUserStore', () => {
 
   it('deduplicates concurrent menu requests', async () => {
     const deferred = createDeferred<{ data: MenuInfo[] }>()
-    getUserMenuApi.mockReturnValue(deferred.promise)
+    getUserMenuMethod.mockReturnValue(deferred.promise)
 
     const { useUserStore } = await import('@/stores/user')
     const store = useUserStore()
@@ -75,7 +75,7 @@ describe('useUserStore', () => {
     const firstRequest = store.fetchMenus()
     const secondRequest = store.fetchMenus()
 
-    expect(getUserMenuApi).toHaveBeenCalledTimes(1)
+    expect(getUserMenuMethod).toHaveBeenCalledTimes(1)
     expect(store.menusLoading).toBe(true)
 
     deferred.resolve({

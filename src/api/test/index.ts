@@ -1,15 +1,17 @@
-export function testGetApi() {
-  return useGet('/test')
+import { http } from '@/utils/request'
+
+export function testGetMethod() {
+  return http.Get('/test')
 }
 
-export function testPostApi() {
-  return usePost('/test')
+export function testPostMethod() {
+  return http.Post('/test')
 }
 
-export function testPutApi() {
-  return usePut('/test')
+export function testPutMethod() {
+  return http.Put('/test')
 }
 
-export function testDeleteApi() {
-  return useDelete('/test')
+export function testDeleteMethod() {
+  return http.Delete('/test')
 }

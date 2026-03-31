@@ -1,6 +1,6 @@
 import type { MenuInfo } from '@/api/menu'
 import type { UserInfo } from '@/api/user'
-import { getUserInfoApi, getUserMenuApi } from '@/api/user'
+import { getUserInfoMethod, getUserMenuMethod } from '@/api/user'
 import { useAuthorization } from '@/composables/authorization'
 import { extractMenuPermissions } from '@/utils/permission'
 
@@ -60,17 +60,25 @@ export const useUserStore = defineStore('user', {
 
       this.userInfoLoading = true
       userInfoPromise = (async () => {
-        const [error, res] = await tryIt<ER>()(getUserInfoApi)
-        if (this.token !== currentToken) {
+        try {
+          const res = await getUserInfoMethod()
+          if (this.token !== currentToken) {
+            return this.userInfo
+          }
+          if (!res.data) {
+            this.userInfo = undefined
+            return undefined
+          }
+
+          this.userInfo = res.data
           return this.userInfo
-        }
-        if (error || !res?.data) {
+        } catch {
+          if (this.token !== currentToken) {
+            return this.userInfo
+          }
           this.userInfo = undefined
           return undefined
         }
-
-        this.userInfo = res.data
-        return this.userInfo
       })()
 
       try {
@@ -100,21 +108,31 @@ export const useUserStore = defineStore('user', {
 
       this.menusLoading = true
       menusPromise = (async () => {
-        const [error, res] = await tryIt<ER>()(getUserMenuApi)
-        if (this.token !== currentToken) {
+        try {
+          const res = await getUserMenuMethod()
+          if (this.token !== currentToken) {
+            return this.menus
+          }
+          if (!res.data) {
+            this.menus = []
+            this.permissions = []
+            this.menusLoaded = false
+            return undefined
+          }
+
+          this.menus = res.data
+          this.permissions = extractMenuPermissions(this.menus)
+          this.menusLoaded = true
           return this.menus
-        }
-        if (error || !res?.data) {
+        } catch {
+          if (this.token !== currentToken) {
+            return this.menus
+          }
           this.menus = []
           this.permissions = []
           this.menusLoaded = false
           return undefined
         }
-
-        this.menus = res.data
-        this.permissions = extractMenuPermissions(this.menus)
-        this.menusLoaded = true
-        return this.menus
       })()
 
       try {
