@@ -2,7 +2,7 @@ import type { MockContext } from '../index'
 import { defineMock, response } from '../index'
 
 export default defineMock({
-  POST({ data }: MockContext) {
+  '[POST]/login'({ data }: MockContext) {
     const payload =
       typeof data === 'object' && data !== null ? (data as Record<string, unknown>) : {}
     const username = typeof payload.username === 'string' ? payload.username : ''

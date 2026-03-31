@@ -1,7 +1,7 @@
 import { defineMock, response } from '../index.ts'
 
 export default defineMock({
-  GET() {
+  '/dev/btns'() {
     return response({
       code: 200,
       msg: 'success',

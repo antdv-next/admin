@@ -3,8 +3,18 @@ import { MENU_TYPE } from '@/constants/menu'
 import menusMock from '../menus'
 
 describe('mock user menus', () => {
-  it('groups system management menus under a single parent directory', () => {
-    const result = menusMock.GET?.()
+  it('groups system management menus under a single parent directory', async () => {
+    const handler = menusMock.data['/user/menus']
+    expect(typeof handler).toBe('function')
+
+    const result = await (
+      handler as (...args: any[]) => Promise<{ body: { data: any[] } }> | { body: { data: any[] } }
+    )({
+      data: {},
+      headers: {},
+      params: {},
+      query: {},
+    })
 
     expect(result).toMatchObject({
       body: {

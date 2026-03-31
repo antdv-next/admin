@@ -1,13 +1,13 @@
 export function normalizeGlobPath(path: string) {
   const normalizedPath = path
-    .replaceAll('\\', '/')
+    .replace(/\\/g, '/')
     .replace(/^\.?\//, '')
     .replace(/\/+$/, '')
   return normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`
 }
 
 export function normalizeFsPath(filePath: string) {
-  return filePath.replaceAll('\\', '/')
+  return filePath.replace(/\\/g, '/')
 }
 
 export function normalizeGlobPattern(pattern: string) {

@@ -21,12 +21,13 @@
     "prepare": "vp config"
   },
   "dependencies": {
+    "@alova/mock": "^2.0.20",
     "@antdv-next/icons": "^1.0.5",
     "@antdv-next/tailwind": "^1.0.2",
     "@tailwindcss/vite": "^4.2.2",
     "@vueuse/core": "^14.2.1",
+    "alova": "^3.5.1",
     "antdv-next": "^1.1.7",
-    "axios": "^1.14.1",
     "es-toolkit": "^1.45.1",
     "pinia": "^3.0.4",
     "tailwindcss": "^4.2.2",

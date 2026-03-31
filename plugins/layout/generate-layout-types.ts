@@ -50,8 +50,11 @@ function resolveLayoutKey(filePath: string, options: ResolvedLayoutPluginOptions
       if (!matched) continue
 
       const routePrefix = matched[1]
+      const layoutPath = matched[2]
+      if (!routePrefix || !layoutPath) continue
+
       const moduleName = getModuleName(routePrefix, options)
-      return `${moduleName}/${normalizeLayoutPath(matched[2])}`
+      return `${moduleName}/${normalizeLayoutPath(layoutPath)}`
     }
   }
 
@@ -59,7 +62,7 @@ function resolveLayoutKey(filePath: string, options: ResolvedLayoutPluginOptions
 }
 
 function toLayoutTypeLiteral(layoutName: string) {
-  return `'${layoutName.replaceAll("'", "\\'")}'`
+  return `'${layoutName.replace(/'/g, "\\'")}'`
 }
 
 function createGeneratedDts(layoutNames: string[]) {

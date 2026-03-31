@@ -1,4 +1,5 @@
-import type { InternalAxiosRequestConfig } from 'axios'
+import type { RequestBody } from 'alova'
+import type { FetchRequestInit } from 'alova/fetch'
 
 export interface RequestMeta {
   baseURL?: string
@@ -6,6 +7,9 @@ export interface RequestMeta {
   mock?: boolean
 }
 
-export interface RequestConfig<T = any> extends InternalAxiosRequestConfig<T> {
+export interface RequestConfig<T extends RequestBody = RequestBody> extends FetchRequestInit {
+  data?: T
+  method?: string
+  params?: Record<string, unknown> | string
   meta?: RequestMeta
 }

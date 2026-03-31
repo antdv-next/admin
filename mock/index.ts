@@ -1,11 +1,11 @@
-import type { InternalAxiosRequestConfig, RawAxiosResponseHeaders } from 'axios'
+import type { MockServerRequest, StatusResponse } from '@alova/mock'
+import { defineMock as defineAlovaMock } from '@alova/mock'
 
 export const MOCK_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'] as const
 
 export type MockMethod = (typeof MOCK_METHODS)[number]
 
 export interface MockContext<T = unknown> {
-  config: InternalAxiosRequestConfig<T>
   data: T
   headers: Record<string, string>
   method: MockMethod
@@ -18,18 +18,16 @@ export interface MockContext<T = unknown> {
 export interface MockResponse<T = unknown> {
   body: T
   delay?: number
-  headers?: RawAxiosResponseHeaders
+  headers?: Record<string, string>
   status?: number
   statusText?: string
 }
 
-export interface ResolvedMockResponse<T = unknown> extends MockResponse<T> {
-  __mockResponse: true
-}
+export type ResolvedMockResponse = StatusResponse
 
 export type MockHandler<T = unknown, Body = unknown> = (
   context: MockContext<Body>,
-) => T | ResolvedMockResponse<T> | Promise<T | ResolvedMockResponse<T>>
+) => T | ResolvedMockResponse | Promise<T | ResolvedMockResponse>
 
 export type MockStaticValue =
   | Record<string, unknown>
@@ -42,19 +40,77 @@ export type MockStaticValue =
 
 export type MockHandlerValue = MockHandler | MockStaticValue | ResolvedMockResponse
 
-export type MockDefinition = Partial<Record<MockMethod | Lowercase<MockMethod>, MockHandlerValue>>
+export type MockDefinition = Record<string, MockHandlerValue>
 
-export function defineMock<T extends MockDefinition>(mock: T) {
-  return mock
+export function defineMock<T extends MockDefinition>(mock: T, enable = true) {
+  return defineAlovaMock(transformMockDefinition(mock), enable)
 }
 
 export function response<T>(
   body: T,
   options: Omit<MockResponse<T>, 'body'> = {},
-): ResolvedMockResponse<T> {
-  return {
-    __mockResponse: true,
+): T | ResolvedMockResponse | Promise<T | ResolvedMockResponse> {
+  const buildResponse = () => ({
     body,
-    ...options,
+    responseHeaders: {
+      'content-type': 'application/json',
+      ...(options.headers ?? {}),
+    },
+    status: options.status ?? 200,
+    statusText: options.statusText ?? 'OK',
+  })
+
+  if (options.delay && options.delay > 0) {
+    return new Promise(resolve => {
+      setTimeout(() => resolve(buildResponse()), options.delay)
+    })
   }
+
+  return buildResponse()
+}
+
+function transformMockDefinition(mock: MockDefinition) {
+  return Object.fromEntries(
+    Object.entries(mock).map(([key, handler]) => [key, toAlovaMockHandler(key, handler)]),
+  )
+}
+
+function toAlovaMockHandler(key: string, handler: MockHandlerValue) {
+  return (request: MockServerRequest) => {
+    if (typeof handler !== 'function') {
+      return handler
+    }
+
+    return handler({
+      data: request.data,
+      headers: normalizeHeaders(request.headers),
+      method: extractMockMethod(key),
+      params: request.params,
+      path: extractMockPath(key),
+      query: normalizeQuery(request.query),
+      url: extractMockPath(key),
+    })
+  }
+}
+
+function normalizeHeaders(headers: Record<string, unknown>) {
+  return Object.fromEntries(Object.entries(headers).map(([key, value]) => [key, String(value)]))
+}
+
+function normalizeQuery(query: Record<string, unknown>) {
+  return Object.fromEntries(
+    Object.entries(query).map(([key, value]) => [
+      key,
+      Array.isArray(value) ? value.map(item => String(item)) : String(value),
+    ]),
+  ) as Record<string, string | string[]>
+}
+
+function extractMockMethod(key: string): MockMethod {
+  const match = key.replace(/^-/, '').match(/^\[(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\]/i)
+  return (match?.[1]?.toUpperCase() as MockMethod | undefined) ?? 'GET'
+}
+
+function extractMockPath(key: string) {
+  return key.replace(/^-/, '').replace(/^\[(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\]/i, '')
 }

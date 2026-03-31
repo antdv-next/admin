@@ -8,6 +8,10 @@ export interface LoginResponse {
   token: string
 }
 
-export async function loginApi(params: LoginParams) {
-  return usePost<R<LoginResponse>>('/login', params)
+export function loginApi(params: LoginParams) {
+  return usePost<R<LoginResponse>>('/login', params, {
+    meta: {
+      token: false,
+    },
+  })
 }

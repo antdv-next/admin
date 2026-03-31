@@ -1,7 +1,7 @@
 import { defineMock, response } from '..'
 
 export default defineMock({
-  GET() {
+  '/test'() {
     return response(
       {
         code: 200,
@@ -13,7 +13,7 @@ export default defineMock({
     )
   },
 
-  POST() {
+  '[POST]/test'() {
     return response(
       {
         code: 200,
@@ -24,7 +24,7 @@ export default defineMock({
       { delay: 500 },
     )
   },
-  PUT() {
+  '[PUT]/test'() {
     return response(
       {
         code: 200,
@@ -36,7 +36,7 @@ export default defineMock({
     )
   },
 
-  DELETE() {
+  '[DELETE]/test'() {
     return response(
       {
         code: 200,

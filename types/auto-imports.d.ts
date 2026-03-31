@@ -7,6 +7,7 @@
 export {}
 declare global {
   const EffectScope: typeof import('vue').EffectScope
+  const RequestError: typeof import('../src/utils/request/index').RequestError
   const acceptHMRUpdate: typeof import('pinia').acceptHMRUpdate
   const asyncComputed: typeof import('@vueuse/core').asyncComputed
   const autoResetRef: typeof import('@vueuse/core').autoResetRef
@@ -24,6 +25,7 @@ declare global {
   const createPinia: typeof import('pinia').createPinia
   const createReactiveFn: typeof import('@vueuse/core').createReactiveFn
   const createRef: typeof import('@vueuse/core').createRef
+  const createRequestClient: typeof import('../src/utils/request/index').createRequestClient
   const createReusableTemplate: typeof import('@vueuse/core').createReusableTemplate
   const createSharedComposable: typeof import('@vueuse/core').createSharedComposable
   const createTemplatePromise: typeof import('@vueuse/core').createTemplatePromise
@@ -42,6 +44,7 @@ declare global {
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
   const h: typeof import('vue').h
+  const http: typeof import('../src/utils/request/index').http
   const ignorableWatch: typeof import('@vueuse/core').ignorableWatch
   const inject: typeof import('vue').inject
   const injectLocal: typeof import('@vueuse/core').injectLocal
@@ -337,6 +340,6 @@ declare global {
   export type { UserState } from '../src/stores/user'
   import('../src/stores/user')
   // @ts-ignore
-  export type { TryItResult } from '../src/utils/request/index'
+  export type { TryItResult, RequestConfig, RequestMeta } from '../src/utils/request/index'
   import('../src/utils/request/index')
 }

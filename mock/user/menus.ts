@@ -2,7 +2,7 @@ import { MENU_TYPE } from '@/constants/menu'
 import { defineMock, response } from '../index'
 
 export default defineMock({
-  GET() {
+  '/user/menus'() {
     return response({
       code: 200,
       msg: 'success',

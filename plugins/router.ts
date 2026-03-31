@@ -5,7 +5,7 @@ import { resolveLayoutOptions } from './layout/options'
 const commonExclude = ['**/components/**', '**/hooks/**', '**/composables/**']
 
 function normalizePath(filePath: string) {
-  return filePath.replaceAll('\\', '/')
+  return filePath.replace(/\\/g, '/')
 }
 
 function toRelativePath(filePath: string, prefix: string) {

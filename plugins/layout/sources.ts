@@ -61,7 +61,7 @@ export function resolveLayoutSources(layoutDirs: string[]): ResolvedLayoutSource
         })
       } else {
         const segments = rootDir.split('/').filter(Boolean)
-        const routePrefix = segments.at(-1)
+        const routePrefix = segments[segments.length - 1]
         if (!routePrefix) continue
 
         sources.push({

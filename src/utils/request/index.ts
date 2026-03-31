@@ -1,44 +1,45 @@
-import { http } from './instance'
+import type { Method, RequestBody } from 'alova'
+import { createRequestClient, http, RequestError } from './alova'
 import type { RequestConfig } from './interface'
 
 export type TryItResult<T, E = unknown> = [error: E, result: undefined] | [error: null, result: T]
 
 type TryItFn = (...args: any[]) => any
 
-export function useRequest(config: RequestConfig) {
-  return http.request(config)
+export function useRequest<D = any>(config: RequestConfig & { url: string }): Method<any> {
+  return http.Request<D>(config)
 }
 
 export function useGet<D = any>(url: string, config?: Omit<RequestConfig, 'url' | 'method'>) {
-  return http.get(url, config) as Promise<D>
+  return http.Get<D>(url, config)
 }
 
-export function usePost<D = any, T = any>(
+export function usePost<D = any, T extends RequestBody = RequestBody>(
   url: string,
   data?: T,
   config?: Omit<RequestConfig, 'url' | 'method' | 'data'>,
 ) {
-  return http.post(url, data, config) as Promise<D>
+  return http.Post<D>(url, data, config)
 }
 
-export function usePut<D = any, T = any>(
+export function usePut<D = any, T extends RequestBody = RequestBody>(
   url: string,
   data?: T,
   config?: Omit<RequestConfig, 'url' | 'method' | 'data'>,
 ) {
-  return http.put(url, data, config) as Promise<D>
+  return http.Put<D>(url, data, config)
 }
 
 export function useDelete<D = any>(url: string, config?: Omit<RequestConfig, 'url' | 'method'>) {
-  return http.delete(url, config) as Promise<D>
+  return http.Delete<D>(url, undefined, config)
 }
 
-export function usePatch<D = any, T = any>(
+export function usePatch<D = any, T extends RequestBody = RequestBody>(
   url: string,
   data?: T,
   config?: Omit<RequestConfig, 'url' | 'method' | 'data'>,
 ) {
-  return http.patch(url, data, config) as Promise<D>
+  return http.Patch<D>(url, data, config)
 }
 
 async function tryItBase<TFn extends TryItFn>(
@@ -113,3 +114,5 @@ const tryItHandler = tryIt as TryIt
 tryItHandler.result = createTryItWithResult
 
 export { tryItHandler as tryIt }
+export { createRequestClient, http, RequestError }
+export type { RequestConfig, RequestMeta } from './interface'

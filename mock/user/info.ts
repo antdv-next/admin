@@ -2,7 +2,7 @@ import { v7 } from 'uuid'
 import { defineMock, response } from '../index'
 
 export default defineMock({
-  GET() {
+  '/user/info'() {
     return response(
       {
         code: 200,

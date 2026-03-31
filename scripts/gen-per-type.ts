@@ -9,7 +9,7 @@ const OUTPUT_PATH = resolve(process.cwd(), 'types/permission.d.ts')
 const DEFAULT_PERMISSION_API_URL = 'http://127.0.0.1:6800/api/dev/btns'
 
 function isResolvedMockResponse(value: unknown): value is { body: { data?: unknown[] } } {
-  return typeof value === 'object' && value !== null && '__mockResponse' in value
+  return typeof value === 'object' && value !== null && 'body' in value
 }
 
 async function fetchPermissionData() {
@@ -35,7 +35,23 @@ async function fetchPermissionData() {
       throw error
     }
 
-    const resolved = await Promise.resolve(mockDevBtns.GET())
+    const mockHandler = mockDevBtns.data['/dev/btns'] as
+      | ((request: {
+          data: Record<string, never>
+          headers: Record<string, never>
+          params: Record<string, never>
+          query: Record<string, never>
+        }) => unknown)
+      | undefined
+
+    const resolved = await Promise.resolve(
+      mockHandler?.({
+        data: {},
+        headers: {},
+        params: {},
+        query: {},
+      }),
+    )
 
     const body = isResolvedMockResponse(resolved)
       ? resolved.body
