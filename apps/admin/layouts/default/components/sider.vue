@@ -56,7 +56,7 @@ const handleClickMenu: MenuEmits['click'] = ({ key }) => {
 </script>
 
 <template>
-  <div class="h-full overflow-y-auto antdv-admin-sider">
+  <div class="h-full overflow-y-auto">
     <a-menu
       mode="inline"
       :inline-collapsed="collapsed"

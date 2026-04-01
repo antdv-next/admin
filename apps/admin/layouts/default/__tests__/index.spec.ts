@@ -44,7 +44,7 @@ vi.mock('antdv-next', () => {
 
 vi.mock('@/stores/app', () => ({
   useAppStore: () => ({
-    collapsed: false,
+    collapsed: shallowRef(false),
     toggleCollapsed: vi.fn(),
   }),
 }))
@@ -133,5 +133,77 @@ describe('DefaultLayout', () => {
 
     expect(wrapper.find('[data-test="page-skeleton"]').exists()).toBe(false)
     expect(wrapper.get('[data-test="async-page"]').text()).toBe('Async page ready')
+  })
+
+  it('renders a fixed header and fixed sider shell with content offsets', () => {
+    const RouterViewStub = defineComponent({
+      name: 'RouterViewStub',
+      setup(_, { slots }) {
+        return () =>
+          slots.default?.({
+            Component: defineComponent({
+              name: 'SyncPage',
+              setup() {
+                return () => h('div', { 'data-test': 'sync-page' }, 'Sync page')
+              },
+            }),
+            route: {
+              fullPath: '/admin/workspace/overview',
+            },
+          })
+      },
+    })
+
+    const PassThroughStub = defineComponent({
+      name: 'PassThroughStub',
+      inheritAttrs: false,
+      setup(_, { attrs, slots }) {
+        return () => h('div', attrs, slots.default?.())
+      },
+    })
+
+    const wrapper = mount(DefaultLayout, {
+      global: {
+        stubs: {
+          DefaultHeader: {
+            template: '<div data-test="default-header-stub">Header</div>',
+          },
+          DefaultSider: {
+            template: '<div data-test="default-sider-stub">Sider</div>',
+          },
+          RouterView: RouterViewStub,
+          'router-view': RouterViewStub,
+          AConfigProvider: PassThroughStub,
+          ALayout: PassThroughStub,
+          ALayoutHeader: PassThroughStub,
+          ALayoutSider: PassThroughStub,
+          ALayoutContent: PassThroughStub,
+          'a-config-provider': PassThroughStub,
+          'a-layout': PassThroughStub,
+          'a-layout-header': PassThroughStub,
+          'a-layout-sider': PassThroughStub,
+          'a-layout-content': PassThroughStub,
+        },
+      },
+    })
+
+    const fixedHeader = wrapper.get('[data-test="admin-fixed-header"]')
+    const fixedSider = wrapper.get('[data-test="admin-fixed-sider"]')
+    const siderSpacer = wrapper.get('[data-test="admin-sider-header-spacer"]')
+    const siderBody = wrapper.get('[data-test="admin-sider-scroll-body"]')
+    const content = wrapper.get('[data-test="admin-layout-content"]')
+
+    expect(fixedHeader.classes()).toContain('fixed')
+    expect(fixedHeader.classes()).toContain('top-0')
+    expect(fixedSider.classes()).toContain('fixed')
+    expect(fixedSider.classes()).toContain('inset-y-0')
+    expect(fixedSider.classes()).toContain('antdv-admin-sider')
+    expect(content.classes()).toContain('pt-14')
+    expect(fixedHeader.attributes('style')).toContain('z-index: 50')
+    expect(fixedSider.attributes('style')).toContain('z-index: 40')
+    expect(content.attributes('style')).toContain('margin-left: 245px')
+    expect(fixedSider.attributes('style')).toContain('width: 245px')
+    expect(siderSpacer.classes()).toContain('h-14')
+    expect(siderBody.attributes('style')).toContain('height: calc(100vh - 56px)')
   })
 })
