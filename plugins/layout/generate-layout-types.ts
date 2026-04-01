@@ -1,5 +1,5 @@
 import { existsSync, globSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { dirname } from 'node:path'
+import { dirname, matchesGlob } from 'node:path'
 import { LAYOUT_TYPES_DTS_PATH } from './constants'
 import type { ResolvedLayoutPluginOptions } from './types'
 import { normalizeExcludeGlob, normalizeFsPath } from './utils'
@@ -99,14 +99,18 @@ export function generateLayoutTypeDts(root: string, options: ResolvedLayoutPlugi
     return normalizeExcludeGlob(pattern).replace(/^\/+/, '')
   })
 
+  const isExcluded = (filePath: string) => {
+    const normalizedPath = normalizeFsPath(filePath).replace(/^\/+/, '')
+    return exclude.some(pattern => matchesGlob(`/${normalizedPath}`, `/${pattern}`))
+  }
+
   for (const layoutDir of options.layoutDirs) {
     const globPattern = `${normalizeLayoutDir(layoutDir)}/**/*.vue`
-    const files = globSync(globPattern, {
-      cwd: root,
-      exclude,
-    })
+    const files = globSync(globPattern, { cwd: root })
 
     for (const filePath of files) {
+      if (isExcluded(filePath)) continue
+
       const key = resolveLayoutKey(filePath, options)
       if (key) layoutNames.add(key)
     }
