@@ -72,12 +72,10 @@ const handleClickMenu: MenuEmits['click'] = info => {
   <div :class="isDark ? '' : 'text-white/80'" class="flex h-full items-center justify-between">
     <div class="flex items-center gap-3">
       <Logo />
-      <a-button type="text" size="small" @click="emit('toggleCollapse')">
-        <template #icon>
-          <MenuUnfoldOutlined v-if="collapsed" />
-          <MenuFoldOutlined v-else />
-        </template>
-      </a-button>
+      <span class="cursor-pointer" @click="emit('toggleCollapse')">
+        <MenuUnfoldOutlined v-if="collapsed" />
+        <MenuFoldOutlined v-else />
+      </span>
     </div>
     <div class="flex items-center gap-3">
       <div class="flex items-center justify-center h-full" v-if="showUserLoading">

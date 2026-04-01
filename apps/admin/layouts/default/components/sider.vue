@@ -62,7 +62,7 @@ const handleClickMenu: MenuEmits['click'] = ({ key }) => {
       :inline-collapsed="collapsed"
       :items="menuItems"
       v-model:open-keys="openKeys"
-      v-model:selected-keys="selectedKeys"
+      :selected-keys="selectedKeys"
       @click="handleClickMenu"
       class="w-full"
       :classes="{

@@ -34,6 +34,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/admin/[...path]': RouteRecordInfo<
+      '/admin/[...path]',
+      '/admin/:path(.*)',
+      { path: ParamValue<true> },
+      { path: ParamValue<false> },
+      | never
+    >,
     '/admin/system/config/': RouteRecordInfo<
       '/admin/system/config/',
       '/admin/system/config',
@@ -178,6 +185,12 @@ declare module 'vue-router/auto-routes' {
     'apps/admin/pages/index.vue': {
       routes:
         | '/admin/'
+      views:
+        | never
+    }
+    'apps/admin/pages/[...path].vue': {
+      routes:
+        | '/admin/[...path]'
       views:
         | never
     }
