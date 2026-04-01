@@ -38,6 +38,13 @@ export default defineMock({
           icon: 'SettingOutlined',
         },
         {
+          id: '9',
+          parentId: '4',
+          path: '/admin/system/menu',
+          menuStatus: 0,
+          title: '菜单管理',
+        },
+        {
           id: '5',
           parentId: '4',
           path: '/admin/system/config',

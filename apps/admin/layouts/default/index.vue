@@ -6,6 +6,7 @@ import { useGlobalToken } from '@/composables/token'
 import { useAppStore } from '@/stores/app'
 import { defaultConfig } from '../components/config'
 import DefaultHeader from './components/header.vue'
+import PageSkeleton from './components/page-skeleton.vue'
 import DefaultSider from './components/sider.vue'
 
 type ThemeType = NonNullable<ConfigProviderProps['theme']>
@@ -47,7 +48,14 @@ const themeConfig = computed(() => {
         </a-layout-sider>
         <a-layout>
           <a-layout-content>
-            <router-view />
+            <router-view v-slot="{ Component, route }">
+              <Suspense>
+                <component :is="Component" :key="route.fullPath" />
+                <template #fallback>
+                  <PageSkeleton />
+                </template>
+              </Suspense>
+            </router-view>
           </a-layout-content>
         </a-layout>
       </a-layout>

@@ -5,5 +5,6 @@ declare module 'vue' {
     export interface GlobalComponents {
       Access: typeof import("../src/components/access/access.vue")
       AntdIcon: typeof import("../src/components/icons/antd.vue")
+      PageContainer: typeof import("../src/components/page-container/index.vue")
     }
 }
