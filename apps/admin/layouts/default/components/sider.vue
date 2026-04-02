@@ -59,7 +59,6 @@ const handleClickMenu: MenuEmits['click'] = ({ key }) => {
   <div class="h-full overflow-y-auto">
     <a-menu
       mode="inline"
-      :inline-collapsed="collapsed"
       :items="menuItems"
       v-model:open-keys="openKeys"
       :selected-keys="selectedKeys"
@@ -79,12 +78,6 @@ const handleClickMenu: MenuEmits['click'] = ({ key }) => {
 </template>
 
 <style>
-.antdv-admin-sider {
-  box-shadow: 2px 0 8px #1d23290d;
-}
-.dark .antdv-admin-sider {
-  box-shadow: 0 2px 8px #0d0d0da6;
-}
 .antdv-admin-sider-root {
   border-inline-end: unset;
 }

@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import {
-  LogoutOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  UserOutlined,
-} from '@antdv-next/icons'
+import { LogoutOutlined, UserOutlined } from '@antdv-next/icons'
 import type { MenuEmits, MenuProps } from 'antdv-next'
 import { useUserStore } from '@/stores/user'
 import Logo from '../../components/logo.vue'
@@ -12,14 +7,6 @@ import Logo from '../../components/logo.vue'
 defineOptions({
   name: 'DefaultHeader',
 })
-
-defineProps<{
-  collapsed: boolean
-}>()
-
-const emit = defineEmits<{
-  toggleCollapse: []
-}>()
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -72,10 +59,6 @@ const handleClickMenu: MenuEmits['click'] = info => {
   <div :class="isDark ? '' : 'text-white/80'" class="flex h-full items-center justify-between">
     <div class="flex items-center gap-3">
       <Logo />
-      <span class="cursor-pointer" @click="emit('toggleCollapse')">
-        <MenuUnfoldOutlined v-if="collapsed" />
-        <MenuFoldOutlined v-else />
-      </span>
     </div>
     <div class="flex items-center gap-3">
       <div class="flex items-center justify-center h-full" v-if="showUserLoading">
