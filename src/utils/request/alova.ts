@@ -18,6 +18,7 @@ const MOCK_MODULES = import.meta.glob(
     '!../../../mock/**/*.spec.ts',
     '!../../../mock/**/*.test.ts',
     '!../../../mock/**/__tests__/**/*.ts',
+    '!../../../mock/**/seeds/**/*.ts',
   ],
   { eager: true },
 ) as Record<

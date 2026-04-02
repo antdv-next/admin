@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { ColProps, FormInstance, SelectProps } from 'antdv-next'
+import { SettingOutlined } from '@antdv-next/icons'
+import type { ColProps, FormInstance, SelectProps, TableProps } from 'antdv-next'
 import type { MenuInfo } from '@/api/menu'
 import SearchFormGrid from '@/components/search-form-grid/index.vue'
 import SearchFormGridItem from '@/components/search-form-grid/item.vue'
@@ -40,6 +41,25 @@ const formRef = shallowRef<FormInstance>()
 const handleSearch = () => {
   console.log(searchForm)
 }
+
+const columns: TableProps['columns'] = [
+  {
+    dataIndex: 'name',
+    title: '菜单名称',
+  },
+  {
+    dataIndex: 'menuType',
+    title: '菜单类型',
+  },
+  {
+    dataIndex: 'path',
+    title: '路由路径',
+  },
+  {
+    dataIndex: 'action',
+    title: '操作列',
+  },
+]
 </script>
 
 <template>
@@ -76,6 +96,34 @@ const handleSearch = () => {
       </a-form>
     </div>
 
-    <div>Table</div>
+    <div class="bg-container mx-4 rounded px-4 pb-4">
+      <a-table :columns="columns">
+        <template #title>
+          <div class="flex justify-between items-center">
+            <span class="text-lg font-bold">查询表格</span>
+            <div class="flex items-center">
+              <a-button type="text" size="small">
+                <template #icon>
+                  <SettingOutlined />
+                </template>
+              </a-button>
+            </div>
+          </div>
+        </template>
+        <template #bodyCell="{ record, column }">
+          <template v-if="column.dataIndex === 'menuType'">
+            <template v-if="record.menuType === 'menu_type_dir'">
+              <a-tag color="blue">目录</a-tag>
+            </template>
+            <template v-else-if="record.menuType === 'menu_type_btn'">
+              <a-tag color="cyan">按钮</a-tag>
+            </template>
+            <template v-else>
+              <a-tag color="success"> 菜单 </a-tag>
+            </template>
+          </template>
+        </template>
+      </a-table>
+    </div>
   </page-container>
 </template>
