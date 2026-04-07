@@ -44,14 +44,12 @@ async function fetchPermissionData() {
         }) => unknown)
       | undefined
 
-    const resolved = await Promise.resolve(
-      mockHandler?.({
-        data: {},
-        headers: {},
-        params: {},
-        query: {},
-      }),
-    )
+    const resolved = await mockHandler?.({
+      data: {},
+      headers: {},
+      params: {},
+      query: {},
+    })
 
     const body = isResolvedMockResponse(resolved)
       ? resolved.body
