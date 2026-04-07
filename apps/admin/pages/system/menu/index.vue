@@ -77,6 +77,10 @@ const columns: TableProps['columns'] = [
     title: '路由路径',
   },
   {
+    dataIndex: 'permission',
+    title: '权限',
+  },
+  {
     dataIndex: 'action',
     title: '操作列',
     width: 120,
@@ -164,6 +168,12 @@ const columns: TableProps['columns'] = [
           <template v-else-if="column.dataIndex === 'path'">
             <template v-if="record.path">
               {{ record.path }}
+            </template>
+            <template v-else> - </template>
+          </template>
+          <template v-else-if="column.dataIndex === 'permission'">
+            <template v-if="record.permission">
+              {{ record.permission }}
             </template>
             <template v-else> - </template>
           </template>
