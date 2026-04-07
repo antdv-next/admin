@@ -39,6 +39,9 @@ export function loadPlugins(mode: string, baseUrl: string) {
     layout(layoutOptions),
     i18n({
       dts: 'types/i18n.d.ts',
+      json: {
+        outDir: 'public/locales',
+      },
     }),
     // vue-router的插件必须放在vue插件前面
     vue(),

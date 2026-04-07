@@ -2,6 +2,7 @@ import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vite-plus/test'
+import { shouldGenerateJsonAssets } from '../i18n'
 import { mergeMessageTrees } from '../i18n/merge'
 import { normalizeNamespaceSegments } from '../i18n/namespace'
 import { resolveI18nPluginOptions } from '../i18n/options'
@@ -215,5 +216,50 @@ describe('createI18nRuntimeModuleCode', () => {
     expect(code).toContain('const loadI18n = async (locale: string) => {')
     expect(code).toContain('["zh-CN", defaultMessages]')
     expect(code).toContain('() => import("/repo/src/locales/en-US/antd.ts")')
+  })
+})
+
+describe('shouldGenerateJsonAssets', () => {
+  it('only enables json generation for production builds when json output is configured', () => {
+    expect(
+      shouldGenerateJsonAssets({
+        command: 'build',
+        mode: 'production',
+        json: {
+          outDir: 'public/locales',
+          fileName: (locale: string) => `${locale}.json`,
+        },
+      }),
+    ).toBe(true)
+
+    expect(
+      shouldGenerateJsonAssets({
+        command: 'serve',
+        mode: 'development',
+        json: {
+          outDir: 'public/locales',
+          fileName: (locale: string) => `${locale}.json`,
+        },
+      }),
+    ).toBe(false)
+
+    expect(
+      shouldGenerateJsonAssets({
+        command: 'build',
+        mode: 'development',
+        json: {
+          outDir: 'public/locales',
+          fileName: (locale: string) => `${locale}.json`,
+        },
+      }),
+    ).toBe(false)
+
+    expect(
+      shouldGenerateJsonAssets({
+        command: 'build',
+        mode: 'production',
+        json: false,
+      }),
+    ).toBe(false)
   })
 })

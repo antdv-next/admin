@@ -7,6 +7,7 @@
     "preview": "vp preview",
     "check": "vp check --fix",
     "gen:perType": "cross-env NODE_ENV=development esno scripts/gen-per-type.ts",
+    "gen:i18n-json": "cross-env NODE_ENV=development esno scripts/gen-i18n-json.ts",
     "db:generate:dev": "cross-env NODE_ENV=development drizzle-kit generate",
     "db:migrate:dev": "cross-env NODE_ENV=development drizzle-kit migrate",
     "db:pull:dev": "cross-env NODE_ENV=development drizzle-kit pull",

@@ -3,12 +3,25 @@ import { dirname } from 'node:path'
 import type { Plugin } from 'vite-plus'
 import { RESOLVED_VIRTUAL_I18N_MODULE_ID, VIRTUAL_I18N_MODULE_ID } from './constants'
 import { createI18nDts } from './dts'
+import { generateLocaleJsonFiles } from './json'
 import { resolveI18nPluginOptions } from './options'
 import type { I18nPluginOptions } from './options'
 import { createI18nRuntimeModuleCode } from './runtime'
 import { scanLocaleSources } from './scan'
 
 export type { I18nPluginOptions } from './options'
+
+export function shouldGenerateJsonAssets({
+  command,
+  mode,
+  json,
+}: {
+  command: 'build' | 'serve'
+  mode: string
+  json: false | object
+}) {
+  return command === 'build' && mode === 'production' && json !== false
+}
 
 function writeIfChanged(filePath: string, content: string) {
   mkdirSync(dirname(filePath), { recursive: true })
@@ -24,6 +37,8 @@ function writeIfChanged(filePath: string, content: string) {
 export function i18n(userOptions: I18nPluginOptions = {}): Plugin {
   const options = resolveI18nPluginOptions(userOptions)
   let root = process.cwd()
+  let command: 'build' | 'serve' = 'serve'
+  let mode = 'development'
   const shouldGenerateOnStartup = !process.argv.includes('check')
 
   const getSources = () => scanLocaleSources(root, options)
@@ -45,10 +60,15 @@ export function i18n(userOptions: I18nPluginOptions = {}): Plugin {
     enforce: 'pre',
     configResolved(config) {
       root = config.root
+      command = config.command
+      mode = config.mode
       if (shouldGenerateOnStartup) generateTypes()
     },
-    buildStart() {
+    async buildStart() {
       if (shouldGenerateOnStartup) generateTypes()
+      if (shouldGenerateJsonAssets({ command, mode, json: options.json })) {
+        await generateLocaleJsonFiles(root, getSources(), options)
+      }
     },
     configureServer({ moduleGraph, watcher, ws }) {
       watcher.add([
