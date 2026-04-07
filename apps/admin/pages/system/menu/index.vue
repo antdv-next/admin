@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SettingOutlined } from '@antdv-next/icons'
+import { SettingOutlined, ReloadOutlined } from '@antdv-next/icons'
 import type { ColProps, FormInstance, SelectProps, TableProps } from 'antdv-next'
 import type { MenuInfo } from '@/api/menu'
 import SearchFormGrid from '@/components/search-form-grid/index.vue'
@@ -101,7 +101,12 @@ const columns: TableProps['columns'] = [
         <template #title>
           <div class="flex justify-between items-center">
             <span class="text-lg font-bold">查询表格</span>
-            <div class="flex items-center">
+            <div class="flex items-center gap-2">
+              <a-button type="text" size="small">
+                <template #icon>
+                  <ReloadOutlined />
+                </template>
+              </a-button>
               <a-button type="text" size="small">
                 <template #icon>
                   <SettingOutlined />

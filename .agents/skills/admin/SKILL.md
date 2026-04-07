@@ -19,6 +19,8 @@ Use this skill for repo-specific conventions. Load only the reference file that 
   `references/permissions.md`
 - Sub-app pages, file-based routing, nested route shells, and scaffolding:
   `references/sub-app-routing.md`
+- Removing a sub app and cleaning reverse dependencies:
+  `references/sub-app-removal.md`
 - Sub-app layouts, module default layout resolution, and layout plugin behavior:
   `references/sub-app-layouts.md`
 - Local SVG icon conventions for global and sub-app scopes:
@@ -40,6 +42,8 @@ Use this skill for repo-specific conventions. Load only the reference file that 
   read `references/permissions.md`
 - Adding pages under `apps/*/pages`, debugging file-based routing, or creating a shared route shell like `/admin/user/**`:
   read `references/sub-app-routing.md`
+- Removing a sub app under `apps/*`, or cleaning its alias, route, icon, or menu references:
+  read `references/sub-app-removal.md`
 - Adding or adjusting `apps/*/layouts`, changing `meta.layout`, or updating layout plugin defaults:
   read `references/sub-app-layouts.md`
 - Adding or debugging local SVG icons in `src/assets/icons` or `apps/*/assets/icons`:
