@@ -1,0 +1,202 @@
+import { dirname, relative } from 'node:path'
+import { normalizeFsPath } from './namespace'
+import type { ResolvedI18nPluginOptions } from './options'
+import type { LocaleSource } from './scan'
+
+function sanitizeTypeNamePart(value: string) {
+  return value
+    .replace(/[^a-zA-Z0-9]+/g, ' ')
+    .replace(/(^|\s)(\w)/g, (_, __, char: string) => char.toUpperCase())
+    .replace(/\s+/g, '')
+}
+
+function toTypeName(prefix: string, locale: string) {
+  return `${prefix}${sanitizeTypeNamePart(locale)}`
+}
+
+function toImportTypePath(root: string, dtsPath: string, filePath: string) {
+  const fromDir = dirname(normalizeFsPath(`${root}/${dtsPath}`))
+  let relativePath = normalizeFsPath(relative(fromDir, filePath))
+  relativePath = relativePath.replace(/\.[^.]+$/, '')
+  if (!relativePath.startsWith('.')) relativePath = `./${relativePath}`
+  return relativePath
+}
+
+function toTypeKey(segment: string) {
+  return /^[$A-Z_a-z][$\w]*$/.test(segment) ? segment : `'${segment.replace(/'/g, "\\'")}'`
+}
+
+function wrapTypeExpression(
+  namespaceSegments: string[],
+  valueExpression: string,
+  level = 0,
+): string {
+  const indent = '  '.repeat(level)
+  const propertyIndent = '  '.repeat(level + 1)
+
+  if (namespaceSegments.length === 0) return valueExpression
+
+  const [head, ...tail] = namespaceSegments
+  if (tail.length === 0) {
+    return `{\n${propertyIndent}${toTypeKey(head)}: ${valueExpression}\n${indent}}`
+  }
+
+  return `{\n${propertyIndent}${toTypeKey(head)}: ${wrapTypeExpression(tail, valueExpression, level + 1)}\n${indent}}`
+}
+
+function sortSources(left: LocaleSource, right: LocaleSource) {
+  return (
+    left.locale.localeCompare(right.locale) ||
+    left.namespaceSegments.join('.').localeCompare(right.namespaceSegments.join('.')) ||
+    left.filePath.localeCompare(right.filePath)
+  )
+}
+
+function createSchemaEntries(
+  root: string,
+  dtsPath: string,
+  locale: string,
+  sources: LocaleSource[],
+) {
+  return sources
+    .filter(source => source.locale === locale)
+    .sort(sortSources)
+    .map((source, index) => {
+      const importTypePath = toImportTypePath(root, dtsPath, source.filePath).replace(/'/g, "\\'")
+      const importType = `typeof import('${importTypePath}').default`
+      const nodeTypeName = `${toTypeName('LocaleNode', locale)}${index}`
+      return {
+        nodeTypeName,
+        source,
+        declaration: `type ${nodeTypeName} = ${wrapTypeExpression(source.namespaceSegments, importType)}`,
+      }
+    })
+}
+
+export function validateLocaleSchemas(sources: LocaleSource[], defaultLocale: string) {
+  const baselineKeys = new Set(
+    sources
+      .filter(source => source.locale === defaultLocale)
+      .map(source => source.namespaceSegments.join('.')),
+  )
+
+  const locales = [...new Set(sources.map(source => source.locale))].filter(
+    locale => locale !== defaultLocale,
+  )
+
+  for (const locale of locales) {
+    const localeKeys = new Set(
+      sources
+        .filter(source => source.locale === locale)
+        .map(source => source.namespaceSegments.join('.')),
+    )
+    const missing = [...baselineKeys].filter(key => !localeKeys.has(key))
+    const extra = [...localeKeys].filter(key => !baselineKeys.has(key))
+
+    if (missing.length > 0 || extra.length > 0) {
+      const details = [
+        missing.length > 0 ? `missing: ${missing.join(', ')}` : '',
+        extra.length > 0 ? `extra: ${extra.join(', ')}` : '',
+      ]
+        .filter(Boolean)
+        .join('; ')
+      throw new Error(
+        `[i18n] Locale "${locale}" does not match "${defaultLocale}" schema: ${details}`,
+      )
+    }
+  }
+}
+
+export function createI18nDts(
+  sources: LocaleSource[],
+  options: Pick<ResolvedI18nPluginOptions, 'defaultLocale' | 'dts' | 'strict'> & { root: string },
+) {
+  const dtsPath = options.dts || 'types/i18n.d.ts'
+  const locales = [...new Set(sources.map(source => source.locale))].sort((a, b) =>
+    a.localeCompare(b),
+  )
+
+  if (options.strict) {
+    validateLocaleSchemas(sources, options.defaultLocale)
+  }
+
+  const nodeDeclarations: string[] = []
+  const schemaDeclarations: string[] = []
+
+  for (const locale of locales) {
+    const schemaEntries = createSchemaEntries(options.root, dtsPath, locale, sources)
+    nodeDeclarations.push(...schemaEntries.map(entry => entry.declaration))
+    const schemaTypeName = toTypeName('LocaleSchema', locale)
+    const tupleEntries = schemaEntries.map(entry => entry.nodeTypeName).join(', ')
+    schemaDeclarations.push(`type ${schemaTypeName} = MergeAll<[${tupleEntries}]>`)
+  }
+
+  const baselineSchemaTypeName = toTypeName('LocaleSchema', options.defaultLocale)
+  const strictChecks = options.strict
+    ? locales
+        .filter(locale => locale !== options.defaultLocale)
+        .map(locale => {
+          const localeTypeName = toTypeName('LocaleSchema', locale)
+          return `type _LocaleSchemaCheck${sanitizeTypeNamePart(locale)} = AssertTrue<IsEqual<${baselineSchemaTypeName}, ${localeTypeName}>>`
+        })
+    : []
+
+  return `/* eslint-disable */
+// Generated by plugins/i18n. Do not edit this file.
+import 'vue-i18n'
+
+type Simplify<T> = {
+  [K in keyof T]: T[K]
+}
+
+type IsPlainObject<T> = T extends (...args: never[]) => unknown
+  ? false
+  : T extends readonly unknown[]
+    ? false
+    : T extends object
+      ? true
+      : false
+
+type DeepMerge<A, B> =
+  IsPlainObject<A> extends true
+    ? IsPlainObject<B> extends true
+      ? Simplify<{
+          [K in keyof A | keyof B]:
+            K extends keyof B
+              ? K extends keyof A
+                ? DeepMerge<A[K], B[K]>
+                : B[K]
+              : K extends keyof A
+                ? A[K]
+                : never
+        }>
+      : B
+    : B
+
+type MergeAll<T extends readonly unknown[], Acc = {}> = T extends readonly [
+  infer Head,
+  ...infer Tail,
+]
+  ? MergeAll<Tail, DeepMerge<Acc, Head>>
+  : Acc
+
+type IsEqual<A, B> =
+  (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false
+
+type AssertTrue<T extends true> = T
+
+${nodeDeclarations.join('\n\n')}
+
+${schemaDeclarations.join('\n\n')}
+
+${strictChecks.join('\n')}
+
+export type GeneratedI18nSchema = ${baselineSchemaTypeName}
+
+declare module 'vue-i18n' {
+  export interface DefineLocaleMessage extends ${baselineSchemaTypeName} {}
+}
+
+export {}
+`
+}

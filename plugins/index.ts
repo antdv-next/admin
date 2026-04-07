@@ -10,6 +10,7 @@ import components from 'unplugin-vue-components/vite'
 import dayjs from 'vite-plugin-dayjs'
 import { loadEnv } from 'vite-plus'
 import vueRouter from 'vue-router/vite'
+import { i18n } from './i18n'
 import { loadIcons } from './icons'
 import type { LayoutPluginOptions } from './layout'
 import { layout } from './layout'
@@ -36,6 +37,9 @@ export function loadPlugins(mode: string, baseUrl: string) {
       routesFolder: loadRouter(layoutOptions),
     }),
     layout(layoutOptions),
+    i18n({
+      dts: 'types/i18n.d.ts',
+    }),
     // vue-router的插件必须放在vue插件前面
     vue(),
     Icons({
