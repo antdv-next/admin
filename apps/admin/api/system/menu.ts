@@ -1,7 +1,9 @@
 import type { MenuInfo } from '@/api/menu'
 
-export interface MenuParams {}
-
-export const getMenuListMethod = (data?: MenuParams) => {
-  return http.Post<RL<MenuInfo>>('/admin/system/menu', data)
+export const getMenuListMethod = (page: number, pageSize: number, data?: Partial<MenuInfo>) => {
+  return http.Post<RL<MenuInfo>>('/admin/system/menu', {
+    page,
+    pageSize,
+    ...data,
+  })
 }

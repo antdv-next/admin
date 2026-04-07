@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { SettingOutlined, ReloadOutlined } from '@antdv-next/icons'
+import { SettingOutlined, ReloadOutlined, DeleteOutlined, EditOutlined } from '@antdv-next/icons'
 import type { ColProps, FormInstance, SelectProps, TableProps } from 'antdv-next'
-import { useRequest } from 'alova/client'
+import { usePagination } from 'alova/client'
 import type { MenuInfo } from '@/api/menu'
 import SearchFormGrid from '@/components/search-form-grid/index.vue'
 import SearchFormGridItem from '@/components/search-form-grid/item.vue'
@@ -24,7 +24,7 @@ const formColProps: ColProps = {
   xxxl: 6,
 }
 const searchForm = reactive<Partial<MenuInfo>>({
-  name: '',
+  title: '',
   menuType: '',
 })
 
@@ -37,20 +37,35 @@ const menuTypeOptions: SelectProps['options'] = [
     label: '菜单',
     value: 'menu_type_menu',
   },
+  {
+    label: '按钮',
+    value: 'menu_type_btn',
+  },
 ]
 
-const { loading, data } = useRequest(getMenuListMethod, {})
+const { loading, data, total, pageSize, page, send } = usePagination(
+  (page, pageSize) => getMenuListMethod(page, pageSize, searchForm),
+  {
+    total: response => response.data?.total,
+    data: response => response.data?.list,
+    initialPage: 1,
+    initialPageSize: 10,
+  },
+)
 
-const dataSource = computed(() => data.value?.data?.list ?? [])
+const handlePageChange = (p: number, ps: number) => {
+  page.value = p
+  pageSize.value = ps
+}
 
 const formRef = shallowRef<FormInstance>()
 const handleSearch = () => {
-  console.log(searchForm)
+  send({ ...searchForm })
 }
 
 const columns: TableProps['columns'] = [
   {
-    dataIndex: 'name',
+    dataIndex: 'title',
     title: '菜单名称',
   },
   {
@@ -64,6 +79,8 @@ const columns: TableProps['columns'] = [
   {
     dataIndex: 'action',
     title: '操作列',
+    width: 120,
+    align: 'center',
   },
 ]
 </script>
@@ -74,8 +91,8 @@ const columns: TableProps['columns'] = [
       <a-form layout="inline" name="searchForm" ref="formRef" @submit="handleSearch">
         <search-form-grid :item-col-props="formColProps">
           <search-form-grid-item>
-            <a-form-item label="菜单名称" name="name">
-              <a-input v-model:value="searchForm.name" placeholder="请输入" allow-clear />
+            <a-form-item label="菜单名称" name="title">
+              <a-input v-model:value="searchForm.title" placeholder="请输入" allow-clear />
             </a-form-item>
           </search-form-grid-item>
           <search-form-grid-item>
@@ -103,7 +120,18 @@ const columns: TableProps['columns'] = [
     </div>
 
     <div class="bg-container mx-4 rounded px-4 pb-4">
-      <a-table :columns="columns" :loading="loading" :data-source="dataSource">
+      <a-table
+        :columns="columns"
+        :loading="loading"
+        :data-source="data"
+        :scroll="{ y: 500 }"
+        :pagination="{
+          total,
+          pageSize,
+          current: page,
+          onChange: handlePageChange,
+        }"
+      >
         <template #title>
           <div class="flex justify-between items-center">
             <span class="text-lg font-bold">查询表格</span>
@@ -132,6 +160,26 @@ const columns: TableProps['columns'] = [
             <template v-else>
               <a-tag color="success"> 菜单 </a-tag>
             </template>
+          </template>
+          <template v-else-if="column.dataIndex === 'path'">
+            <template v-if="record.path">
+              {{ record.path }}
+            </template>
+            <template v-else> - </template>
+          </template>
+          <template v-else-if="column.dataIndex === 'action'">
+            <div class="inline-flex items-center gap-2">
+              <a-button type="link" size="small">
+                <template #icon>
+                  <EditOutlined />
+                </template>
+              </a-button>
+              <a-button type="text" size="small" danger>
+                <template #icon>
+                  <DeleteOutlined />
+                </template>
+              </a-button>
+            </div>
           </template>
         </template>
       </a-table>

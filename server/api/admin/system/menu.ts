@@ -1,14 +1,12 @@
-import { defineMock, response } from '../../../../mock'
+import { defineHandler } from 'nitro/h3'
 
-export default defineMock({
-  '[POST]/admin/system/menu': () => {
-    return response({
-      status: 200,
-      data: {
-        total: 100,
-        list: [],
-      },
-      msg: 'success',
-    })
-  },
+export default defineHandler(() => {
+  return {
+    code: 200,
+    msg: 'success',
+    data: {
+      total: 100,
+      list: [],
+    },
+  }
 })
