@@ -5,7 +5,7 @@
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "paths": {
       "@/*": ["./src/*"],
-      "@apps/admin/*": ["./apps/admin/src/*"],
+      "@apps/admin/*": ["./apps/admin/*"],
       "#db/*": ["./server/db/schema/*"]
     },
 

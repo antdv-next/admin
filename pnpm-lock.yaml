@@ -131,8 +131,8 @@ importers:
         specifier: npm:@voidzero-dev/vite-plus-core@^0.1.16
         version: '@voidzero-dev/vite-plus-core@0.1.16(@types/node@24.12.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(publint@0.3.18)(terser@5.46.0)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.2)'
       vite-plugin-dayjs:
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: ^1.0.2
+        version: 1.0.2
       vite-plugin-inspect:
         specifier: ^11.3.3
         version: 11.3.3(@voidzero-dev/vite-plus-core@0.1.16)
@@ -3812,8 +3812,8 @@ packages:
     peerDependencies:
       vite: ^2.6.0 || ^3.0.0 || ^4.0.0 || ^5.0.0-0 || ^6.0.0-0 || ^7.0.0-0
 
-  vite-plugin-dayjs@1.0.1:
-    resolution: {integrity: sha512-k8Z9prlpi/Pa8oETEduym68PmmopQjV5FfcXUFX1qSh2EI0pC1nhC423ZKgeRKrAgjM49xZEB49kGijoFPzViw==}
+  vite-plugin-dayjs@1.0.2:
+    resolution: {integrity: sha512-In33iaGn+uZ0jYbDlFDtEqOSQAKx5ahcIyXkydTYxDT52GT6RwFnum0RRLS8WHlQAKUMbO07zD2AlMnacjbCng==}
 
   vite-plugin-inspect@11.3.3:
     resolution: {integrity: sha512-u2eV5La99oHoYPHE6UvbwgEqKKOQGz86wMg40CCosP6q8BkB6e5xPneZfYagK4ojPJSj5anHCrnvC20DpwVdRA==}
@@ -7210,7 +7210,7 @@ snapshots:
     dependencies:
       vite: '@voidzero-dev/vite-plus-core@0.1.16(@types/node@24.12.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(publint@0.3.18)(terser@5.46.0)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.2)'
 
-  vite-plugin-dayjs@1.0.1: {}
+  vite-plugin-dayjs@1.0.2: {}
 
   vite-plugin-inspect@11.3.3(@voidzero-dev/vite-plus-core@0.1.16):
     dependencies:

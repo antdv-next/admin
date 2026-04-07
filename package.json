@@ -63,7 +63,7 @@
     "unplugin-vue-components": "^32.0.0",
     "uuid": "^13.0.0",
     "vite": "npm:@voidzero-dev/vite-plus-core@^0.1.16",
-    "vite-plugin-dayjs": "^1.0.1",
+    "vite-plugin-dayjs": "^1.0.2",
     "vite-plugin-inspect": "^11.3.3",
     "vite-plus": "^0.1.16",
     "vue-tsc": "^3.2.6"

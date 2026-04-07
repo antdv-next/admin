@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { SettingOutlined, ReloadOutlined } from '@antdv-next/icons'
 import type { ColProps, FormInstance, SelectProps, TableProps } from 'antdv-next'
+import { useRequest } from 'alova/client'
 import type { MenuInfo } from '@/api/menu'
 import SearchFormGrid from '@/components/search-form-grid/index.vue'
 import SearchFormGridItem from '@/components/search-form-grid/item.vue'
+import { getMenuListMethod } from '@apps/admin/api/system/menu'
 
 defineOptions({ name: 'AdminSystemMenuPage' })
 
@@ -36,6 +38,10 @@ const menuTypeOptions: SelectProps['options'] = [
     value: 'menu_type_menu',
   },
 ]
+
+const { loading, data } = useRequest(getMenuListMethod, {})
+
+const dataSource = computed(() => data.value?.data?.list ?? [])
 
 const formRef = shallowRef<FormInstance>()
 const handleSearch = () => {
@@ -97,7 +103,7 @@ const columns: TableProps['columns'] = [
     </div>
 
     <div class="bg-container mx-4 rounded px-4 pb-4">
-      <a-table :columns="columns">
+      <a-table :columns="columns" :loading="loading" :data-source="dataSource">
         <template #title>
           <div class="flex justify-between items-center">
             <span class="text-lg font-bold">查询表格</span>

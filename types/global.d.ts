@@ -12,6 +12,11 @@ declare global {
 
   type R<T = any> = ResponseBody<T>
 
+  type RL<T = any> = ResponseBody<{
+    total: number
+    list: T[]
+  }>
+
   type ER = ErrorResponse
 }
 
