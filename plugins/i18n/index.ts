@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
-import type { Plugin } from 'vite-plus'
+import { createFilter, normalizePath, type Plugin } from 'vite-plus'
 import { RESOLVED_VIRTUAL_I18N_MODULE_ID, VIRTUAL_I18N_MODULE_ID } from './constants'
 import { createI18nDts } from './dts'
 import { generateLocaleJsonFiles } from './json'
@@ -10,6 +10,13 @@ import { createI18nRuntimeModuleCode } from './runtime'
 import { scanLocaleSources } from './scan'
 
 export type { I18nPluginOptions } from './options'
+
+const localeFilePatterns = [
+  'src/locales/**/*.ts',
+  'src/pages/**/locales/**/*.ts',
+  'apps/*/locales/**/*.ts',
+  'apps/*/pages/**/locales/**/*.ts',
+]
 
 export function shouldGenerateJsonAssets({
   command,
@@ -21,6 +28,11 @@ export function shouldGenerateJsonAssets({
   json: false | object
 }) {
   return command === 'build' && mode === 'production' && json !== false
+}
+
+export function createLocaleFileFilter() {
+  const filter = createFilter(localeFilePatterns)
+  return (file: string) => filter(normalizePath(file))
 }
 
 function writeIfChanged(filePath: string, content: string) {
@@ -40,6 +52,7 @@ export function i18n(userOptions: I18nPluginOptions = {}): Plugin {
   let command: 'build' | 'serve' = 'serve'
   let mode = 'development'
   const shouldGenerateOnStartup = !process.argv.includes('check')
+  const localeFileFilter = createLocaleFileFilter()
 
   const getSources = () => scanLocaleSources(root, options)
 
@@ -71,14 +84,9 @@ export function i18n(userOptions: I18nPluginOptions = {}): Plugin {
       }
     },
     configureServer({ moduleGraph, watcher, ws }) {
-      watcher.add([
-        'src/locales/**/*.ts',
-        'src/pages/**/locales/**/*.ts',
-        'apps/*/locales/**/*.ts',
-        'apps/*/pages/**/locales/**/*.ts',
-      ])
+      const updateVirtualModule = (file: string) => {
+        if (!localeFileFilter(file)) return
 
-      const updateVirtualModule = () => {
         generateTypes()
 
         const module = moduleGraph.getModuleById(RESOLVED_VIRTUAL_I18N_MODULE_ID)

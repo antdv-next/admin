@@ -2,7 +2,7 @@ import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vite-plus/test'
-import { shouldGenerateJsonAssets } from '../i18n'
+import { createLocaleFileFilter, shouldGenerateJsonAssets } from '../i18n'
 import { mergeMessageTrees } from '../i18n/merge'
 import { normalizeNamespaceSegments } from '../i18n/namespace'
 import { resolveI18nPluginOptions } from '../i18n/options'
@@ -212,10 +212,21 @@ describe('createI18nRuntimeModuleCode', () => {
     expect(code).toContain('import source1 from "/repo/src/pages/error/locales/zh-CN.ts"')
     expect(code).not.toContain('import source2 from "/repo/src/locales/en-US/antd.ts"')
     expect(code).toContain('const defaultMessages = buildMessages(')
-    expect(code).toContain('const loaders: Record<string, LocaleLoaderRecord[]> = {')
-    expect(code).toContain('const loadI18n = async (locale: string) => {')
+    expect(code).toContain('const loaders = {')
+    expect(code).toContain('const loadI18n = async locale => {')
     expect(code).toContain('["zh-CN", defaultMessages]')
     expect(code).toContain('() => import("/repo/src/locales/en-US/antd.ts")')
+  })
+
+  it('emits browser-executable JavaScript for the virtual module', async () => {
+    const code = createI18nRuntimeModuleCode([], 'zh-CN')
+
+    await expect(import(`data:text/javascript,${encodeURIComponent(code)}`)).resolves.toMatchObject(
+      {
+        default: {},
+        messages: {},
+      },
+    )
   })
 })
 
@@ -261,5 +272,32 @@ describe('shouldGenerateJsonAssets', () => {
         json: false,
       }),
     ).toBe(false)
+  })
+})
+
+describe('createLocaleFileFilter', () => {
+  const filter = createLocaleFileFilter()
+
+  it('matches locale source files and ignores unrelated files', () => {
+    expect(
+      filter(
+        '/Users/yanyu/workspace/gitea/antdv-next/admin/src/locales/zh-CN/workspace/overview.ts',
+      ),
+    ).toBe(true)
+    expect(
+      filter('/Users/yanyu/workspace/gitea/antdv-next/admin/src/pages/error/locales/zh-CN.ts'),
+    ).toBe(true)
+    expect(
+      filter('/Users/yanyu/workspace/gitea/antdv-next/admin/apps/admin/locales/en-US/dashboard.ts'),
+    ).toBe(true)
+    expect(
+      filter(
+        '/Users/yanyu/workspace/gitea/antdv-next/admin/apps/admin/pages/error/locales/en-US.ts',
+      ),
+    ).toBe(true)
+    expect(filter('/Users/yanyu/workspace/gitea/antdv-next/admin/src/main.ts')).toBe(false)
+    expect(filter('/Users/yanyu/workspace/gitea/antdv-next/admin/src/pages/error/index.vue')).toBe(
+      false,
+    )
   })
 })
