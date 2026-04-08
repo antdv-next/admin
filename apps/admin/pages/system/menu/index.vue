@@ -43,7 +43,7 @@ const menuTypeOptions: SelectProps['options'] = [
   },
 ]
 
-const { loading, data, total, pageSize, page, send } = usePagination(
+const { loading, data, total, pageSize, page, send, refresh } = usePagination(
   (page, pageSize) => getMenuListMethod(page, pageSize, searchForm),
   {
     total: response => response.data?.total,
@@ -140,7 +140,9 @@ const columns: TableProps['columns'] = [
           <div class="flex justify-between items-center">
             <span class="text-lg font-bold">查询表格</span>
             <div class="flex items-center gap-2">
-              <a-button type="text" size="small">
+              <a-button type="primary" size="small">新增</a-button>
+              <a-divider vertical />
+              <a-button type="text" size="small" :loading="loading" @click="() => refresh()">
                 <template #icon>
                   <ReloadOutlined />
                 </template>

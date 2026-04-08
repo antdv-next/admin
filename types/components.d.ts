@@ -21,6 +21,7 @@ declare module 'vue' {
     ACol: typeof import('antdv-next')['Col']
     AConfigProvider: typeof import('antdv-next')['ConfigProvider']
     ADatePicker: typeof import('antdv-next')['DatePicker']
+    ADivider: typeof import('antdv-next')['Divider']
     ADropdown: typeof import('antdv-next')['Dropdown']
     AFlex: typeof import('antdv-next')['Flex']
     AForm: typeof import('antdv-next')['Form']
