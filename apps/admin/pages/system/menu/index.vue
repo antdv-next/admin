@@ -6,6 +6,7 @@ import type { MenuInfo } from '@/api/menu'
 import SearchFormGrid from '@/components/search-form-grid/index.vue'
 import SearchFormGridItem from '@/components/search-form-grid/item.vue'
 import { getMenuListMethod } from '@apps/admin/api/system/menu'
+import MenuModal from './components/menu-modal.vue'
 
 defineOptions({ name: 'AdminSystemMenuPage' })
 
@@ -87,6 +88,15 @@ const columns: TableProps['columns'] = [
     align: 'center',
   },
 ]
+type ModalType = 'create' | 'edit'
+const open = shallowRef(false)
+const modalType = shallowRef<ModalType>('create')
+const editingRecord = shallowRef<MenuInfo>()
+const handleModal = (type: ModalType, record?: MenuInfo) => {
+  modalType.value = type
+  open.value = true
+  editingRecord.value = record
+}
 </script>
 
 <template>
@@ -140,7 +150,7 @@ const columns: TableProps['columns'] = [
           <div class="flex justify-between items-center">
             <span class="text-lg font-bold">查询表格</span>
             <div class="flex items-center gap-2">
-              <a-button type="primary" size="small">新增</a-button>
+              <a-button type="primary" size="small" @click="handleModal('create')">新增</a-button>
               <a-divider vertical />
               <a-button type="text" size="small" :loading="loading" @click="() => refresh()">
                 <template #icon>
@@ -181,7 +191,7 @@ const columns: TableProps['columns'] = [
           </template>
           <template v-else-if="column.dataIndex === 'action'">
             <div class="inline-flex items-center gap-2">
-              <a-button type="link" size="small">
+              <a-button type="link" size="small" @click="handleModal('create', record as MenuInfo)">
                 <template #icon>
                   <EditOutlined />
                 </template>
@@ -196,5 +206,6 @@ const columns: TableProps['columns'] = [
         </template>
       </a-table>
     </div>
+    <MenuModal v-model:open="open" :type="modalType" :record="editingRecord" />
   </page-container>
 </template>

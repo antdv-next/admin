@@ -7,3 +7,7 @@ export const getMenuListMethod = (page: number, pageSize: number, data?: Partial
     ...data,
   })
 }
+
+export const getMenuInfoMethod = (id: NonNullable<MenuInfo['id']>) => {
+  return http.Get<R<MenuInfo>>(`/admin/system/menu/${id}`)
+}
