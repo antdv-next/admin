@@ -41,13 +41,27 @@ watch(
   <a-modal
     v-model:open="open"
     :title="type === 'edit' ? '编辑菜单' : '菜单创建'"
-    width="520px"
+    width="820px"
     :loading="loading"
   >
-    <a-form :model="record" layout="vertical">
-      <a-form-item label="菜单名称" name="title">
-        <a-input v-model:value="record.title" placeholder="请输入" />
-      </a-form-item>
+    <a-form :model="record">
+      <a-row :gutter="[20, 20]">
+        <a-col :span="12">
+          <a-form-item label="菜单名称" name="title">
+            <a-input v-model:value="record.title" placeholder="请输入" />
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label="菜单多语言" name="locale">
+            <a-input v-model:value="record.locale" placeholder="请输入" />
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label="图标" name="icon">
+            <a-input v-model:value="record.icon" placeholder="请输入" />
+          </a-form-item>
+        </a-col>
+      </a-row>
     </a-form>
   </a-modal>
 </template>
