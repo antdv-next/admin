@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { SettingOutlined, ReloadOutlined, DeleteOutlined, EditOutlined } from '@antdv-next/icons'
-import type { ColProps, FormInstance, SelectProps, TableProps } from 'antdv-next'
+import type { ColProps, FormInstance, TableProps } from 'antdv-next'
 import { usePagination } from 'alova/client'
 import type { MenuInfo } from '@/api/menu'
 import SearchFormGrid from '@/components/search-form-grid/index.vue'
 import SearchFormGridItem from '@/components/search-form-grid/item.vue'
 import { getMenuListMethod } from '@apps/admin/api/system/menu'
 import MenuModal from './components/menu-modal.vue'
+import { menuTypeOptions } from './data'
 
 defineOptions({ name: 'AdminSystemMenuPage' })
 
@@ -26,23 +27,8 @@ const formColProps: ColProps = {
 }
 const searchForm = reactive<Partial<MenuInfo>>({
   title: '',
-  menuType: '',
+  menuType: 'menu_type_menu',
 })
-
-const menuTypeOptions: SelectProps['options'] = [
-  {
-    label: '目录',
-    value: 'menu_type_dir',
-  },
-  {
-    label: '菜单',
-    value: 'menu_type_menu',
-  },
-  {
-    label: '按钮',
-    value: 'menu_type_btn',
-  },
-]
 
 const { loading, data, total, pageSize, page, send, refresh } = usePagination(
   (page, pageSize) => getMenuListMethod(page, pageSize, searchForm),
