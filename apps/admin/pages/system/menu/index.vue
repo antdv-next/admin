@@ -5,9 +5,10 @@ import { usePagination } from 'alova/client'
 import type { MenuInfo } from '@/api/menu'
 import SearchFormGrid from '@/components/search-form-grid/index.vue'
 import SearchFormGridItem from '@/components/search-form-grid/item.vue'
+import { MENU_TYPE } from '@/constants/menu'
 import { getMenuListMethod } from '@apps/admin/api/system/menu'
 import MenuModal from './components/menu-modal.vue'
-import { menuTypeOptions } from './data'
+import { getMenuTypeLabel, getMenuTypeTagColor, menuTypeOptions } from './data'
 
 defineOptions({ name: 'AdminSystemMenuPage' })
 
@@ -27,7 +28,7 @@ const formColProps: ColProps = {
 }
 const searchForm = reactive<Partial<MenuInfo>>({
   title: '',
-  menuType: 'menu_type_menu',
+  menuType: '',
 })
 
 const { loading, data, total, pageSize, page, send, refresh } = usePagination(
@@ -153,15 +154,9 @@ const handleModal = (type: ModalType, record?: MenuInfo) => {
         </template>
         <template #bodyCell="{ record, column }">
           <template v-if="column.dataIndex === 'menuType'">
-            <template v-if="record.menuType === 'menu_type_dir'">
-              <a-tag color="blue">目录</a-tag>
-            </template>
-            <template v-else-if="record.menuType === 'menu_type_btn'">
-              <a-tag color="cyan">按钮</a-tag>
-            </template>
-            <template v-else>
-              <a-tag color="success"> 菜单 </a-tag>
-            </template>
+            <a-tag :color="getMenuTypeTagColor(record.menuType)">
+              {{ getMenuTypeLabel(record.menuType) ?? '-' }}
+            </a-tag>
           </template>
           <template v-else-if="column.dataIndex === 'path'">
             <template v-if="record.path">

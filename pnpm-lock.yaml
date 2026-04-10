@@ -33,6 +33,9 @@ importers:
       antdv-next:
         specifier: ^1.1.9
         version: 1.1.9(vue@3.5.32(typescript@6.0.2))
+      enum-plus:
+        specifier: ^3.1.8
+        version: 3.1.8
       es-toolkit:
         specifier: ^1.45.1
         version: 1.45.1
@@ -2633,6 +2636,10 @@ packages:
   entities@7.0.1:
     resolution: {integrity: sha512-TWrgLOFUQTH994YUyl1yT4uyavY5nNB5muff+RtWaqNVCAK408b5ZnnbNAUEWLTCpum9w6arT70i1XdQ4UeOPA==}
     engines: {node: '>=0.12'}
+
+  enum-plus@3.1.8:
+    resolution: {integrity: sha512-g2V3Bxj38a9x3bkBHiufnHpNJ5/LtUnEChZ5TXQEcCoLvK9T815GJALryBhcL/c40lU+Msa6P+hF8z7D7VO9vQ==}
+    engines: {node: '>=7.10.1'}
 
   env-runner@0.1.6:
     resolution: {integrity: sha512-fSb7X1zdda8k6611a6/SdSQpDe7a/bqMz2UWdbHjk9YWzpUR4/fn9YtE/hqgGQ2nhvVN0zUtcL1SRMKwIsDbAA==}
@@ -6015,6 +6022,8 @@ snapshots:
   entities@6.0.1: {}
 
   entities@7.0.1: {}
+
+  enum-plus@3.1.8: {}
 
   env-runner@0.1.6:
     dependencies:

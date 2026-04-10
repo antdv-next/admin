@@ -1,0 +1,4 @@
+interface:
+  display_name: "enum-plus"
+  short_description: "Help with enum-plus usage patterns"
+  default_prompt: "Use $enum-plus to define, extend, or integrate enum-plus enums cleanly."

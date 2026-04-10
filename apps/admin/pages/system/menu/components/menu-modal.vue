@@ -2,7 +2,7 @@
 import { useRequest } from 'alova/client'
 import type { MenuInfo } from '@/api/menu'
 import { getMenuInfoMethod } from '@apps/admin/api/system/menu.ts'
-import { menuTypeOptions } from '../data'
+import { getMenuTypeLabel, isMenuType, menuTypeOptions } from '../data'
 
 defineOptions({
   name: 'MenuModal',
@@ -39,18 +39,14 @@ watch(
 
 const getLabelName = (title: string, type?: string | null) => {
   if (!type) return title
-  const option = menuTypeOptions?.find(item => item.value === type)
-  return option?.label ? `${option.label}${title}` : title
+  const label = getMenuTypeLabel(type)
+  return label ? `${label}${title}` : title
 }
 
 const checkMenuType = (type?: 'btn' | 'dir' | 'menu') => {
-  if (type === 'btn') {
-    return record.value.menuType === 'menu_type_btn'
-  } else if (type === 'dir') {
-    return record.value.menuType === 'menu_type_dir'
-  } else if (type === 'menu') {
-    return record.value.menuType === 'menu_type_menu'
-  }
+  if (!type) return false
+
+  return isMenuType(record.value.menuType, type)
 }
 </script>
 

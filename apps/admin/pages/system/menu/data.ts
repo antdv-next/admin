@@ -1,15 +1,25 @@
 import type { SelectProps } from 'antdv-next'
-export const menuTypeOptions: SelectProps['options'] = [
-  {
-    label: '目录',
-    value: 'menu_type_dir',
-  },
-  {
-    label: '菜单',
-    value: 'menu_type_menu',
-  },
-  {
-    label: '按钮',
-    value: 'menu_type_btn',
-  },
-]
+import type { MenuInfo } from '@/api/menu'
+import { MenuTypeEnum, type MenuTypeKind } from '@/constants/menu'
+
+type MenuTypeInput = MenuInfo['menuType'] | undefined
+
+export const menuTypeOptions: SelectProps['options'] = MenuTypeEnum.items
+
+export function getMenuTypeItem(menuType?: MenuTypeInput) {
+  if (!menuType) return undefined
+
+  return MenuTypeEnum.findBy('value', menuType)
+}
+
+export function getMenuTypeLabel(menuType?: MenuTypeInput) {
+  return getMenuTypeItem(menuType)?.label
+}
+
+export function getMenuTypeTagColor(menuType?: MenuTypeInput) {
+  return getMenuTypeItem(menuType)?.raw.tagColor ?? 'default'
+}
+
+export function isMenuType(menuType: MenuTypeInput, kind: MenuTypeKind) {
+  return getMenuTypeItem(menuType)?.raw.kind === kind
+}
