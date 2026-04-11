@@ -147,6 +147,8 @@ The current `apps/admin` structure already follows this pattern:
 
 So `/admin/**` routes are treated as a sub-app and default to `admin/default`.
 
+The `apps/admin` sub-app also has a `base` layout at `apps/admin/layouts/base/index.vue` (key: `admin/base`). Use `meta.layout: 'admin/base'` on individual routes, or configure `modules.admin.layout` when the whole `/admin/**` prefix should default to it instead of `admin/default`.
+
 ## Practical Usage
 
 - Use `src/pages` and `src/layouts` for global pages and layouts.

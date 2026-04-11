@@ -46,8 +46,8 @@ Read [`references/core-api.md`](./references/core-api.md) for examples of each f
 
 - For component option lists, prefer `enum.items` first.
 - Use `toList` or `toMap` only when the consumer expects custom field names or a different shape.
-- For React Ant Design helpers like `toSelect` or `toValueMap`, install the matching plugin first.
-- For localization, prefer `Enum.install(...)` with an i18n plugin when one already exists for the stack; otherwise wire `Enum.localize`.
+- `@enum-plus/plugin-antd` is already installed globally in `src/main.ts` via `Enum.install(antdPlugins)`. Methods like `toSelect`, `toMenu`, `toFilter`, and `toValueMap` are available on all enums — no extra setup needed.
+- This project currently uses direct string labels (e.g. Chinese text) rather than i18n keys. `Enum.localize` is not wired and no i18n plugin is installed. Do not assume labels are localized.
 - If the task also changes Vue, antdv-next, or repo-specific UI code, load the matching repo skill alongside this one.
 
 Read [`references/integration-patterns.md`](./references/integration-patterns.md) for concrete integration patterns.

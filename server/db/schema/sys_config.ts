@@ -1,34 +1,41 @@
-import { pgTable, smallint, text, timestamp, unique, varchar } from 'drizzle-orm/pg-core'
-import { v7 as uuidv7 } from 'uuid'
+import { boolean, pgSchema, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { v7 as uuidV7 } from 'uuid'
 
-export const sysConfig = pgTable(
-  'sys_config',
-  {
-    // 主键 ID
-    id: varchar('id', { length: 36 })
-      .primaryKey()
-      .$defaultFn(() => uuidv7()),
-    // 租户 ID，预留字段；暂不建立租户表或外键关联
-    tenantId: varchar('tenant_id', { length: 36 })
-      .notNull()
-      .default('00000000-0000-0000-0000-000000000000'),
-    // 配置键
-    configKey: varchar('config_key', { length: 128 }).notNull(),
-    // 配置值
-    configValue: text('config_value'),
-    // 值类型 1字符串 2数字 3布尔 4JSON
-    valueType: smallint('value_type').default(1),
-    // 是否系统内置
-    isBuiltin: smallint('is_builtin').default(0),
-    // 备注
-    remark: varchar('remark', { length: 255 }),
-    // 创建时间
-    createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
-    // 更新时间
-    updatedAt: timestamp('updated_at', { mode: 'date' })
-      .notNull()
-      .defaultNow()
-      .$onUpdate(() => new Date()),
-  },
-  table => [unique('uk_tenant_config_key').on(table.tenantId, table.configKey)],
-)
+const antdvBoot = pgSchema('antdv_boot')
+
+export const sysConfig = antdvBoot.table('sys_config', {
+  // 主键
+  id: varchar('id', { length: 36 })
+    .primaryKey()
+    .$defaultFn(() => uuidV7()),
+  // 创建人id
+  createId: varchar('create_id', { length: 36 }),
+  // 创建人名称
+  createName: varchar('create_name', { length: 55 }),
+  // 创建时间
+  createTime: timestamp('create_time', { mode: 'date', precision: 6 }),
+  // 更新人id
+  updateId: varchar('update_id', { length: 36 }),
+  // 更新人名称
+  updateName: varchar('update_name', { length: 55 }),
+  // 更新时间
+  updateTime: timestamp('update_time', { mode: 'date', precision: 6 }),
+  // 编号
+  code: varchar('code', { length: 55 }),
+  // 伪删除（false未删除 true已删除）
+  isDelete: boolean('is_delete').notNull().default(false),
+  // 配置分类，字典值
+  configType: varchar('config_type', { length: 55 }),
+  // 配置名称
+  configName: varchar('config_name', { length: 55 }),
+  // 配置键
+  configKey: varchar('config_key', { length: 55 }),
+  // 配置值
+  configValue: varchar('config_value', { length: 255 }),
+  // 配置来源，config_source_system系统默认 config_source_custom自定义
+  configSource: varchar('config_source', { length: 55 }),
+  // 配置备注
+  sourceRemark: varchar('source_remark', { length: 255 }),
+})
+
+export type SysConfig = typeof sysConfig.$inferSelect

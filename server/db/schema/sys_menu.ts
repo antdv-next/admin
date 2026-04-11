@@ -5,7 +5,9 @@ import { v7 as uuidV7 } from 'uuid'
 
 export const sysMenu = antdvBoot.table('sys_menu', {
   // 菜单ID
-  id: varchar('id', { length: 36 }).$defaultFn(() => uuidV7()),
+  id: varchar('id', { length: 36 })
+    .primaryKey()
+    .$defaultFn(() => uuidV7()),
   // 创建者id
   createId: varchar('create_id', { length: 36 }),
   // 创建者姓名

@@ -18,9 +18,9 @@ Use `toList(...)` only when field names must change.
 
 ## Ant Design and Related Plugins
 
-Core enum-plus does not ship React Ant Design helpers like `toSelect`, `toMenu`, `toFilter`, or `toValueMap`.
+Core enum-plus does not ship helpers like `toSelect`, `toMenu`, `toFilter`, or `toValueMap` — these come from `@enum-plus/plugin-antd`.
 
-Install `@enum-plus/plugin-antd` before using those methods.
+**This project already installs this plugin** in `src/main.ts`:
 
 ```ts
 import antdPlugin from '@enum-plus/plugin-antd';
@@ -29,7 +29,9 @@ import { Enum } from 'enum-plus';
 Enum.install(antdPlugin);
 ```
 
-For Vue stacks such as Ant Design Vue or `antdv-next`, `enum.items` is usually enough because component APIs already accept option arrays.
+All those methods are available on every enum without any extra setup. The plugin works for both React Ant Design and Vue-based stacks like `antdv-next`.
+
+For direct option rendering in `antdv-next` components, `enum.items` is the preferred choice. Use `toSelect`, `toMenu`, etc. only when the consumer needs a specific shape those helpers produce.
 
 ## Localization
 

@@ -3,16 +3,16 @@ import { v7 as uuidV7 } from 'uuid'
 
 const antdvBoot = pgSchema('antdv_boot')
 
-// 系统管理-角色菜单关系表
-export const sysRoleMenuRel = antdvBoot.table('sys_role_menu_rel', {
-  // 自增编号
+// 系统管理-角色部门关系表
+export const sysRoleDeptRel = antdvBoot.table('sys_role_dept_rel', {
+  // id
   id: varchar('id', { length: 36 })
     .primaryKey()
     .$defaultFn(() => uuidV7()),
-  // 角色ID
+  // 角色id
   roleId: varchar('role_id', { length: 36 }),
-  // 菜单ID
-  menuId: varchar('menu_id', { length: 36 }),
+  // 部门id
+  deptId: varchar('dept_id', { length: 36 }),
 })
 
-export type SysRoleMenuRel = typeof sysRoleMenuRel.$inferSelect
+export type SysRoleDeptRel = typeof sysRoleDeptRel.$inferSelect

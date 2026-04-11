@@ -11,14 +11,18 @@
 ```text
 apps/
   admin/
+    api/
+    assets/
+      icons/
+    layouts/
+      default/index.vue
+      base/index.vue
     pages/
       index.vue
       user.vue
       user/
         index.vue
         center.vue
-    layouts/
-      default/index.vue
     stores/
       ...
 ```
