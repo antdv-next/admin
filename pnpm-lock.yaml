@@ -21,6 +21,9 @@ importers:
       '@antdv-next/tailwind':
         specifier: ^1.0.2
         version: 1.0.2(tailwindcss@4.2.2)
+      '@enum-plus/plugin-antd':
+        specifier: ^1.0.0
+        version: 1.0.0(enum-plus@3.1.8)
       '@tailwindcss/vite':
         specifier: ^4.2.2
         version: 4.2.2(@voidzero-dev/vite-plus-core@0.1.16)
@@ -370,6 +373,11 @@ packages:
 
   '@emotion/unitless@0.7.5':
     resolution: {integrity: sha512-OWORNpfjMsSSUBVrRBVGECkhWcULOAJz9ZW8uK9qgxD+87M7jHRcvh/A96XXNhXTLmKcoYSQtBEX7lHMO7YRwg==}
+
+  '@enum-plus/plugin-antd@1.0.0':
+    resolution: {integrity: sha512-WSr8G/vWA0DGRzFD4kA1g+YGNcrmZwMIRsHATB0SPvsfAvPqY9R3yMZSDVpOFWx4kFhtiaAZf2eUyT+fkR6tqA==}
+    peerDependencies:
+      enum-plus: ^3.0.0
 
   '@epic-web/invariant@1.0.0':
     resolution: {integrity: sha512-lrTPqgvfFQtR/eY/qkIzp98OGdNJu0m5ji3q/nJI8v3SXkRKEnWiOxMmbvcSoAIzv/cGiuvRy57k4suKQSAdwA==}
@@ -4259,6 +4267,10 @@ snapshots:
   '@emotion/hash@0.8.0': {}
 
   '@emotion/unitless@0.7.5': {}
+
+  '@enum-plus/plugin-antd@1.0.0(enum-plus@3.1.8)':
+    dependencies:
+      enum-plus: 3.1.8
 
   '@epic-web/invariant@1.0.0': {}
 
