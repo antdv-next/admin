@@ -61,6 +61,20 @@ export function initFormRecord(): MenuFormRecord {
   }
 }
 
+export function toMenuFormRecord(record?: Partial<MenuInfo> | null): MenuFormRecord {
+  return {
+    ...initFormRecord(),
+    ...record,
+    affix: record?.affix ?? 0,
+    hideChildrenInMenu: record?.hideChildrenInMenu ?? 0,
+    hideInBreadcrumb: record?.hideInBreadcrumb ?? 0,
+    hideInMenu: record?.hideInMenu ?? 0,
+    keepAlive: record?.keepAlive ?? 0,
+    menuStatus: record?.menuStatus ?? 0,
+    sort: record?.sort ?? 0,
+  }
+}
+
 export const menuTypeOptions: SelectProps['options'] = MenuTypeEnum.items
 
 export function getMenuTypeItem(menuType?: MenuTypeInput) {
@@ -79,4 +93,19 @@ export function getMenuTypeTagColor(menuType?: MenuTypeInput) {
 
 export function isMenuType(menuType: MenuTypeInput, kind: MenuTypeKind) {
   return getMenuTypeItem(menuType)?.raw.kind === kind
+}
+
+export function isParentMenuSelectable(
+  currentMenuType: MenuTypeInput,
+  parentMenuType: MenuTypeInput,
+) {
+  if (!currentMenuType || !parentMenuType) {
+    return false
+  }
+
+  if (currentMenuType === MenuTypeEnum.Button) {
+    return parentMenuType === MenuTypeEnum.Menu
+  }
+
+  return parentMenuType === MenuTypeEnum.Dir
 }

@@ -34,6 +34,7 @@ declare module 'vue' {
     ALayoutSider: typeof import('antdv-next')['LayoutSider']
     AMenu: typeof import('antdv-next')['Menu']
     AModal: typeof import('antdv-next')['Modal']
+    APopconfirm: typeof import('antdv-next')['Popconfirm']
     AResult: typeof import('antdv-next')['Result']
     ARow: typeof import('antdv-next')['Row']
     ASelect: typeof import('antdv-next')['Select']
@@ -45,6 +46,7 @@ declare module 'vue' {
     ASwitch: typeof import('antdv-next')['Switch']
     ATable: typeof import('antdv-next')['Table']
     ATag: typeof import('antdv-next')['Tag']
+    ATreeSelect: typeof import('antdv-next')['TreeSelect']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

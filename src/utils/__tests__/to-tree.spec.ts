@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vite-plus/test'
-import { toTree } from '@/utils/to-tree'
+import { toTree, toTreeSelectData } from '@/utils/to-tree'
 
 interface TreeItem {
   id: string
@@ -57,6 +57,50 @@ describe('toTree', () => {
         parentId: 'missing',
         sort: 3,
         title: 'orphan',
+        children: [],
+      },
+    ])
+  })
+
+  it('converts a flat list into sorted tree-select data', () => {
+    const items: TreeItem[] = [
+      { id: 'child-b', parentId: 'root-a', sort: 2, title: 'child-b' },
+      { id: 'root-b', sort: 2, title: 'root-b' },
+      { id: 'child-a', parentId: 'root-a', sort: 1, title: 'child-a' },
+      { id: 'root-a', sort: 1, title: 'root-a' },
+    ]
+
+    expect(
+      toTreeSelectData(items, {
+        getId: item => item.id,
+        getParentId: item => item.parentId,
+        getSortValue: item => item.sort,
+        getTitle: item => item.title,
+      }),
+    ).toEqual([
+      {
+        key: 'root-a',
+        title: 'root-a',
+        value: 'root-a',
+        children: [
+          {
+            key: 'child-a',
+            title: 'child-a',
+            value: 'child-a',
+            children: [],
+          },
+          {
+            key: 'child-b',
+            title: 'child-b',
+            value: 'child-b',
+            children: [],
+          },
+        ],
+      },
+      {
+        key: 'root-b',
+        title: 'root-b',
+        value: 'root-b',
         children: [],
       },
     ])

@@ -1,37 +1,70 @@
 <script setup lang="ts">
+import type { FormInstance } from 'antdv-next'
 import { useRequest } from 'alova/client'
 import type { MenuInfo } from '@/api/menu'
-import { getMenuInfoMethod } from '@apps/admin/api/system/menu.ts'
+import { useApp } from '@/composables/app'
+import { toTreeSelectData } from '@/utils/to-tree'
+import {
+  getMenuInfoMethod,
+  getMenuParentOptionsMethod,
+  saveMenuMethod,
+  type MenuParentOption,
+} from '@apps/admin/api/system/menu.ts'
 import {
   type MenuFormRecord,
   getMenuTypeLabel,
   initFormRecord,
   isMenuType,
+  isParentMenuSelectable,
   menuTypeOptions,
-} from '../data'
+  toMenuFormRecord,
+} from '../utils'
 
 const props = defineProps<{
   type?: 'create' | 'edit'
   record?: MenuInfo
 }>()
+const emit = defineEmits<{
+  success: []
+}>()
 const open = defineModel('open', {
   type: Boolean,
   default: false,
 })
+const { message } = useApp()
 
-const { send, loading } = useRequest(getMenuInfoMethod, {
+const { send, loading: infoLoading } = useRequest(getMenuInfoMethod, {
   immediate: false,
 })
+const { send: saveMenu, loading: saveLoading } = useRequest(saveMenuMethod, {
+  immediate: false,
+})
+const { data: parentMenuResponse, loading: parentMenuLoading } = useRequest(
+  getMenuParentOptionsMethod,
+  {
+    initialData: {
+      code: 200,
+      data: [] as MenuParentOption[],
+      msg: 'success',
+    },
+  },
+)
 
+const formRef = shallowRef<FormInstance>()
 const formData = ref<MenuFormRecord>(initFormRecord())
+
 watch(
-  () => props.record,
-  () => {
-    if (props.type === 'edit') {
-      const id = props?.record?.id as string
-      if (id) {
-        send(id)
+  [() => open.value, () => props.type, () => props.record?.id],
+  async ([isOpen, type, id]) => {
+    if (!isOpen) {
+      return
+    }
+    if (type === 'edit' && id) {
+      const response = await send(id)
+      if (!open.value) {
+        return
       }
+      formData.value = toMenuFormRecord(response.data)
     } else {
       formData.value = initFormRecord()
     }
@@ -44,9 +77,25 @@ const isDir = computed(() => isMenuType(formData.value.menuType, 'dir'))
 const isMenu = computed(() => isMenuType(formData.value.menuType, 'menu'))
 const isBtn = computed(() => isMenuType(formData.value.menuType, 'btn'))
 const isDirOrMenu = computed(() => isDir.value || isMenu.value)
+const modalLoading = computed(() => infoLoading.value || parentMenuLoading.value)
+const parentMenuTreeData = computed(() =>
+  toTreeSelectData(parentMenuResponse.value.data ?? [], {
+    getDisabled: item =>
+      item.id === formData.value.id ||
+      !isParentMenuSelectable(formData.value.menuType, item.menuType),
+    getId: item => item.id,
+    getParentId: item => item.parentId,
+    getSelectable: item =>
+      item.id !== formData.value.id &&
+      isParentMenuSelectable(formData.value.menuType, item.menuType),
+    getSortValue: item => item.sort,
+    getTitle: item => item.title ?? '-',
+  }),
+)
 
 // Conditional field visibility
-const showUrl = computed(() => !!formData.value.target)
+const showTarget = computed(() => isMenu.value)
+const showUrl = computed(() => showTarget.value && !!formData.value.target)
 const showParentKeys = computed(() => formData.value.hideInMenu === 1)
 
 const getLabelName = (title: string) => {
@@ -64,6 +113,49 @@ const targetOptions = [
   { label: '新标签页', value: '_blank' },
   { label: 'iframe 嵌入', value: 'iframe' },
 ]
+
+const handleSave = async () => {
+  try {
+    await formRef.value?.validate()
+  } catch {
+    return
+  }
+
+  try {
+    await saveMenu({
+      ...formData.value,
+    })
+    message.success(props.type === 'edit' ? '更新成功' : '保存成功')
+    open.value = false
+    emit('success')
+  } catch {
+    // Global request layer already reports the error message.
+  }
+}
+
+watch(
+  [() => formData.value.menuType, () => formData.value.parentId, parentMenuResponse],
+  ([menuType, parentId, response]) => {
+    if (!parentId) {
+      return
+    }
+
+    const parentMenu = response.data?.find(item => item.id === parentId)
+    if (!parentMenu) {
+      formData.value.parentId = null
+      return
+    }
+
+    if (!isParentMenuSelectable(menuType, parentMenu.menuType)) {
+      formData.value.parentId = null
+    }
+  },
+)
+
+const handleAfterClose = () => {
+  formData.value = initFormRecord()
+  formRef.value?.resetFields?.()
+}
 </script>
 
 <template>
@@ -71,9 +163,13 @@ const targetOptions = [
     v-model:open="open"
     :title="type === 'edit' ? '编辑菜单' : '新增菜单'"
     width="860px"
-    :loading="loading"
+    ok-text="保存"
+    :confirm-loading="saveLoading"
+    :loading="modalLoading"
+    :after-close="handleAfterClose"
+    @ok="handleSave"
   >
-    <a-form :model="formData" :label-col="{ style: { width: '90px' } }" class="mt-6">
+    <a-form ref="formRef" :model="formData" :label-col="{ style: { width: '90px' } }" class="mt-6">
       <a-row :gutter="[20, 0]">
         <!-- 基本信息 -->
         <a-col :span="12">
@@ -96,6 +192,17 @@ const targetOptions = [
             :rules="[{ required: true, message: '请输入名称' }]"
           >
             <a-input v-model:value="formData.title" placeholder="请输入" />
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label="上级菜单" name="parentId">
+            <a-tree-select
+              v-model:value="formData.parentId"
+              :tree-data="parentMenuTreeData"
+              allow-clear
+              placeholder="请选择上级菜单，不选则作为顶级节点"
+              tree-default-expand-all
+            />
           </a-form-item>
         </a-col>
 
@@ -133,20 +240,13 @@ const targetOptions = [
           </a-col>
 
           <a-col :span="12">
-            <a-form-item label="路由地址" name="path">
+            <a-form-item label="路由地址" name="path" tooltip="确保路由路径与文件路径一致">
               <a-input v-model:value="formData.path" placeholder="/system/user" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="路由名称" name="name">
               <a-input v-model:value="formData.name" placeholder="SystemUser" />
-            </a-form-item>
-          </a-col>
-
-          <!-- 组件路径：仅菜单 -->
-          <a-col :span="24" v-if="isMenu">
-            <a-form-item label="组件路径" name="component">
-              <a-input v-model:value="formData.component" placeholder="system/user/index" />
             </a-form-item>
           </a-col>
 
@@ -158,7 +258,7 @@ const targetOptions = [
           </a-col>
 
           <!-- 打开方式 + 链接地址 -->
-          <a-col :span="12">
+          <a-col :span="12" v-if="showTarget">
             <a-form-item label="打开方式" name="target">
               <a-select
                 :options="targetOptions"

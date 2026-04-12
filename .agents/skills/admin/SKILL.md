@@ -29,6 +29,8 @@ Use this skill for repo-specific conventions. Load only the reference file that 
   `references/sub-app-aliases.md`
 - `vite-plus` test imports, test placement, and test tsconfig:
   `references/testing.md`
+- Query list + CRUD page composition, modal flows, mock conventions, and validation:
+  `references/query-list-crud.md`
 
 ## When To Read What
 
@@ -54,3 +56,5 @@ Use this skill for repo-specific conventions. Load only the reference file that 
   read `references/sub-app-routing.md` first, then `references/router-access.md`
 - Adding or moving tests, or fixing test editor/type errors:
   read `references/testing.md`
+- Building a standard admin query-list page with search, table, modal save, and row delete:
+  read `references/query-list-crud.md`

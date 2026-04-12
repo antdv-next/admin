@@ -172,4 +172,28 @@ describe('alova request layer', () => {
     })
     expect(fetchSpy).toHaveBeenCalledTimes(1)
   })
+
+  it('matches dynamic mock routes for menu detail requests', async () => {
+    vi.stubEnv('VITE_APP_MOCK_ENABLED', 'true')
+    const fetchSpy = vi.fn(async () => {
+      return new Response(JSON.stringify({ code: 200, data: { source: 'network' }, msg: 'ok' }), {
+        headers: {
+          'content-type': 'application/json',
+        },
+      })
+    })
+
+    const { createRequestClient } = await import('../alova')
+    const client = createRequestClient({ customFetch: fetchSpy })
+
+    await expect(client.Get('/admin/system/menu/9').send()).resolves.toMatchObject({
+      code: 200,
+      data: {
+        id: '9',
+        menuType: 'menu_type_menu',
+        title: '菜单管理',
+      },
+    })
+    expect(fetchSpy).not.toHaveBeenCalled()
+  })
 })

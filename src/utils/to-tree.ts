@@ -8,6 +8,15 @@ interface ToTreeOptions<T extends object, Id extends PropertyKey> {
   getSortValue?: (item: T) => number | null | undefined
 }
 
+interface ToTreeSelectDataOptions<T extends object, Id extends PropertyKey> extends ToTreeOptions<
+  T,
+  Id
+> {
+  getDisabled?: (item: T) => boolean | null | undefined
+  getSelectable?: (item: T) => boolean | null | undefined
+  getTitle: (item: T) => string
+}
+
 interface IndexedNode<T extends object> {
   index: number
   node: TreeNode<T>
@@ -15,6 +24,15 @@ interface IndexedNode<T extends object> {
 
 function normalizeSortValue(value: number | null | undefined) {
   return typeof value === 'number' && Number.isFinite(value) ? value : Number.MAX_SAFE_INTEGER
+}
+
+export interface TreeSelectDataNode<Id extends PropertyKey = string> {
+  children: TreeSelectDataNode<Id>[]
+  disabled?: boolean
+  key: Id
+  selectable?: boolean
+  title: string
+  value: Id
 }
 
 export function toTree<T extends object, Id extends PropertyKey>(
@@ -90,4 +108,31 @@ export function toTree<T extends object, Id extends PropertyKey>(
   }
 
   return sortNodes(roots)
+}
+
+export function toTreeSelectData<T extends object, Id extends PropertyKey>(
+  items: readonly T[],
+  options: ToTreeSelectDataOptions<T, Id>,
+): TreeSelectDataNode<Id>[] {
+  return toTree(items, options).map(node => mapTreeNodeToSelectData(node, options))
+}
+
+function mapTreeNodeToSelectData<T extends object, Id extends PropertyKey>(
+  node: TreeNode<T>,
+  options: ToTreeSelectDataOptions<T, Id>,
+): TreeSelectDataNode<Id> {
+  const id = options.getId(node)
+
+  if (id == null) {
+    throw new Error('TreeSelect data requires every node to have an id.')
+  }
+
+  return {
+    children: node.children.map(childNode => mapTreeNodeToSelectData(childNode, options)),
+    disabled: options.getDisabled?.(node) ?? undefined,
+    key: id,
+    selectable: options.getSelectable?.(node) ?? undefined,
+    title: options.getTitle(node),
+    value: id,
+  }
 }

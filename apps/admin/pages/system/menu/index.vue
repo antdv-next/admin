@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { SettingOutlined, ReloadOutlined, DeleteOutlined, EditOutlined } from '@antdv-next/icons'
 import type { ColProps, FormInstance, TableProps } from 'antdv-next'
-import { usePagination } from 'alova/client'
+import { usePagination, useRequest } from 'alova/client'
 import type { MenuInfo } from '@/api/menu'
 import SearchFormGrid from '@/components/search-form-grid/index.vue'
 import SearchFormGridItem from '@/components/search-form-grid/item.vue'
-import { getMenuListMethod } from '@apps/admin/api/system/menu'
+import { useApp } from '@/composables/app'
+import { deleteMenuMethod, getMenuListMethod } from '@apps/admin/api/system/menu'
 import MenuModal from './components/menu-modal.vue'
-import { getMenuTypeLabel, getMenuTypeTagColor, menuTypeOptions } from './data'
+import { getMenuTypeLabel, getMenuTypeTagColor, menuTypeOptions } from './utils'
 
 defineOptions({ name: 'AdminSystemMenuPage' })
 
@@ -16,6 +17,7 @@ definePage({
     title: '菜单管理',
   },
 })
+const { message } = useApp()
 const formColProps: ColProps = {
   xs: 24,
   md: 24,
@@ -49,27 +51,36 @@ const formRef = shallowRef<FormInstance>()
 const handleSearch = () => {
   send({ ...searchForm })
 }
+const { send: deleteMenu, loading: deleteLoading } = useRequest(deleteMenuMethod, {
+  immediate: false,
+})
+const deletingId = shallowRef<MenuInfo['id']>()
 
 const columns: TableProps['columns'] = [
   {
     dataIndex: 'title',
+    minWidth: 100,
     title: '菜单名称',
   },
   {
     dataIndex: 'menuType',
+    minWidth: 100,
     title: '菜单类型',
   },
   {
     dataIndex: 'path',
+    minWidth: 100,
     title: '路由路径',
   },
   {
     dataIndex: 'permission',
+    minWidth: 100,
     title: '权限',
   },
   {
     dataIndex: 'action',
     title: '操作列',
+    minWidth: 100,
     width: 120,
     align: 'center',
   },
@@ -82,6 +93,24 @@ const handleModal = (type: ModalType, record?: MenuInfo) => {
   modalType.value = type
   open.value = true
   editingRecord.value = record
+}
+const handleDelete = async (record: MenuInfo) => {
+  const id = record.id
+  if (!id) {
+    return
+  }
+
+  deletingId.value = id
+
+  try {
+    await deleteMenu(id)
+    message.success('删除成功')
+    await refresh()
+  } catch {
+    // Global request layer already reports the error message.
+  } finally {
+    deletingId.value = undefined
+  }
 }
 </script>
 
@@ -171,21 +200,33 @@ const handleModal = (type: ModalType, record?: MenuInfo) => {
           </template>
           <template v-else-if="column.dataIndex === 'action'">
             <div class="inline-flex items-center gap-2">
-              <a-button type="link" size="small" @click="handleModal('create', record as MenuInfo)">
+              <a-button type="link" size="small" @click="handleModal('edit', record as MenuInfo)">
                 <template #icon>
                   <EditOutlined />
                 </template>
               </a-button>
-              <a-button type="text" size="small" danger>
-                <template #icon>
-                  <DeleteOutlined />
-                </template>
-              </a-button>
+              <a-popconfirm
+                title="确认删除当前数据？"
+                ok-text="确认"
+                cancel-text="取消"
+                @confirm="handleDelete(record as MenuInfo)"
+              >
+                <a-button
+                  type="text"
+                  size="small"
+                  danger
+                  :loading="deleteLoading && deletingId === (record as MenuInfo).id"
+                >
+                  <template #icon>
+                    <DeleteOutlined />
+                  </template>
+                </a-button>
+              </a-popconfirm>
             </div>
           </template>
         </template>
       </a-table>
     </div>
-    <MenuModal v-model:open="open" :type="modalType" :record="editingRecord" />
+    <MenuModal v-model:open="open" :type="modalType" :record="editingRecord" @success="refresh" />
   </page-container>
 </template>
