@@ -31,6 +31,8 @@ Use this skill for repo-specific conventions. Load only the reference file that 
   `references/testing.md`
 - Query list + CRUD page composition, modal flows, mock conventions, and validation:
   `references/query-list-crud.md`
+- Dictionary loading, global dict hints, and `useDict()` usage:
+  `references/dict.md`
 
 ## When To Read What
 
@@ -58,3 +60,5 @@ Use this skill for repo-specific conventions. Load only the reference file that 
   read `references/testing.md`
 - Building a standard admin query-list page with search, table, modal save, and row delete:
   read `references/query-list-crud.md`
+- Using global or page-level dictionaries, or calling `useDict()` helpers like `getLabel()` and `getOptions()`:
+  read `references/dict.md`
