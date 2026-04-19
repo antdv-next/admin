@@ -6,6 +6,11 @@ import type { TreeNode } from '@/utils/to-tree'
 export type DictTreeInfo = TreeNode<DictInfo>
 export type DictCodeInput = string | readonly string[]
 export type DictTreeMap = Record<string, DictTreeInfo[]>
+export type DictExpandObject = Record<string, unknown>
+export type DictMergedTreeInfo = Omit<DictTreeInfo, 'children'> &
+  DictExpandObject & {
+    children: DictMergedTreeInfo[]
+  }
 type MergeGlobalDictCode<TCode extends string, TGlobal extends string = KnownGlobalDictCodeType> = [
   TGlobal,
 ] extends [never]
@@ -36,6 +41,9 @@ export interface DictOptionFieldMap {
   label?: string
   value?: string
 }
+export interface DictResolveOptions {
+  mergeExpand?: boolean
+}
 type ResolveOptionFieldKey<
   TFieldMap extends DictOptionFieldMap | undefined,
   TField extends keyof DictOptionFieldMap,
@@ -51,16 +59,42 @@ export type DictMappedOption<TFieldMap extends DictOptionFieldMap | undefined = 
     Record<ResolveOptionFieldKey<TFieldMap, 'value', 'value'>, string> & {
       [K in ResolveOptionFieldKey<TFieldMap, 'children', 'children'>]: DictMappedOption<TFieldMap>[]
     }
+export type DictMergedOption<TFieldMap extends DictOptionFieldMap | undefined = undefined> =
+  DictMappedOption<TFieldMap> & DictExpandObject
 export interface UseDictResult<TCodes extends DictCodeInput | undefined = undefined> {
   dictMap: Readonly<Record<string, DictTreeInfo[]>>
   getDict: (code: DictCodeKey<TCodes>) => DictTreeInfo[]
-  getItem: (code: DictCodeKey<TCodes>, value: string) => DictTreeInfo | undefined
+  getItem: {
+    (code: DictCodeKey<TCodes>, value: string): DictTreeInfo | undefined
+    (
+      code: DictCodeKey<TCodes>,
+      value: string,
+      options: DictResolveOptions & { mergeExpand: true },
+    ): DictMergedTreeInfo | undefined
+    (
+      code: DictCodeKey<TCodes>,
+      value: string,
+      options: DictResolveOptions,
+    ): DictTreeInfo | DictMergedTreeInfo | undefined
+  }
   getLabel: (code: DictCodeKey<TCodes>, value: string) => string
   getDicts: (codes: readonly string[]) => DictTreeMap
-  getOptions: <TFieldMap extends DictOptionFieldMap | undefined = undefined>(
-    code: DictCodeKey<TCodes>,
-    fieldMap?: TFieldMap,
-  ) => DictMappedOption<TFieldMap>[]
+  getOptions: {
+    <TFieldMap extends DictOptionFieldMap | undefined = undefined>(
+      code: DictCodeKey<TCodes>,
+      fieldMap?: TFieldMap,
+    ): DictMappedOption<TFieldMap>[]
+    <TFieldMap extends DictOptionFieldMap | undefined = undefined>(
+      code: DictCodeKey<TCodes>,
+      fieldMap: TFieldMap | undefined,
+      options: DictResolveOptions & { mergeExpand: true },
+    ): DictMergedOption<TFieldMap>[]
+    <TFieldMap extends DictOptionFieldMap | undefined = undefined>(
+      code: DictCodeKey<TCodes>,
+      fieldMap: TFieldMap | undefined,
+      options: DictResolveOptions,
+    ): Array<DictMappedOption<TFieldMap> | DictMergedOption<TFieldMap>>
+  }
   globalDicts: Readonly<Ref<DictTreeInfo[]>>
   globalDictMap: Readonly<Record<string, DictTreeInfo[]>>
   globalDictsLoaded: Readonly<Ref<boolean>>
@@ -72,6 +106,63 @@ export interface UseDictResult<TCodes extends DictCodeInput | undefined = undefi
     (code: readonly string[], force?: boolean): Promise<DictTreeMap>
   }
   loadGlobalDict: (force?: boolean) => Promise<DictTreeInfo[]>
+}
+
+const PROTECTED_DICT_ITEM_FIELDS = [
+  'children',
+  'code',
+  'dictStatus',
+  'expand',
+  'id',
+  'label',
+  'value',
+] as const
+
+const PROTECTED_DICT_OPTION_FIELDS = [
+  'children',
+  'disabled',
+  'key',
+  'label',
+  'title',
+  'value',
+] as const
+
+function isDictExpandObject(value: unknown): value is DictExpandObject {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function safeParseExpandObject(expand: DictInfo['expand']) {
+  if (!expand) {
+    return undefined
+  }
+
+  try {
+    const parsed = JSON.parse(expand)
+    return isDictExpandObject(parsed) ? parsed : undefined
+  } catch {
+    return undefined
+  }
+}
+
+function mergeExpandFields<TTarget extends Record<string, unknown>>(
+  target: TTarget,
+  expand: DictInfo['expand'],
+  protectedKeys: readonly string[],
+) {
+  const expandObject = safeParseExpandObject(expand)
+  if (!expandObject) {
+    return target
+  }
+
+  const mergedTarget = { ...target } as TTarget & DictExpandObject
+  for (const [key, value] of Object.entries(expandObject)) {
+    if (protectedKeys.includes(key)) {
+      continue
+    }
+    ;(mergedTarget as DictExpandObject)[key] = value
+  }
+
+  return mergedTarget
 }
 
 function buildDictTree(items: readonly DictInfo[]) {
@@ -149,14 +240,15 @@ function findDictNode(nodes: readonly DictTreeInfo[], value: string): DictTreeIn
 function mapDictNodeToOption<TFieldMap extends DictOptionFieldMap | undefined = undefined>(
   node: DictTreeInfo,
   fieldMap?: TFieldMap,
-): DictMappedOption<TFieldMap> {
+  options?: DictResolveOptions,
+): DictMappedOption<TFieldMap> | DictMergedOption<TFieldMap> {
   const optionValue = String(node.value ?? node.id ?? '')
   const labelKey = fieldMap?.label ?? 'label'
   const valueKey = fieldMap?.value ?? 'value'
   const childrenKey = fieldMap?.children ?? 'children'
-  const children = node.children.map(child => mapDictNodeToOption(child, fieldMap))
+  const children = node.children.map(child => mapDictNodeToOption(child, fieldMap, options))
 
-  return {
+  const option = {
     children,
     disabled: node.dictStatus === 1 ? true : undefined,
     key: optionValue,
@@ -167,6 +259,28 @@ function mapDictNodeToOption<TFieldMap extends DictOptionFieldMap | undefined = 
     [labelKey]: node.label ?? optionValue,
     [valueKey]: optionValue,
   } as DictMappedOption<TFieldMap>
+
+  if (!options?.mergeExpand) {
+    return option
+  }
+
+  return mergeExpandFields(
+    option as Record<string, unknown>,
+    node.expand,
+    PROTECTED_DICT_OPTION_FIELDS,
+  ) as DictMergedOption<TFieldMap>
+}
+
+function mapDictNodeToMergedItem(node: DictTreeInfo): DictMergedTreeInfo {
+  const children = node.children.map(child => mapDictNodeToMergedItem(child))
+  return mergeExpandFields(
+    {
+      ...node,
+      children,
+    } as DictMergedTreeInfo,
+    node.expand,
+    PROTECTED_DICT_ITEM_FIELDS,
+  ) as DictMergedTreeInfo
 }
 
 const useDictState = createGlobalState(() => {
@@ -294,12 +408,23 @@ const useDictState = createGlobalState(() => {
     return resolveDict(code)
   }
 
-  function getItem(code: string, value: string) {
+  function getItem(code: string, value: string): DictTreeInfo | undefined
+  function getItem(
+    code: string,
+    value: string,
+    options: DictResolveOptions & { mergeExpand: true },
+  ): DictMergedTreeInfo | undefined
+  function getItem(code: string, value: string, options?: DictResolveOptions) {
     if (!value) {
       return undefined
     }
 
-    return findDictNode(resolveDict(code), value)
+    const item = findDictNode(resolveDict(code), value)
+    if (!item || !options?.mergeExpand) {
+      return item
+    }
+
+    return mapDictNodeToMergedItem(item)
   }
 
   function getLabel(code: string, value: string) {
@@ -309,8 +434,18 @@ const useDictState = createGlobalState(() => {
   function getOptions<TFieldMap extends DictOptionFieldMap | undefined = undefined>(
     code: string,
     fieldMap?: TFieldMap,
+  ): DictMappedOption<TFieldMap>[]
+  function getOptions<TFieldMap extends DictOptionFieldMap | undefined = undefined>(
+    code: string,
+    fieldMap: TFieldMap | undefined,
+    options: DictResolveOptions & { mergeExpand: true },
+  ): DictMergedOption<TFieldMap>[]
+  function getOptions<TFieldMap extends DictOptionFieldMap | undefined = undefined>(
+    code: string,
+    fieldMap?: TFieldMap,
+    options?: DictResolveOptions,
   ) {
-    return resolveDict(code).map(item => mapDictNodeToOption(item, fieldMap))
+    return resolveDict(code).map(item => mapDictNodeToOption(item, fieldMap, options))
   }
 
   function isDictLoaded(code: string) {

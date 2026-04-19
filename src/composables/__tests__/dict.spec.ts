@@ -42,7 +42,7 @@ function createDict(partial: Partial<DictInfo>): DictInfo {
     createTime: null,
     dictSource: 'dict_source_custom',
     dictStatus: 0,
-    expand: null,
+    expand: partial.expand ?? null,
     isDelete: '0',
     label: partial.label ?? null,
     parentId: partial.parentId ?? null,
@@ -183,6 +183,56 @@ describe('useDict', () => {
             title: 'Enabled Child',
           },
         ],
+      },
+    ])
+  })
+
+  it('merges parsed expand fields only when mergeExpand is enabled', async () => {
+    getDictListByCodeMethod.mockResolvedValue({
+      data: [
+        createDict({
+          id: 'enabled',
+          code: 'user_status',
+          label: 'Enabled',
+          value: '1',
+          expand: JSON.stringify({
+            color: 'green',
+            label: 'Expand Label',
+            tagType: 'success',
+            value: 'expand-value',
+          }),
+        }),
+      ],
+    })
+
+    const { useDict } = await import('@/composables/dict')
+    const dict = useDict(['user_status'] as const)
+
+    await expect(dict.loadDict('user_status')).resolves.toHaveLength(1)
+
+    expect(dict.getItem('user_status', '1')).not.toHaveProperty('color')
+    expect(dict.getOptions('user_status')).toMatchObject([
+      {
+        label: 'Enabled',
+        value: '1',
+      },
+    ])
+    expect(
+      (dict.getItem as (...args: any[]) => any)('user_status', '1', { mergeExpand: true }),
+    ).toMatchObject({
+      color: 'green',
+      label: 'Enabled',
+      tagType: 'success',
+      value: '1',
+    })
+    expect(
+      (dict.getOptions as (...args: any[]) => any)('user_status', undefined, { mergeExpand: true }),
+    ).toMatchObject([
+      {
+        color: 'green',
+        label: 'Enabled',
+        tagType: 'success',
+        value: '1',
       },
     ])
   })
