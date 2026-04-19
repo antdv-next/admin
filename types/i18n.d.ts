@@ -18,13 +18,14 @@ type DeepMerge<A, B> =
   IsPlainObject<A> extends true
     ? IsPlainObject<B> extends true
       ? Simplify<{
-          [K in keyof A | keyof B]: K extends keyof B
-            ? K extends keyof A
-              ? DeepMerge<A[K], B[K]>
-              : B[K]
-            : K extends keyof A
-              ? A[K]
-              : never
+          [K in keyof A | keyof B]:
+            K extends keyof B
+              ? K extends keyof A
+                ? DeepMerge<A[K], B[K]>
+                : B[K]
+              : K extends keyof A
+                ? A[K]
+                : never
         }>
       : B
     : B
