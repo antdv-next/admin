@@ -2,6 +2,7 @@ import type { Router, RouteRecordRaw } from 'vue-router'
 import { omit } from 'es-toolkit'
 import { setupLayouts } from 'virtual:layout'
 import { routes } from 'vue-router/auto-routes'
+import { useDict } from '@/composables'
 import { LOGIN_PATH } from '@/constants/router'
 import { NOT_FOUND_NAME, notFoundRoute, ROUTE_NAME } from '@/router/constant'
 import { filterRoutesByAccess } from '@/router/guard-menu'
@@ -11,6 +12,7 @@ let routeAccessKey: string | null = null
 
 export function setupAuthGuard(router: Router) {
   const authorization = useAuthorization()
+  const dict = useDict()
   router.beforeEach(async to => {
     const userStore = useUserStore()
     const isAuthenticated = Boolean(authorization.value)
@@ -22,8 +24,20 @@ export function setupAuthGuard(router: Router) {
       userStore.setToken(authorization.value)
     }
 
-    if (isAuthenticated && (!userStore.userInfo || !userStore.menusLoaded)) {
-      const { userInfo } = await userStore.ensureAuthContext()
+    const shouldLoadAuthContext = !userStore.userInfo || !userStore.menusLoaded
+    const shouldLoadGlobalDict = !dict.globalDictsLoaded.value
+
+    if (isAuthenticated && (shouldLoadAuthContext || shouldLoadGlobalDict)) {
+      const [{ userInfo }] = await Promise.all([
+        shouldLoadAuthContext
+          ? userStore.ensureAuthContext()
+          : Promise.resolve({
+              menus: userStore.menus,
+              permissions: userStore.permissions,
+              userInfo: userStore.userInfo,
+            }),
+        shouldLoadGlobalDict ? dict.loadGlobalDict() : Promise.resolve(dict.globalDicts.value),
+      ])
       if (!userInfo && userStore.token) {
         userStore.logout()
         return {
