@@ -101,7 +101,9 @@ declare global {
   const refThrottled: typeof import('@vueuse/core').refThrottled
   const refWithControl: typeof import('@vueuse/core').refWithControl
   const resolveComponent: typeof import('vue').resolveComponent
+  const resolveNextActivePath: typeof import('../apps/admin/stores/tabs').resolveNextActivePath
   const resolveRef: typeof import('@vueuse/core').resolveRef
+  const resolveRouteComponentName: typeof import('../apps/admin/stores/tabs').resolveRouteComponentName
   const setActivePinia: typeof import('pinia').setActivePinia
   const setMapStoreSuffix: typeof import('pinia').setMapStoreSuffix
   const shallowReactive: typeof import('vue').shallowReactive
@@ -129,6 +131,7 @@ declare global {
   const until: typeof import('@vueuse/core').until
   const useAccess: typeof import('../src/composables/index').useAccess
   const useActiveElement: typeof import('@vueuse/core').useActiveElement
+  const useAdminTabsStore: typeof import('../apps/admin/stores/tabs').useAdminTabsStore
   const useAlovaRequest: typeof import('../src/utils/request/index').useAlovaRequest
   const useAlovaWatcher: typeof import('../src/utils/request/index').useAlovaWatcher
   const useAnimate: typeof import('@vueuse/core').useAnimate
@@ -180,6 +183,7 @@ declare global {
   const useDeviceOrientation: typeof import('@vueuse/core').useDeviceOrientation
   const useDevicePixelRatio: typeof import('@vueuse/core').useDevicePixelRatio
   const useDevicesList: typeof import('@vueuse/core').useDevicesList
+  const useDict: typeof import('../src/composables/index').useDict
   const useDisplayMedia: typeof import('@vueuse/core').useDisplayMedia
   const useDocumentVisibility: typeof import('@vueuse/core').useDocumentVisibility
   const useDraggable: typeof import('@vueuse/core').useDraggable
@@ -215,6 +219,7 @@ declare global {
   const useLastChanged: typeof import('@vueuse/core').useLastChanged
   const useLink: typeof import('vue-router').useLink
   const useLocalStorage: typeof import('@vueuse/core').useLocalStorage
+  const useLocale: typeof import('../src/composables/index').useLocale
   const useMagicKeys: typeof import('@vueuse/core').useMagicKeys
   const useManualRefHistory: typeof import('@vueuse/core').useManualRefHistory
   const useMediaControls: typeof import('@vueuse/core').useMediaControls
@@ -334,6 +339,9 @@ declare global {
   // @ts-ignore
   export type { UserState } from '../src/stores/user'
   import('../src/stores/user')
+  // @ts-ignore
+  export type { AdminTabItem } from '../apps/admin/stores/tabs'
+  import('../apps/admin/stores/tabs')
   // @ts-ignore
   export type { RequestMeta } from '../src/utils/request/index'
   import('../src/utils/request/index')

@@ -41,6 +41,13 @@ declare module 'vue-router/auto-routes' {
       { path: ParamValue<false> },
       | never
     >,
+    '/admin/iframe/': RouteRecordInfo<
+      '/admin/iframe/',
+      '/admin/iframe',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/admin/system/config/': RouteRecordInfo<
       '/admin/system/config/',
       '/admin/system/config',
@@ -191,6 +198,12 @@ declare module 'vue-router/auto-routes' {
     'apps/admin/pages/[...path].vue': {
       routes:
         | '/admin/[...path]'
+      views:
+        | never
+    }
+    'apps/admin/pages/iframe/index.vue': {
+      routes:
+        | '/admin/iframe/'
       views:
         | never
     }
