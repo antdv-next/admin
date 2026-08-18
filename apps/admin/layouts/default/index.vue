@@ -5,16 +5,19 @@ import { storeToRefs } from 'pinia'
 import { useDarkMode } from '@/composables/dark'
 import { useGlobalToken } from '@/composables/token'
 import { useAppStore } from '@/stores/app'
+import { useAdminTabsStore } from '@apps/admin/stores/tabs'
 import { defaultConfig } from '../components/config'
 import DefaultHeader from './components/header.vue'
 import PageSkeleton from './components/page-skeleton.vue'
 import DefaultSider from './components/sider.vue'
+import TabBar from './components/tab-bar.vue'
 
 type ThemeType = NonNullable<ConfigProviderProps['theme']>
 type ComponentsType = NonNullable<ThemeType['components']>
 type LayoutType = NonNullable<ComponentsType['Layout']>
 
 const appStore = useAppStore()
+const tabsStore = useAdminTabsStore()
 const { collapsed } = storeToRefs(appStore)
 const { token } = useGlobalToken()
 const { isDark } = useDarkMode()
@@ -93,14 +96,22 @@ const themeConfig = computed(() => {
         </a-layout-sider>
 
         <a-layout class="min-h-screen pt-14" :style="contentStyle">
-          <a-layout-content class="min-h-[calc(100vh-56px)]">
+          <div class="sticky top-14 z-9">
+            <TabBar />
+          </div>
+          <a-layout-content class="min-h-[calc(100vh-56px-40px)]">
             <router-view v-slot="{ Component, route }">
-              <Suspense>
-                <component :is="Component" :key="route.fullPath" />
-                <template #fallback>
-                  <PageSkeleton />
-                </template>
-              </Suspense>
+              <keep-alive :include="tabsStore.keepAliveNames">
+                <Suspense>
+                  <component
+                    :is="Component"
+                    :key="`${route.fullPath}#${tabsStore.getRefreshVersion(route.path)}`"
+                  />
+                  <template #fallback>
+                    <PageSkeleton />
+                  </template>
+                </Suspense>
+              </keep-alive>
             </router-view>
           </a-layout-content>
         </a-layout>

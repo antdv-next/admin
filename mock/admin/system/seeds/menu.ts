@@ -64,6 +64,7 @@ const sysMenuSeeds: SysMenu[] = [
     menuType: MENU_TYPE.MENU,
     path: '/admin/workspace/overview',
     name: 'AdminWorkspaceOverview',
+    affix: 1,
   }),
   createMenuSeed({
     id: '3',
@@ -96,6 +97,7 @@ const sysMenuSeeds: SysMenu[] = [
     menuType: MENU_TYPE.MENU,
     path: '/admin/system/menu',
     name: 'AdminSystemMenu',
+    keepAlive: 1,
   }),
   createMenuSeed({
     id: '5',
@@ -107,6 +109,7 @@ const sysMenuSeeds: SysMenu[] = [
     menuType: MENU_TYPE.MENU,
     path: '/admin/system/config',
     name: 'AdminSystemConfig',
+    keepAlive: 1,
   }),
   createMenuSeed({
     id: '6',
@@ -118,6 +121,7 @@ const sysMenuSeeds: SysMenu[] = [
     menuType: MENU_TYPE.MENU,
     path: '/admin/system/dict',
     name: 'AdminSystemDict',
+    keepAlive: 1,
   }),
   createMenuSeed({
     id: '7',
@@ -129,6 +133,7 @@ const sysMenuSeeds: SysMenu[] = [
     menuType: MENU_TYPE.MENU,
     path: '/admin/system/user',
     name: 'AdminSystemUser',
+    keepAlive: 1,
   }),
   createMenuSeed({
     id: '7-1',
@@ -164,6 +169,7 @@ const sysMenuSeeds: SysMenu[] = [
     menuType: MENU_TYPE.MENU,
     path: '/admin/system/role',
     name: 'AdminSystemRole',
+    keepAlive: 1,
   }),
 ]
 
