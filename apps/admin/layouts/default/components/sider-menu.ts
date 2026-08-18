@@ -4,9 +4,18 @@ import { MENU_TYPE } from '@/constants/menu'
 import { createMenuTree, findMenuNodeChainByPath, resolveMenuKey } from '@/utils/menu-breadcrumb'
 import type { MenuTreeNode } from '@/utils/menu-breadcrumb'
 
+export interface SiderMenuNavigation {
+  key: string
+  path: string | null
+  target: string | null
+  title: string
+  url: string | null
+}
+
 export interface SiderMenuState {
   items: NonNullable<MenuProps['items']>
   navigableKeys: string[]
+  navigationByKey: Record<string, SiderMenuNavigation>
   openKeys: string[]
   selectedKeys: string[]
 }
@@ -65,7 +74,7 @@ function mapTreeToMenuItems(nodes: readonly MenuTreeNode[]): NonNullable<MenuPro
   })
 }
 
-function collectNavigableKeys(nodes: readonly MenuTreeNode[]): string[] {
+function collectNavigations(nodes: readonly MenuTreeNode[]): SiderMenuNavigation[] {
   return nodes.flatMap(node => {
     const key = resolveMenuKey(node)
     if (!key) {
@@ -74,10 +83,22 @@ function collectNavigableKeys(nodes: readonly MenuTreeNode[]): string[] {
 
     const hasVisibleChildren = node.hideChildrenInMenu !== 1 && node.children.length > 0
     if (!hasVisibleChildren) {
-      return node.path ? [key] : []
+      // 站内路径菜单、以及配置了外部地址（新标签页 / iframe）的菜单都可以点击
+      if (!node.path && !node.url) {
+        return []
+      }
+      return [
+        {
+          key,
+          path: node.path,
+          target: node.target,
+          title: node.title || node.name || key,
+          url: node.url,
+        },
+      ]
     }
 
-    return collectNavigableKeys(node.children)
+    return collectNavigations(node.children)
   })
 }
 
@@ -93,10 +114,14 @@ export function createSiderMenuState(
     .map(node => resolveMenuKey(node))
     .filter((key): key is string => Boolean(key))
   const selectedKey = activeKeyPath[activeKeyPath.length - 1]
+  const navigations = collectNavigations(tree)
 
   return {
     items,
-    navigableKeys: collectNavigableKeys(tree),
+    navigableKeys: navigations.map(navigation => navigation.key),
+    navigationByKey: Object.fromEntries(
+      navigations.map(navigation => [navigation.key, navigation]),
+    ),
     selectedKeys: selectedKey ? [selectedKey] : [],
     openKeys: activeKeyPath.slice(0, -1),
   }

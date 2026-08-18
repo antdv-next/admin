@@ -2,6 +2,7 @@
 import type { MenuEmits } from 'antdv-next'
 import AntdIcon from '@/components/icons/antd.vue'
 import { useUserStore } from '@/stores/user'
+import { ADMIN_IFRAME_PATH } from '@apps/admin/constants/router'
 import { createSiderMenuState, resolveSiderOpenKeys } from './sider-menu'
 
 defineOptions({
@@ -20,7 +21,6 @@ const cachedOpenKeys = shallowRef<string[]>([])
 
 const menuState = computed(() => createSiderMenuState(userStore.menus, route.path))
 const menuItems = computed(() => menuState.value.items)
-const navigableKeys = computed(() => new Set(menuState.value.navigableKeys))
 const selectedKeys = computed(() => menuState.value.selectedKeys)
 
 watch(
@@ -44,13 +44,29 @@ watch(
 )
 
 const handleClickMenu: MenuEmits['click'] = ({ key }) => {
-  const targetPath = key
-  if (!navigableKeys.value.has(targetPath)) {
+  const navigation = menuState.value.navigationByKey[key]
+  if (!navigation) {
     return
   }
 
-  if (targetPath.startsWith('/')) {
-    router.push(targetPath)
+  if (navigation.target === '_blank' && navigation.url) {
+    window.open(navigation.url, '_blank', 'noopener')
+    return
+  }
+
+  if (navigation.target === 'iframe' && navigation.url) {
+    router.push({
+      path: ADMIN_IFRAME_PATH,
+      query: {
+        src: navigation.url,
+        title: navigation.title,
+      },
+    })
+    return
+  }
+
+  if (navigation.path?.startsWith('/')) {
+    router.push(navigation.path)
   }
 }
 </script>

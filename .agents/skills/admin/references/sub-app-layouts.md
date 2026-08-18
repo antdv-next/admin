@@ -157,3 +157,22 @@ The `apps/admin` sub-app also has a `base` layout at `apps/admin/layouts/base/in
 - Add `meta.layout` only when a route needs to opt out or switch away from the sub-app default.
 - Edit `plugins/index.ts` when you need to change shared layout plugin defaults.
 - Edit `modules` config when a route prefix needs a stable custom default layout.
+
+## Admin Multi-Tab Bar
+
+The `admin/default` layout renders a multi-tab bar (`apps/admin/layouts/default/components/tab-bar.vue`) backed by `useAdminTabsStore()` (`apps/admin/stores/tabs.ts`).
+
+- One tab per `route.path`; the latest `fullPath` (query included) is remembered per tab.
+- Menus with `affix === 1` become fixed, non-closable tabs.
+- Menus with `keepAlive === 1` register the page component name into `keepAliveNames`, consumed by `<keep-alive :include>` in the layout. Pages must declare `defineOptions({ name })` for caching to work.
+- Catch-all fallback routes (404 pages) never become tabs.
+- Tab titles resolve as: menu `title` → `route.query.title` (used by the iframe host) → `route.meta.title` → path.
+- `refreshTab(path)` bumps a per-path version consumed in the page render key to force a remount.
+
+## External Link Menus
+
+Menus can set `target` + `url` (`menu-modal` fields):
+
+- `target: '_blank'` opens `url` in a new browser tab from the sider click handler.
+- `target: 'iframe'` navigates to `ADMIN_IFRAME_PATH` (`/admin/iframe`, see `apps/admin/constants/router.ts`) with `query.src` and `query.title`; the host page only accepts http/https URLs.
+- Sider click routing lives in `apps/admin/layouts/default/components/sider.vue` with navigation descriptors built by `createSiderMenuState()`.
