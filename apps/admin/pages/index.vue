@@ -1,5 +1,6 @@
 <script setup lang="ts">
 definePage({
+  redirect: '/admin/workspace/overview',
   meta: {
     access: {
       mode: 'login',
@@ -9,7 +10,5 @@ definePage({
 </script>
 
 <template>
-  <div>
-    <span>测试</span>
-  </div>
+  <div />
 </template>
