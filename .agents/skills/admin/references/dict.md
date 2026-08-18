@@ -5,7 +5,7 @@ Use `useDict()` for both global dictionaries and page-level dictionaries. Do not
 ## Data Sources
 
 - Global dictionaries are loaded from `'/dict/list'`.
-- Page-level dictionaries are loaded from `'/dist/code/list'`.
+- Page-level dictionaries are loaded from `'/dict/code/list'`.
 - Both APIs return flat arrays; `useDict()` converts them to trees internally.
 - Global dictionaries are preloaded in the auth guard together with auth context and do not block navigation if loading fails.
 

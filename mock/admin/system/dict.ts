@@ -86,7 +86,7 @@ function queryParentOptions() {
   return getActiveDicts().sort(compareBySort).map(cloneDict)
 }
 
-function getActiveDicts() {
+export function getActiveDicts() {
   return dictStore.filter(item => item.isDelete !== '1')
 }
 

@@ -8,7 +8,9 @@
 // }
 
 declare global {
-  interface DictCodeRegistry {}
+  interface DictCodeRegistry {
+    user_status: true
+  }
 
   type KnownGlobalDictCodeType = Extract<keyof DictCodeRegistry, string>
 }

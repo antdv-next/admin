@@ -8,7 +8,7 @@ export function getGlobalDictListMethod() {
 }
 
 export function getDictListByCodeMethod(code: string | readonly string[]) {
-  return http.Get<R<DictInfo[]>>('/dist/code/list', {
+  return http.Get<R<DictInfo[]>>('/dict/code/list', {
     params: {
       code,
     },
