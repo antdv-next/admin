@@ -12,7 +12,7 @@ const baseUrl = fileURLToPath(new URL('./', import.meta.url))
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, baseUrl)
   return {
-    base: env.VITE_BASE_PATH ?? '/',
+    base: env.VITE_APP_BASE ?? '/',
     plugins: loadPlugins(mode, baseUrl),
     resolve: {
       alias: loadAlias(baseUrl),
