@@ -2,7 +2,7 @@
 import { LockOutlined, MoonOutlined, SunOutlined, UserOutlined } from '@antdv-next/icons'
 import type { FormProps } from 'antdv-next'
 import { loginMethod } from '@/api/auth/login.ts'
-import { AUTH_DEFAULT_PATH } from '@/constants/router'
+import { resolveLoginSuccessPath } from '@/router/redirect'
 import { useUserStore } from '@/stores/user'
 import { useAlovaRequest } from '@/utils/request'
 
@@ -38,6 +38,7 @@ const formRules: FormProps['rules'] = {
 }
 
 const router = useRouter()
+const route = useRoute()
 const { message } = useApp()
 const userStore = useUserStore()
 const { loading, send: submitLogin } = useAlovaRequest(loginMethod, {
@@ -48,7 +49,7 @@ async function handleFinish() {
   const res = await submitLogin({ ...formModel })
   if (res && res.data && res.data?.token) {
     userStore.setToken(res.data.token)
-    router.push(AUTH_DEFAULT_PATH).then(() => {})
+    router.push(resolveLoginSuccessPath(route.query.redirect)).then(() => {})
     message.success('登录成功')
   }
 }

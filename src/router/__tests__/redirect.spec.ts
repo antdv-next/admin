@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vite-plus/test'
 import { AUTH_DEFAULT_PATH, LOGIN_PATH, UNAUTH_DEFAULT_PATH } from '@/constants/router'
-import { getDefaultEntryPath, resolveAuthGuardRedirect } from '@/router/redirect'
+import {
+  getDefaultEntryPath,
+  resolveAuthGuardRedirect,
+  resolveLoginSuccessPath,
+} from '@/router/redirect'
 
 describe('getDefaultEntryPath', () => {
   it('returns the public home path when user is not authenticated', () => {
@@ -51,5 +55,21 @@ describe('resolveAuthGuardRedirect', () => {
         toPath: '/admin/users',
       }),
     ).toBeUndefined()
+  })
+})
+
+describe('resolveLoginSuccessPath', () => {
+  it('accepts internal paths from the redirect query', () => {
+    expect(resolveLoginSuccessPath('/admin/system/user')).toBe('/admin/system/user')
+    expect(resolveLoginSuccessPath('/admin/system/user?page=2')).toBe('/admin/system/user?page=2')
+  })
+
+  it('falls back to the auth default path for unsafe or missing values', () => {
+    expect(resolveLoginSuccessPath(undefined)).toBe(AUTH_DEFAULT_PATH)
+    expect(resolveLoginSuccessPath('')).toBe(AUTH_DEFAULT_PATH)
+    expect(resolveLoginSuccessPath('https://evil.example.com')).toBe(AUTH_DEFAULT_PATH)
+    expect(resolveLoginSuccessPath('//evil.example.com')).toBe(AUTH_DEFAULT_PATH)
+    expect(resolveLoginSuccessPath(LOGIN_PATH)).toBe(AUTH_DEFAULT_PATH)
+    expect(resolveLoginSuccessPath(`${LOGIN_PATH}?redirect=/admin`)).toBe(AUTH_DEFAULT_PATH)
   })
 })

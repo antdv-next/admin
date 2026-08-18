@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 
 const messageError = vi.fn()
 const useUserStore = vi.fn(() => ({ token: 'mock-token' }))
+const handleSessionExpired = vi.fn(async () => {})
 
 vi.mock('@/composables/app', () => ({
   useApp: () => ({
@@ -15,6 +16,10 @@ vi.mock('@/stores/user', () => ({
   useUserStore,
 }))
 
+vi.mock('../session', () => ({
+  handleSessionExpired,
+}))
+
 describe('alova request layer', () => {
   beforeEach(() => {
     vi.resetModules()
@@ -22,6 +27,7 @@ describe('alova request layer', () => {
     messageError.mockReset()
     useUserStore.mockReset()
     useUserStore.mockReturnValue({ token: 'mock-token' })
+    handleSessionExpired.mockClear()
     vi.stubEnv('VITE_APP_BASE_API', '/api')
   })
 
@@ -85,6 +91,62 @@ describe('alova request layer', () => {
       status: 400,
     })
     expect(messageError).toHaveBeenCalledWith('账号或密码错误')
+  })
+
+  it('rejects business error envelopes even when the http status is 200', async () => {
+    vi.stubEnv('VITE_APP_MOCK_ENABLED', 'false')
+    const fetchSpy = vi.fn(async () => {
+      return new Response(JSON.stringify({ code: 500, data: null, msg: '服务繁忙' }), {
+        headers: {
+          'content-type': 'application/json',
+        },
+      })
+    })
+
+    const { createRequestClient, RequestError } = await import('../alova')
+    const client = createRequestClient({ customFetch: fetchSpy })
+
+    await expect(client.Get('/business-error').send()).rejects.toBeInstanceOf(RequestError)
+    expect(messageError).toHaveBeenCalledWith('服务繁忙')
+    expect(handleSessionExpired).not.toHaveBeenCalled()
+  })
+
+  it('triggers the session expired flow on http 401 without duplicated toast', async () => {
+    vi.stubEnv('VITE_APP_MOCK_ENABLED', 'false')
+    const fetchSpy = vi.fn(async () => {
+      return new Response(JSON.stringify({ code: 401, data: null, msg: 'Unauthorized' }), {
+        status: 401,
+        statusText: 'Unauthorized',
+        headers: {
+          'content-type': 'application/json',
+        },
+      })
+    })
+
+    const { createRequestClient, RequestError } = await import('../alova')
+    const client = createRequestClient({ customFetch: fetchSpy })
+
+    await expect(client.Get('/secure').send()).rejects.toBeInstanceOf(RequestError)
+    expect(handleSessionExpired).toHaveBeenCalledTimes(1)
+    expect(messageError).not.toHaveBeenCalled()
+  })
+
+  it('triggers the session expired flow on business code 401 with http status 200', async () => {
+    vi.stubEnv('VITE_APP_MOCK_ENABLED', 'false')
+    const fetchSpy = vi.fn(async () => {
+      return new Response(JSON.stringify({ code: 401, data: null, msg: '登录已过期' }), {
+        headers: {
+          'content-type': 'application/json',
+        },
+      })
+    })
+
+    const { createRequestClient, RequestError } = await import('../alova')
+    const client = createRequestClient({ customFetch: fetchSpy })
+
+    await expect(client.Get('/secure').send()).rejects.toBeInstanceOf(RequestError)
+    expect(handleSessionExpired).toHaveBeenCalledTimes(1)
+    expect(messageError).not.toHaveBeenCalled()
   })
 
   it('uses @alova/mock for matched routes and falls through to fetch for unmatched routes', async () => {

@@ -7,6 +7,7 @@ import { useApp } from '@/composables/app'
 import { useUserStore } from '@/stores/user'
 import { AUTHORIZATION_KEY } from './constant'
 import type { RequestMeta } from './interface'
+import { handleSessionExpired } from './session'
 
 interface CreateRequestClientOptions {
   customFetch?: typeof fetch
@@ -32,14 +33,31 @@ class AlovaRequestError<T = unknown> extends Error {
   data?: T
   status: number
   statusText: string
+  /** 会话失效等已经统一提示过的错误，不再重复弹出全局提示 */
+  silent: boolean
 
-  constructor(message: string, options: { data?: T; status: number; statusText: string }) {
+  constructor(
+    message: string,
+    options: { data?: T; silent?: boolean; status: number; statusText: string },
+  ) {
     super(message)
     this.name = 'RequestError'
     this.data = options.data
+    this.silent = options.silent ?? false
     this.status = options.status
     this.statusText = options.statusText
   }
+}
+
+const SUCCESS_BUSINESS_CODE = 200
+const UNAUTHORIZED_BUSINESS_CODE = 401
+
+function resolveBusinessCode(payload: unknown) {
+  if (typeof payload === 'object' && payload !== null && 'code' in payload) {
+    const code = (payload as { code: unknown }).code
+    return typeof code === 'number' ? code : undefined
+  }
+  return undefined
 }
 
 export function createRequestClient(options: CreateRequestClientOptions = {}) {
@@ -84,10 +102,41 @@ export function createRequestClient(options: CreateRequestClientOptions = {}) {
         const contentType = response.headers.get('content-type') ?? ''
         const isJson = contentType.includes('application/json')
         const payload = isJson ? await response.json() : response
+        const businessCode = resolveBusinessCode(payload)
+        const isUnauthorized =
+          response.status === UNAUTHORIZED_BUSINESS_CODE ||
+          businessCode === UNAUTHORIZED_BUSINESS_CODE
+
+        if (isUnauthorized) {
+          const requestError = new AlovaRequestError(
+            resolveErrorMessage(payload, '登录已过期，请重新登录'),
+            {
+              data: payload,
+              silent: true,
+              status: response.status,
+              statusText: response.statusText,
+            },
+          )
+          await handleSessionExpired()
+          throw requestError
+        }
 
         if (!response.ok) {
           const requestError = new AlovaRequestError(
             resolveErrorMessage(payload, `${response.status} ${response.statusText}`),
+            {
+              data: payload,
+              status: response.status,
+              statusText: response.statusText,
+            },
+          )
+          await reportRequestError(requestError)
+          throw requestError
+        }
+
+        if (businessCode !== undefined && businessCode !== SUCCESS_BUSINESS_CODE) {
+          const requestError = new AlovaRequestError(
+            resolveErrorMessage(payload, `Request failed with code ${businessCode}`),
             {
               data: payload,
               status: response.status,
@@ -131,7 +180,9 @@ async function reportRequestError(error: unknown) {
   const { message } = useApp()
 
   if (error instanceof AlovaRequestError) {
-    message.error(resolveErrorMessage(error.data, error.message))
+    if (!error.silent) {
+      message.error(resolveErrorMessage(error.data, error.message))
+    }
     return
   }
 

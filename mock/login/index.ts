@@ -25,14 +25,14 @@ export default defineMock({
 
     return response(
       {
-        code: 0,
+        code: 200,
         data: {
           token: 'mock-token-admin',
         },
         msg: '登录成功',
       },
       {
-        delay: 3000,
+        delay: 600,
       },
     )
   },
