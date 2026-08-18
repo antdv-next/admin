@@ -16,11 +16,11 @@ describe('loadBuild', () => {
           priority: 30,
         }),
         expect.objectContaining({
-          name: 'ui',
+          name: 'antd',
           priority: 20,
         }),
         expect.objectContaining({
-          name: 'ui-icons',
+          name: 'antd-icons',
           priority: 25,
         }),
         expect.objectContaining({

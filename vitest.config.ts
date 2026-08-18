@@ -23,5 +23,12 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    server: {
+      deps: {
+        // antdv-next 组件栈需要走 Vite 转换管线，vite-plugin-dayjs 才能把
+        // dayjs/plugin/* 的裸子路径导入重写到 dayjs/esm，否则 Node 原生 ESM 解析失败
+        inline: [/node_modules[\\/].*(antdv-next|@antdv-next|@v-c)[\\/]/],
+      },
+    },
   },
 })

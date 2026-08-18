@@ -277,27 +277,16 @@ describe('shouldGenerateJsonAssets', () => {
 
 describe('createLocaleFileFilter', () => {
   const filter = createLocaleFileFilter()
+  // createFilter 的相对 pattern 以进程 cwd 为基准，测试路径必须跟随 cwd 构造，
+  // 不能写死某台机器上的仓库绝对路径
+  const resolvePath = (relativePath: string) => join(process.cwd(), relativePath)
 
   it('matches locale source files and ignores unrelated files', () => {
-    expect(
-      filter(
-        '/Users/yanyu/workspace/gitea/antdv-next/admin/src/locales/zh-CN/workspace/overview.ts',
-      ),
-    ).toBe(true)
-    expect(
-      filter('/Users/yanyu/workspace/gitea/antdv-next/admin/src/pages/error/locales/zh-CN.ts'),
-    ).toBe(true)
-    expect(
-      filter('/Users/yanyu/workspace/gitea/antdv-next/admin/apps/admin/locales/en-US/dashboard.ts'),
-    ).toBe(true)
-    expect(
-      filter(
-        '/Users/yanyu/workspace/gitea/antdv-next/admin/apps/admin/pages/error/locales/en-US.ts',
-      ),
-    ).toBe(true)
-    expect(filter('/Users/yanyu/workspace/gitea/antdv-next/admin/src/main.ts')).toBe(false)
-    expect(filter('/Users/yanyu/workspace/gitea/antdv-next/admin/src/pages/error/index.vue')).toBe(
-      false,
-    )
+    expect(filter(resolvePath('src/locales/zh-CN/workspace/overview.ts'))).toBe(true)
+    expect(filter(resolvePath('src/pages/error/locales/zh-CN.ts'))).toBe(true)
+    expect(filter(resolvePath('apps/admin/locales/en-US/dashboard.ts'))).toBe(true)
+    expect(filter(resolvePath('apps/admin/pages/error/locales/en-US.ts'))).toBe(true)
+    expect(filter(resolvePath('src/main.ts'))).toBe(false)
+    expect(filter(resolvePath('src/pages/error/index.vue'))).toBe(false)
   })
 })

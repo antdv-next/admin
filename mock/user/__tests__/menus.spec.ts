@@ -42,6 +42,7 @@ describe('mock user menus', () => {
     expect(childPaths).toEqual([
       '/admin/system/config',
       '/admin/system/dict',
+      '/admin/system/menu',
       '/admin/system/role',
       '/admin/system/user',
     ])
