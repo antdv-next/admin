@@ -3,12 +3,19 @@ import { omit } from 'es-toolkit'
 import { setupLayouts } from 'virtual:layout'
 import { routes } from 'vue-router/auto-routes'
 import { useDict } from '@/composables'
-import { LOGIN_PATH } from '@/constants/router'
+import { FORBIDDEN_PATH, LOGIN_PATH } from '@/constants/router'
 import { NOT_FOUND_NAME, notFoundRoute, ROUTE_NAME } from '@/router/constant'
 import { filterRoutesByAccess } from '@/router/guard-menu'
 import { resolveAuthGuardRedirect } from '@/router/redirect'
+import { createRoutePathChecker, isRouteMissing } from '@/router/route-registry'
 
 let routeAccessKey: string | null = null
+let hasFullRoutePath: ((path: string) => boolean) | null = null
+
+function isPathInFullRouteTree(path: string) {
+  hasFullRoutePath ??= createRoutePathChecker(setupLayouts(routes))
+  return hasFullRoutePath(path)
+}
 
 export function setupAuthGuard(router: Router) {
   const authorization = useAuthorization()
@@ -89,6 +96,14 @@ export function setupAuthGuard(router: Router) {
     if (redirectPath) {
       return {
         path: redirectPath,
+        replace: true,
+      }
+    }
+
+    // 页面在完整路由树中存在、但被菜单权限过滤掉时，落到 403 而不是 404
+    if (isRouteMissing(to) && to.path !== FORBIDDEN_PATH && isPathInFullRouteTree(to.path)) {
+      return {
+        path: FORBIDDEN_PATH,
         replace: true,
       }
     }

@@ -38,6 +38,16 @@ access?: {
 - Public routes stay injected even when unauthenticated.
 - `login` routes are injected only after login.
 
+## 403 vs 404
+
+- Authenticated navigation that resolves to a catch-all (global or sub-app 404) is re-checked
+  against the full unfiltered route tree via `src/router/route-registry.ts`.
+- If the path exists in the full tree but was filtered out by menu access, the guard redirects to
+  `FORBIDDEN_PATH` (`/403`) instead of showing 404.
+- Truly unknown paths still fall through to the catch-all 404 pages.
+- Error routes (`/403`, global 404) are registered manually in `src/router/constant.ts` with
+  `meta.layout: false`.
+
 ## Shared Shell Access Pattern
 
 For a shared parent shell like `/admin/user/**`, set access like this:
@@ -101,9 +111,14 @@ permissions for each child page.
   - `LOGIN_PATH`
   - `UNAUTH_DEFAULT_PATH`
   - `AUTH_DEFAULT_PATH`
+  - `FORBIDDEN_PATH`
 - `src/router/redirect.ts`
   - `getDefaultEntryPath(isAuthenticated)`
   - `resolveAuthGuardRedirect({ isAuthenticated, isPublicRoute, toPath })`
+  - `resolveLoginSuccessPath(redirectQuery)` — login success honors `?redirect=` (internal paths only)
+- `src/router/route-registry.ts`
+  - `createRoutePathChecker(routes)`
+  - `isRouteMissing(to)` / `isCatchAllRecordPath(path)`
 - `src/router/static-router.ts`
   - root route redirect delegates to `getDefaultEntryPath`
 - `src/router/guard/auth.ts`

@@ -1,6 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router'
 import { useAuthorization } from '@/composables/authorization'
-import { notFoundRoute } from '@/router/constant'
+import { forbiddenRoute, notFoundRoute } from '@/router/constant'
 import { getDefaultEntryPath } from '@/router/redirect'
 
 export const routes: RouteRecordRaw[] = [
@@ -9,5 +9,6 @@ export const routes: RouteRecordRaw[] = [
     name: 'rootRedirect',
     redirect: () => getDefaultEntryPath(Boolean(useAuthorization().value)),
   },
+  forbiddenRoute,
   notFoundRoute,
 ]

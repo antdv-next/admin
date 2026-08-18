@@ -4,3 +4,5 @@ export const LOGIN_PATH = '/login'
 export const UNAUTH_DEFAULT_PATH = '/home'
 // 默认已经登录的情况下跳转的页面
 export const AUTH_DEFAULT_PATH = '/admin'
+// 无权限页面
+export const FORBIDDEN_PATH = '/403'

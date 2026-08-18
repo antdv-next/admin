@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getDefaultEntryPath } from '@/router/redirect'
 
-defineOptions({ name: 'GlobalNotFoundPage' })
+defineOptions({ name: 'GlobalForbiddenPage' })
 
 const router = useRouter()
 const authorization = useAuthorization()
@@ -23,9 +23,9 @@ function goBack() {
 <template>
   <div class="flex min-h-screen items-center justify-center bg-layout px-6 py-10">
     <a-result
-      status="404"
-      title="页面不存在"
-      sub-title="你访问的页面不存在，可能已被移除或路径填写有误。"
+      status="403"
+      title="暂无访问权限"
+      sub-title="你没有访问该页面的权限，如需开通请联系管理员。"
     >
       <template #extra>
         <div class="flex flex-wrap items-center justify-center gap-3">
