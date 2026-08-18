@@ -203,7 +203,9 @@ const handleDelete = async (record: UserRecord) => {
           <div class="flex justify-between items-center">
             <span class="text-lg font-bold">查询表格</span>
             <div class="flex items-center gap-2">
-              <a-button type="primary" size="small" @click="handleModal('create')">新增</a-button>
+              <Access auth="system:user:create">
+                <a-button type="primary" size="small" @click="handleModal('create')">新增</a-button>
+              </Access>
               <a-divider vertical />
               <a-button type="text" size="small" :loading="loading" @click="() => refresh()">
                 <template #icon>
@@ -238,28 +240,36 @@ const handleDelete = async (record: UserRecord) => {
           </template>
           <template v-else-if="column.dataIndex === 'action'">
             <div class="inline-flex items-center gap-2">
-              <a-button type="link" size="small" @click="handleModal('edit', record as UserRecord)">
-                <template #icon>
-                  <EditOutlined />
-                </template>
-              </a-button>
-              <a-popconfirm
-                title="确认删除当前数据？"
-                ok-text="确认"
-                cancel-text="取消"
-                @confirm="handleDelete(record as UserRecord)"
-              >
+              <Access auth="system:user:update">
                 <a-button
-                  type="text"
+                  type="link"
                   size="small"
-                  danger
-                  :loading="deleteLoading && deletingId === (record as UserRecord).id"
+                  @click="handleModal('edit', record as UserRecord)"
                 >
                   <template #icon>
-                    <DeleteOutlined />
+                    <EditOutlined />
                   </template>
                 </a-button>
-              </a-popconfirm>
+              </Access>
+              <Access auth="system:user:remove">
+                <a-popconfirm
+                  title="确认删除当前数据？"
+                  ok-text="确认"
+                  cancel-text="取消"
+                  @confirm="handleDelete(record as UserRecord)"
+                >
+                  <a-button
+                    type="text"
+                    size="small"
+                    danger
+                    :loading="deleteLoading && deletingId === (record as UserRecord).id"
+                  >
+                    <template #icon>
+                      <DeleteOutlined />
+                    </template>
+                  </a-button>
+                </a-popconfirm>
+              </Access>
             </div>
           </template>
         </template>

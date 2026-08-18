@@ -160,6 +160,18 @@ const sysMenuSeeds: SysMenu[] = [
     name: 'AdminSystemUserUpdate',
   }),
   createMenuSeed({
+    id: '7-3',
+    code: 'system:user:remove',
+    parentId: '7',
+    parentPath: '/admin/system/user',
+    sort: 3,
+    title: '删除用户',
+    permission: 'system:user:remove',
+    menuType: MENU_TYPE.BUTTON,
+    path: null,
+    name: 'AdminSystemUserRemove',
+  }),
+  createMenuSeed({
     id: '10',
     code: 'admin:links',
     sort: 3,
